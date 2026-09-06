@@ -54,42 +54,14 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     }
   }
 
-  void _showOtherMixlists(List<MixlistSummary> otherMixlists) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Also appears in'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final mixlist in otherMixlists)
-              ListTile(
-                title: Text(mixlist.title),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final fullMixlistData = await getIt<MusicLibraryRepository>()
-                      .mixlists
-                      .getById(mixlist.id);
-                  if (context.mounted) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            MixlistDetailScreen(mixlist: fullMixlistData!),
-                      ),
-                    );
-                  }
-                },
-              ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
+  Future<void> _openMixlist(int mixlistId) async {
+    final fullMixlistData = await getIt<MusicLibraryRepository>().mixlists
+        .getById(mixlistId);
+    if (!mounted || fullMixlistData == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MixlistDetailScreen(mixlist: fullMixlistData),
       ),
     );
   }
@@ -113,39 +85,187 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
                         .where((m) => m.id != widget.mixlist.id)
                         .toList();
 
-                return ListTile(
-                  title: Text(
-                    "${track.position}) ${track.songName}",
-                    style: TextStyle(fontSize: 18, fontWeight: .bold),
-                  ),
-                  subtitle: Text(
-                    '${track.artistNames} \u2022 ${track.albumName}',
-                     style: TextStyle(fontSize: 14, fontWeight: .w500),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: .min,
-                    mainAxisAlignment: .end,
-                    crossAxisAlignment: .end,
-                    children: [
-                      if (otherMixlists.isNotEmpty)
-                        ActionChip(
-                          avatar: const Icon(Icons.repeat, size: 16),
-                          label: Text('${otherMixlists.length}'),
-                          onPressed: () => _showOtherMixlists(otherMixlists),
-                        ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          _durationInSeconds(track.durationMs!),
-                          style: TextStyle(fontSize: 20, fontWeight: .bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                  leading: Image.network(track.albumCoverImageURL),
+                return _TrackTile(
+                  key: ValueKey(track.position),
+                  track: track,
+                  durationLabel: _durationInSeconds(track.durationMs!),
+                  otherMixlists: otherMixlists,
+                  onOtherMixlistTap: _openMixlist,
                 );
               },
             ),
+    );
+  }
+}
+
+/// A single track row. Owns its own "also appears in" expansion so tapping
+/// the chip sprouts a small list right under the row, instead of popping
+/// open a separate dialog.
+class _TrackTile extends StatefulWidget {
+  const _TrackTile({
+    super.key,
+    required this.track,
+    required this.durationLabel,
+    required this.otherMixlists,
+    required this.onOtherMixlistTap,
+  });
+
+  final MixlistTrack track;
+  final String durationLabel;
+  final List<MixlistSummary> otherMixlists;
+  final ValueChanged<int> onOtherMixlistTap;
+
+  @override
+  State<_TrackTile> createState() => _TrackTileState();
+}
+
+class _TrackTileState extends State<_TrackTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  late final Animation<double> _revealAnimation = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeOut,
+    reverseCurve: Curves.easeIn,
+  );
+
+  late final Animation<double> _popAnimation = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeOutBack,
+    reverseCurve: Curves.easeIn,
+  );
+
+  late final Animation<double> _fadeAnimation = CurvedAnimation(
+    parent: _controller,
+    curve: const Interval(0.3, 1.0, curve: Curves.easeIn),
+    reverseCurve: const Interval(0.0, 0.7, curve: Curves.easeOut),
+  );
+
+  bool _isExpanded = false;
+
+  void _toggleExpanded() {
+    setState(() => _isExpanded = !_isExpanded);
+    _isExpanded ? _controller.forward() : _controller.reverse();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final track = widget.track;
+    final hasDuplicates = widget.otherMixlists.isNotEmpty;
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        ListTile(
+          title: Text(
+            "${track.position}) ${track.songName}",
+            style: TextStyle(fontSize: 18, fontWeight: .bold),
+          ),
+          subtitle: Text(
+            '${track.artistNames} \u2022 ${track.albumName}',
+            style: TextStyle(fontSize: 14, fontWeight: .w500),
+          ),
+          trailing: Row(
+            mainAxisSize: .min,
+            children: [
+              if (hasDuplicates)
+                Padding(
+                  padding: .only(right: 8.0),
+                  child: ActionChip(
+                    avatar: const Icon(Icons.repeat, size: 16),
+                    label: Text('${widget.otherMixlists.length}'),
+                    onPressed: _toggleExpanded,
+                  ),
+                ),
+              Text(
+                widget.durationLabel,
+                style: TextStyle(fontSize: 20, fontWeight: .bold),
+              ),
+            ],
+          ),
+          leading: Image.network(track.albumCoverImageURL),
+        ),
+        if (hasDuplicates)
+          Align(
+            alignment: .topRight,
+            child: SizeTransition(
+              sizeFactor: _revealAnimation,
+              alignment: .bottomLeft,
+              child: ScaleTransition(
+                scale: _popAnimation,
+                alignment: .topRight,
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Align(
+                    alignment: .centerRight,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 260),
+                      child: _OtherMixlistsList(
+                        mixlists: widget.otherMixlists,
+                        onTap: widget.onOtherMixlistTap,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _OtherMixlistsList extends StatelessWidget {
+  const _OtherMixlistsList({required this.mixlists, required this.onTap});
+
+  final List<MixlistSummary> mixlists;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: .only(top: 4, right: 16, bottom: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: .circular(12),
+      ),
+      child: Column(
+        mainAxisSize: .min,
+        crossAxisAlignment: .start,
+        children: [
+          Padding(
+            padding: .only(left: 12, top: 8, right: 12, bottom: 4),
+            child: Text(
+              'Also appears in',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+          ),
+          for (final mixlist in mixlists)
+            Material(
+              child: ListTile(
+                dense: true,
+                visualDensity: .compact,
+                title: Text(mixlist.title),
+                onTap: () => onTap(mixlist.id),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

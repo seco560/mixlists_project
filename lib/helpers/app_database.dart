@@ -28,7 +28,10 @@ Future<Database> openAppDatabase() async {
     version: _dbVersion,
     onConfigure: (db) async {},
     onCreate: (db, version) async {
-      await _createSchemaV2(db);
+      final checkForData = await db.rawQuery("SELECT * FROM Mixlists;");
+      if (checkForData.isEmpty) {
+        await _createSchemaV2(db);
+      }
     },
     onUpgrade: (db, oldVersion, newVersion) async {
       if (oldVersion < 2) {
@@ -53,7 +56,7 @@ Future<Database> openAppDatabase() async {
 }
 
 void _initFfiIfNeeded() {
-  if (Platform.isLinux || Platform.isMacOS) {
+  if (Platform.isLinux) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
@@ -74,7 +77,7 @@ Future<void> _copyDatabaseFromAssets(String destinationPath) async {
   }
 }
 
-/// Used as back-up in case existing DB becomes inaccessible for whatever reason.
+/// Used as back-up in case existing DB is empty.
 Future<void> _createSchemaV2(Database db) async {
   await db.execute('''
     CREATE TABLE Mixlists (
