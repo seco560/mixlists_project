@@ -72,7 +72,7 @@ class MixlistTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text("${mixlist.id} - ${mixlist.title}", style: TextStyle(fontSize: 20, fontWeight: .bold)),
+      title: Text("${mixlist.id}) ${mixlist.title}", style: TextStyle(fontSize: 20, fontWeight: .bold)),
       subtitle: Text(mixlist.dateCreated.split('T')[0], style: TextStyle(fontSize: 16, fontWeight: .w600)),
       onTap: () {
         Navigator.push(

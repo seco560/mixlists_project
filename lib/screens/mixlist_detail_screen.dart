@@ -69,7 +69,12 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.mixlist.title), centerTitle: true),
+      appBar: AppBar(
+        title: Text(
+          "${widget.mixlist.id}) ${widget.mixlist.title} | ${widget.mixlist.dateCreated.split('T')[0]}",
+        ),
+        centerTitle: true,
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -98,9 +103,6 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   }
 }
 
-/// A single track row. Owns its own "also appears in" expansion so tapping
-/// the chip sprouts a small list right under the row, instead of popping
-/// open a separate dialog.
 class _TrackTile extends StatefulWidget {
   const _TrackTile({
     super.key,
@@ -196,6 +198,16 @@ class _TrackTileState extends State<_TrackTile>
                 widget.durationLabel,
                 style: TextStyle(fontSize: 20, fontWeight: .bold),
               ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Column(
+                  mainAxisAlignment: .center,
+                  children: [
+                    Text(widget.track.dateAdded.split("T")[0]),
+                    Text(widget.track.dateAdded.split("T")[1].split("Z")[0]),
+                  ],
+                ),
+              ),
             ],
           ),
           leading: Image.network(track.albumCoverImageURL),
@@ -214,7 +226,7 @@ class _TrackTileState extends State<_TrackTile>
                   child: Align(
                     alignment: .centerRight,
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 260),
+                      constraints: const BoxConstraints(maxWidth: 330),
                       child: _OtherMixlistsList(
                         mixlists: widget.otherMixlists,
                         onTap: widget.onOtherMixlistTap,
@@ -252,7 +264,7 @@ class _OtherMixlistsList extends StatelessWidget {
             padding: .only(left: 12, top: 8, right: 12, bottom: 4),
             child: Text(
               'Also appears in',
-              style: Theme.of(context).textTheme.labelMedium,
+              style: Theme.of(context).textTheme.labelLarge,
             ),
           ),
           for (final mixlist in mixlists)
@@ -260,7 +272,10 @@ class _OtherMixlistsList extends StatelessWidget {
               child: ListTile(
                 dense: true,
                 visualDensity: .compact,
-                title: Text(mixlist.title),
+                title: Text(
+                  "${mixlist.id}) ${mixlist.title}",
+                  style: TextStyle(fontSize: 12, fontWeight: .w600),
+                ),
                 onTap: () => onTap(mixlist.id),
               ),
             ),
