@@ -96,6 +96,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
                   durationLabel: _durationInSeconds(track.durationMs!),
                   otherMixlists: otherMixlists,
                   onOtherMixlistTap: _openMixlist,
+                  mixlistCreationDate: widget.mixlist.dateCreated.split('T')[0],
                 );
               },
             ),
@@ -110,12 +111,14 @@ class _TrackTile extends StatefulWidget {
     required this.durationLabel,
     required this.otherMixlists,
     required this.onOtherMixlistTap,
+    required this.mixlistCreationDate,
   });
 
   final MixlistTrack track;
   final String durationLabel;
   final List<MixlistSummary> otherMixlists;
   final ValueChanged<int> onOtherMixlistTap;
+  final String mixlistCreationDate;
 
   @override
   State<_TrackTile> createState() => _TrackTileState();
@@ -203,8 +206,21 @@ class _TrackTileState extends State<_TrackTile>
                 child: Column(
                   mainAxisAlignment: .center,
                   children: [
-                    Text(widget.track.dateAdded.split("T")[0]),
-                    Text(widget.track.dateAdded.split("T")[1].split("Z")[0]),
+                    Text(
+                      widget.track.dateAdded.split("T")[0],
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        color:
+                            widget.mixlistCreationDate ==
+                                widget.track.dateAdded.split("T")[0]
+                            ? Colors.green.shade400
+                            : Colors.blue.shade700,
+                      ),
+                    ),
+                    Text(
+                      widget.track.dateAdded.split("T")[1].split("Z")[0],
+                      style: TextStyle(fontSize: 12.0),
+                    ),
                   ],
                 ),
               ),
