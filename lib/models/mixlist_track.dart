@@ -17,6 +17,7 @@ class MixlistTrack {
     required this.songName,
     required this.artistNames,
     required this.artistURIs,
+    required this.artistId,
     required this.albumId,
     required this.albumName,
     required this.albumCoverImageURL,
@@ -33,6 +34,13 @@ class MixlistTrack {
   final String songName;
   final String artistNames;
   final String artistURIs;
+
+  /// The album's artist (Albums.artist) -- resolves `artistNames` (a free
+  /// text field with no foreign key, see the class doc) to a navigable
+  /// Artists row. Covers the common case correctly; a track whose
+  /// `artistNames` lists collaborators beyond the album's own artist still
+  /// only links to that one.
+  final int artistId;
   final int albumId;
   final String albumName;
   final String albumCoverImageURL;
@@ -56,6 +64,7 @@ class MixlistTrack {
       songName: map['songName'] as String,
       artistNames: map['artists'] as String,
       artistURIs: map['artistsURIs'] as String,
+      artistId: map['artistId'] as int,
       albumId: map['albumId'] as int,
       albumName: map['albumName'] as String,
       albumCoverImageURL: map['albumCoverImageURL'] as String,

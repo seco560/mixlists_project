@@ -7,6 +7,8 @@ import 'package:mixlists_project/helpers/music_library_repository.dart';
 import 'package:mixlists_project/models/mixlist.dart';
 import 'package:mixlists_project/models/mixlist_summary.dart';
 import 'package:mixlists_project/models/mixlist_track.dart';
+import 'package:mixlists_project/screens/album_detail_screen.dart';
+import 'package:mixlists_project/screens/artist_detail_screen.dart';
 
 class MixlistDetailScreen extends StatefulWidget {
   const MixlistDetailScreen({
@@ -284,6 +286,30 @@ class _TrackTileState extends State<_TrackTile> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  Future<void> _openArtist(int artistId) async {
+    final overview = await getIt<MusicLibraryRepository>()
+        .getArtistOverviewById(artistId);
+    if (!mounted || overview == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ArtistDetailScreen(artist: overview),
+      ),
+    );
+  }
+
+  Future<void> _openAlbum(int albumId) async {
+    final overview = await getIt<MusicLibraryRepository>()
+        .getAlbumOverviewById(albumId);
+    if (!mounted || overview == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AlbumDetailScreen(album: overview),
+      ),
+    );
+  }
+
   Widget _wrapWithHighlight(Widget child) {
     final animation = _highlightColorAnimation;
     if (animation == null) return child;
@@ -311,9 +337,25 @@ class _TrackTileState extends State<_TrackTile> with TickerProviderStateMixin {
               "${track.position}) ${track.songName}",
               style: TextStyle(fontSize: 18, fontWeight: .bold),
             ),
-            subtitle: Text(
-              '${track.artistNames} \u2022 ${track.albumName}',
-              style: TextStyle(fontSize: 14, fontWeight: .w500),
+            subtitle: Wrap(
+              crossAxisAlignment: .center,
+              children: [
+                _HoverableLink(
+                  text: track.artistNames,
+                  onTap: () => _openArtist(track.artistId),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4),
+                  child: Text(
+                    '\u2022',
+                    style: TextStyle(fontSize: 14, fontWeight: .w500),
+                  ),
+                ),
+                _HoverableLink(
+                  text: track.albumName,
+                  onTap: () => _openAlbum(track.albumId),
+                ),
+              ],
             ),
             trailing: Row(
               mainAxisSize: .min,
@@ -389,6 +431,45 @@ class _TrackTileState extends State<_TrackTile> with TickerProviderStateMixin {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// The artist/album name in a track's subtitle, tappable to jump to that
+/// artist's or album's detail screen. Underlines on hover so it reads as a
+/// link -- there's no other in-app precedent for a
+/// tappable substring (existing nav taps are always a whole row), so this
+/// is a fresh small widget rather than a shared one.
+class _HoverableLink extends StatefulWidget {
+  const _HoverableLink({required this.text, required this.onTap});
+
+  final String text;
+  final VoidCallback onTap;
+
+  @override
+  State<_HoverableLink> createState() => _HoverableLinkState();
+}
+
+class _HoverableLinkState extends State<_HoverableLink> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Text(
+          widget.text,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: .w500,
+            decoration: _isHovered ? .underline : .none,
+          ),
+        ),
+      ),
     );
   }
 }

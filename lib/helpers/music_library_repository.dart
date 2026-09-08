@@ -54,6 +54,7 @@ class MusicLibraryRepository {
         s.name             AS songName,
         s.artists          AS artists,
         s.artistsURIs      AS artistsURIs,
+        al.artist          AS artistId,
         al.id              AS albumId,
         al.name            AS albumName,
         al.coverImageURL   AS albumCoverImageURL,
@@ -304,6 +305,100 @@ class MusicLibraryRepository {
       appearance.datesAdded.add(row['dateAddedToMixlist'] as String);
     }
     return [for (final songId in songOrder) appearancesBySong[songId]!];
+  }
+
+  /// A single artist, in the same shape as [getArtistOverviews] returns,
+  /// for navigating to an [ArtistOverview]-driven screen (e.g. the artist
+  /// detail screen) when only an id is on hand, like from a [MixlistTrack].
+  /// Scoped queries rather than reusing [getArtistOverviews] and filtering,
+  /// so this stays cheap regardless of library size.
+  Future<ArtistOverview?> getArtistOverviewById(int artistId) async {
+    final artist = await artists.getById(artistId);
+    if (artist == null) return null;
+
+    final albumRows = await _db.rawQuery(
+      '''
+      SELECT id AS albumId, name AS albumName, releaseDate, coverImageURL
+      FROM Albums
+      WHERE artist = ?
+      ORDER BY releaseDate ASC
+    ''',
+      [artistId],
+    );
+    final albums = [
+      for (final row in albumRows)
+        AlbumSummary(
+          id: row['albumId'] as int,
+          name: row['albumName'] as String,
+          releaseDate: row['releaseDate'] as String,
+          coverImageURL: row['coverImageURL'] as String,
+        ),
+    ];
+
+    final mixlistRows = await _db.rawQuery(
+      '''
+      SELECT DISTINCT
+        m.id          AS mixlistId,
+        m.title       AS mixlistTitle,
+        m.dateCreated AS dateCreated
+      FROM SongsMixlists sm
+      JOIN Songs s ON s.id = sm.song
+      JOIN Albums al ON al.id = s.album
+      JOIN Mixlists m ON m.id = sm.mixlist
+      WHERE al.artist = ?
+      ORDER BY m.dateCreated ASC
+    ''',
+      [artistId],
+    );
+    final mixlists = [
+      for (final row in mixlistRows)
+        MixlistSummary(
+          id: row['mixlistId'] as int,
+          title: row['mixlistTitle'] as String,
+          dateCreated: row['dateCreated'] as String,
+        ),
+    ];
+
+    final songCountRows = await _db.rawQuery(
+      '''
+      SELECT COUNT(DISTINCT s.id) AS songCount
+      FROM SongsMixlists sm
+      JOIN Songs s ON s.id = sm.song
+      JOIN Albums al ON al.id = s.album
+      WHERE al.artist = ?
+    ''',
+      [artistId],
+    );
+
+    return ArtistOverview(
+      id: artist.id,
+      name: artist.name,
+      albums: albums,
+      mixlists: mixlists,
+      uniqueSongCount: songCountRows.first['songCount'] as int,
+    );
+  }
+
+  /// A single album, in the same shape as [getAlbumOverviews] returns, for
+  /// navigating to an [AlbumOverview]-driven screen when only an id is on
+  /// hand, like from a [MixlistTrack].
+  Future<AlbumOverview?> getAlbumOverviewById(int albumId) async {
+    final rows = await _db.rawQuery(
+      '''
+      SELECT
+        al.id            AS id,
+        al.name          AS name,
+        al.releaseDate   AS releaseDate,
+        al.coverImageURL AS coverImageURL,
+        ar.name          AS artistName
+      FROM Albums al
+      JOIN Artists ar ON ar.id = al.artist
+      WHERE al.id = ?
+    ''',
+      [albumId],
+    );
+    if (rows.isEmpty) return null;
+    return AlbumOverview.fromMap(rows.first);
   }
 
   // This assumes SongsMixlists doesn't change during the app's lifetime,
