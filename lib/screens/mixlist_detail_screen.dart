@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/helpers/get_it_init.dart';
 import 'package:mixlists_project/helpers/music_library_repository.dart';
@@ -6,9 +7,18 @@ import 'package:mixlists_project/models/mixlist_summary.dart';
 import 'package:mixlists_project/models/mixlist_track.dart';
 
 class MixlistDetailScreen extends StatefulWidget {
-  const MixlistDetailScreen({super.key, required this.mixlist});
+  const MixlistDetailScreen({
+    super.key,
+    required this.mixlist,
+    this.highlightSongId,
+  });
 
   final Mixlist mixlist;
+
+  /// When arriving from a specific song (an artist's "songs on mixlists"
+  /// entry, or an "also appears in" chip), the id of that song -- its
+  /// track gets scrolled into view and highlighted once the list is up.
+  final int? highlightSongId;
 
   @override
   State<MixlistDetailScreen> createState() => _MixlistDetailScreenState();
@@ -17,6 +27,7 @@ class MixlistDetailScreen extends StatefulWidget {
 class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   List<MixlistTrack> _tracks = [];
   Map<int, List<MixlistSummary>> _duplicateSongIndex = {};
+  Map<int, GlobalKey> _trackKeys = {};
   bool _isLoading = true;
   String? _error;
 
@@ -43,8 +54,10 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
       setState(() {
         _tracks = tracks;
         _duplicateSongIndex = duplicateIndex;
+        _trackKeys = {for (final t in tracks) t.position: GlobalKey()};
         _isLoading = false;
       });
+      _scrollToHighlightedTrack();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -54,15 +67,59 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     }
   }
 
-  Future<void> _openMixlist(int mixlistId) async {
+  void _scrollToHighlightedTrack() {
+    final highlightSongId = widget.highlightSongId;
+    if (highlightSongId == null) return;
+    MixlistTrack? highlighted;
+    for (final t in _tracks) {
+      if (t.songId == highlightSongId) {
+        highlighted = t;
+        break;
+      }
+    }
+    if (highlighted == null) return;
+    final key = _trackKeys[highlighted.position];
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final renderContext = key?.currentContext;
+      if (renderContext == null) return;
+      Scrollable.ensureVisible(
+        renderContext,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
     final fullMixlistData = await getIt<MusicLibraryRepository>().mixlists
         .getById(mixlistId);
     if (!mounted || fullMixlistData == null) return;
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MixlistDetailScreen(mixlist: fullMixlistData),
+        builder: (context) => MixlistDetailScreen(
+          mixlist: fullMixlistData,
+          highlightSongId: highlightSongId,
+        ),
       ),
+    );
+  }
+
+  Widget _buildTrackTile(MixlistTrack track) {
+    final otherMixlists =
+        (_duplicateSongIndex[track.songId] ?? const <MixlistSummary>[])
+            .where((m) => m.id != widget.mixlist.id)
+            .toList();
+
+    return _TrackTile(
+      key: _trackKeys[track.position],
+      track: track,
+      durationLabel: _durationInSeconds(track.durationMs!),
+      otherMixlists: otherMixlists,
+      onOtherMixlistTap: _openMixlist,
+      mixlistCreationDate: widget.mixlist.dateCreated.split('T')[0],
+      isHighlighted: track.songId == widget.highlightSongId,
     );
   }
 
@@ -79,26 +136,13 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _error != null
           ? Center(child: Text(_error!))
-          : ListView.separated(
-              separatorBuilder: (_, _) => Divider(color: Colors.blueGrey),
-              itemCount: _tracks.length,
-              itemBuilder: (context, index) {
-                final track = _tracks[index];
-                final otherMixlists =
-                    (_duplicateSongIndex[track.songId] ??
-                            const <MixlistSummary>[])
-                        .where((m) => m.id != widget.mixlist.id)
-                        .toList();
-
-                return _TrackTile(
-                  key: ValueKey(track.position),
-                  track: track,
-                  durationLabel: _durationInSeconds(track.durationMs!),
-                  otherMixlists: otherMixlists,
-                  onOtherMixlistTap: _openMixlist,
-                  mixlistCreationDate: widget.mixlist.dateCreated.split('T')[0],
-                );
-              },
+          : ListView(
+              children: [
+                for (var i = 0; i < _tracks.length; i++) ...[
+                  _buildTrackTile(_tracks[i]),
+                  if (i != _tracks.length - 1) Divider(color: Colors.blueGrey),
+                ],
+              ],
             ),
     );
   }
@@ -112,21 +156,35 @@ class _TrackTile extends StatefulWidget {
     required this.otherMixlists,
     required this.onOtherMixlistTap,
     required this.mixlistCreationDate,
+    this.isHighlighted = false,
   });
 
   final MixlistTrack track;
   final String durationLabel;
   final List<MixlistSummary> otherMixlists;
-  final ValueChanged<int> onOtherMixlistTap;
+  final void Function(int mixlistId, int songId) onOtherMixlistTap;
   final String mixlistCreationDate;
+
+  /// True for the one track (if any) this screen was navigated to for --
+  /// flashes red then yellow then settles into a lingering green
+  /// background so it stays easy to spot.
+  final bool isHighlighted;
 
   @override
   State<_TrackTile> createState() => _TrackTileState();
 }
 
-class _TrackTileState extends State<_TrackTile>
-    with SingleTickerProviderStateMixin {
+class _TrackTileState extends State<_TrackTile> with TickerProviderStateMixin {
+  // Washed-out red -> yellow -> a pleasant green that the tile then just
+  // keeps as its background -- a one-way trip, not a pulse, so the green
+  // stays on screen as a permanent "you scrolled in from here" marker.
+  static final _highlightRed = Colors.red.withValues(alpha: 0.35);
+  static final _highlightYellow = Colors.yellow.withValues(alpha: 0.4);
+  static final _highlightGreen = Colors.green.withValues(alpha: 0.3);
+
   late final AnimationController _controller;
+  AnimationController? _highlightController;
+  Animation<Color?>? _highlightColorAnimation;
 
   late final Animation<double> _revealAnimation = CurvedAnimation(
     parent: _controller,
@@ -156,6 +214,28 @@ class _TrackTileState extends State<_TrackTile>
   @override
   void initState() {
     super.initState();
+    if (widget.isHighlighted) {
+      final controller = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 900),
+      );
+      _highlightController = controller;
+      _highlightColorAnimation = TweenSequence<Color?>([
+        TweenSequenceItem(
+          tween: ColorTween(begin: Colors.transparent, end: _highlightRed),
+          weight: 1,
+        ),
+        TweenSequenceItem(
+          tween: ColorTween(begin: _highlightRed, end: _highlightYellow),
+          weight: 1,
+        ),
+        TweenSequenceItem(
+          tween: ColorTween(begin: _highlightYellow, end: _highlightGreen),
+          weight: 1,
+        ),
+      ]).animate(controller);
+      controller.forward();
+    }
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -165,7 +245,21 @@ class _TrackTileState extends State<_TrackTile>
   @override
   void dispose() {
     _controller.dispose();
+    _highlightController?.dispose();
     super.dispose();
+  }
+
+  Widget _wrapWithHighlight(Widget child) {
+    final animation = _highlightColorAnimation;
+    if (animation == null) return child;
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) => ColoredBox(
+        color: animation.value ?? Colors.transparent,
+        child: child,
+      ),
+      child: child,
+    );
   }
 
   @override
@@ -176,57 +270,62 @@ class _TrackTileState extends State<_TrackTile>
     return Column(
       crossAxisAlignment: .start,
       children: [
-        ListTile(
-          title: Text(
-            "${track.position}) ${track.songName}",
-            style: TextStyle(fontSize: 18, fontWeight: .bold),
-          ),
-          subtitle: Text(
-            '${track.artistNames} \u2022 ${track.albumName}',
-            style: TextStyle(fontSize: 14, fontWeight: .w500),
-          ),
-          trailing: Row(
-            mainAxisSize: .min,
-            children: [
-              if (hasDuplicates)
+        _wrapWithHighlight(
+          ListTile(
+            title: Text(
+              "${track.position}) ${track.songName}",
+              style: TextStyle(fontSize: 18, fontWeight: .bold),
+            ),
+            subtitle: Text(
+              '${track.artistNames} \u2022 ${track.albumName}',
+              style: TextStyle(fontSize: 14, fontWeight: .w500),
+            ),
+            trailing: Row(
+              mainAxisSize: .min,
+              children: [
+                if (hasDuplicates)
+                  Padding(
+                    padding: .only(right: 8.0),
+                    child: ActionChip(
+                      avatar: const Icon(Icons.repeat, size: 16),
+                      label: Text('${widget.otherMixlists.length}'),
+                      onPressed: _toggleExpanded,
+                    ),
+                  ),
+                Text(
+                  widget.durationLabel,
+                  style: TextStyle(fontSize: 20, fontWeight: .bold),
+                ),
                 Padding(
-                  padding: .only(right: 8.0),
-                  child: ActionChip(
-                    avatar: const Icon(Icons.repeat, size: 16),
-                    label: Text('${widget.otherMixlists.length}'),
-                    onPressed: _toggleExpanded,
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Column(
+                    mainAxisAlignment: .center,
+                    children: [
+                      Text(
+                        widget.track.dateAdded.split("T")[0],
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color:
+                              widget.mixlistCreationDate ==
+                                  widget.track.dateAdded.split("T")[0]
+                              ? Colors.green.shade400
+                              : Colors.blue.shade700,
+                        ),
+                      ),
+                      Text(
+                        widget.track.dateAdded.split("T")[1].split("Z")[0],
+                        style: TextStyle(fontSize: 12.0),
+                      ),
+                    ],
                   ),
                 ),
-              Text(
-                widget.durationLabel,
-                style: TextStyle(fontSize: 20, fontWeight: .bold),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Column(
-                  mainAxisAlignment: .center,
-                  children: [
-                    Text(
-                      widget.track.dateAdded.split("T")[0],
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color:
-                            widget.mixlistCreationDate ==
-                                widget.track.dateAdded.split("T")[0]
-                            ? Colors.green.shade400
-                            : Colors.blue.shade700,
-                      ),
-                    ),
-                    Text(
-                      widget.track.dateAdded.split("T")[1].split("Z")[0],
-                      style: TextStyle(fontSize: 12.0),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
+            leading: CachedNetworkImage(
+              imageUrl: track.albumCoverImageURL,
+              width: 50,
+            ),
           ),
-          leading: Image.network(track.albumCoverImageURL),
         ),
         if (hasDuplicates)
           Align(
@@ -245,7 +344,8 @@ class _TrackTileState extends State<_TrackTile>
                       constraints: const BoxConstraints(maxWidth: 330),
                       child: _OtherMixlistsList(
                         mixlists: widget.otherMixlists,
-                        onTap: widget.onOtherMixlistTap,
+                        onTap: (mixlistId) =>
+                            widget.onOtherMixlistTap(mixlistId, track.songId),
                       ),
                     ),
                   ),

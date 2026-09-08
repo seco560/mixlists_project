@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/screens/all_artists_screen.dart';
 import 'package:mixlists_project/screens/all_mixlists_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -27,6 +28,15 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               child: Text("View All Mixlists"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AllArtistsScreen()),
+                );
+              },
+              child: Text("View All Artists"),
             ),
           ],
         ),
