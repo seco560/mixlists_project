@@ -183,7 +183,7 @@ class _SongTileState extends State<_SongTile> {
             children: [
               Text(song.albumName, style: _subtitleTextStyle),
               Text(
-                song.datesAdded.map((d) => d.split('T')[0]).join(', '),
+                'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',
                 style: _metaTextStyle,
               ),
             ],
