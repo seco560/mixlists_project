@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/screens/all_albums_screen.dart';
 import 'package:mixlists_project/screens/all_artists_screen.dart';
 import 'package:mixlists_project/screens/all_mixlists_screen.dart';
 
@@ -20,23 +21,43 @@ class HomeScreen extends StatelessWidget {
                 color: Colors.blueGrey,
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AllMixlistsScreen()),
-                );
-              },
-              child: Text("View All Mixlists"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AllArtistsScreen()),
-                );
-              },
-              child: Text("View All Artists"),
+            Row(
+              mainAxisAlignment: .spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AllMixlistsScreen(),
+                      ),
+                    );
+                  },
+                  child: Text("View All Mixlists"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AllArtistsScreen(),
+                      ),
+                    );
+                  },
+                  child: Text("View All Artists"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AllAlbumsScreen(),
+                      ),
+                    );
+                  },
+                  child: Text("View All Albums"),
+                ),
+              ],
             ),
           ],
         ),

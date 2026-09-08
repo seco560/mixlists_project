@@ -103,9 +103,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     // to its estimated position (by fraction of the list) to force it to
     // build, then let ensureVisible do the precise, animated alignment.
     if (key.currentContext == null && _scrollController.hasClients) {
-      final fraction = _tracks.length <= 1
-          ? 0.0
-          : index / (_tracks.length - 1);
+      final fraction = _tracks.length <= 1 ? 0.0 : index / (_tracks.length - 1);
       _scrollController.jumpTo(
         fraction * _scrollController.position.maxScrollExtent,
       );
@@ -170,12 +168,16 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
           ? Center(child: Text(_error!))
           : ListView(
               controller: _scrollController,
-              children: [
-                for (var i = 0; i < _tracks.length; i++) ...[
-                  _buildTrackTile(_tracks[i]),
-                  if (i != _tracks.length - 1) Divider(color: Colors.blueGrey),
-                ],
-              ],
+              children:
+                  [
+                    Divider(color: Colors.blueGrey),
+                    for (var i = 0; i < _tracks.length; i++) ...[
+                      _buildTrackTile(_tracks[i]),
+                      if (i != _tracks.length - 1)
+                        Divider(color: Colors.blueGrey),
+                    ],
+                  ] +
+                  [Divider(color: Colors.blueGrey), SizedBox(height: 40)],
             ),
     );
   }
