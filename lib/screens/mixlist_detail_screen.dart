@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/helpers/get_it_init.dart';
@@ -30,11 +32,18 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   Map<int, GlobalKey> _trackKeys = {};
   bool _isLoading = true;
   String? _error;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   String _durationInSeconds(int durationMs) {
@@ -57,7 +66,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
         _trackKeys = {for (final t in tracks) t.position: GlobalKey()};
         _isLoading = false;
       });
-      _scrollToHighlightedTrack();
+      unawaited(_scrollToHighlightedTrack());
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -67,28 +76,51 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     }
   }
 
-  void _scrollToHighlightedTrack() {
+  Future<void> _scrollToHighlightedTrack() async {
     final highlightSongId = widget.highlightSongId;
     if (highlightSongId == null) return;
     MixlistTrack? highlighted;
-    for (final t in _tracks) {
-      if (t.songId == highlightSongId) {
-        highlighted = t;
+    var index = -1;
+    for (var i = 0; i < _tracks.length; i++) {
+      if (_tracks[i].songId == highlightSongId) {
+        highlighted = _tracks[i];
+        index = i;
         break;
       }
     }
     if (highlighted == null) return;
     final key = _trackKeys[highlighted.position];
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final renderContext = key?.currentContext;
-      if (renderContext == null) return;
-      Scrollable.ensureVisible(
-        renderContext,
-        alignment: 0.5,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOut,
+    if (key == null) return;
+
+    // Wait for the list to actually be laid out (it's still the loading
+    // spinner in the same frame this was scheduled from).
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+
+    // ListView only mounts tiles near the viewport, so a track far down a
+    // long mixlist may not exist in the tree yet -- key.currentContext is
+    // null and there's nothing for ensureVisible to scroll to. Jump close
+    // to its estimated position (by fraction of the list) to force it to
+    // build, then let ensureVisible do the precise, animated alignment.
+    if (key.currentContext == null && _scrollController.hasClients) {
+      final fraction = _tracks.length <= 1
+          ? 0.0
+          : index / (_tracks.length - 1);
+      _scrollController.jumpTo(
+        fraction * _scrollController.position.maxScrollExtent,
       );
-    });
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+    }
+
+    final renderContext = key.currentContext;
+    if (renderContext == null || !renderContext.mounted) return;
+    await Scrollable.ensureVisible(
+      renderContext,
+      alignment: 0.5,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+    );
   }
 
   Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
@@ -137,6 +169,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
           : _error != null
           ? Center(child: Text(_error!))
           : ListView(
+              controller: _scrollController,
               children: [
                 for (var i = 0; i < _tracks.length; i++) ...[
                   _buildTrackTile(_tracks[i]),
