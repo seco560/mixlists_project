@@ -8,6 +8,7 @@ import 'package:mixlists_project/models/artist_song_appearance.dart';
 import 'package:mixlists_project/screens/album_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlist_detail_screen.dart';
 import 'package:mixlists_project/screens/song_mixlist_tile.dart';
+import 'package:mixlists_project/screens/year_histogram_chart.dart';
 
 class ArtistDetailScreen extends StatefulWidget {
   const ArtistDetailScreen({super.key, required this.artist});
@@ -47,6 +48,22 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
     }
   }
 
+  /// How many times any of this artist's songs were added to a mixlist,
+  /// bucketed by the calendar year of `SongsMixlists.dateAdded` -- reuses
+  /// the `datesAdded` already carried by each [ArtistSongAppearance] (one
+  /// entry per mixlist a song is on), so no extra query is needed.
+  Map<int, int> _addedOverTimeCounts() {
+    final counts = <int, int>{};
+    for (final song in _songs) {
+      for (final dateAdded in song.datesAdded) {
+        final year = DateTime.tryParse(dateAdded)?.year;
+        if (year == null) continue;
+        counts[year] = (counts[year] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }
+
   Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
     final fullMixlistData = await getIt<MusicLibraryRepository>().mixlists
         .getById(mixlistId);
@@ -77,6 +94,9 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
           ? Center(child: Text(_error!))
           : ListView(
               children: [
+                SectionHeader('Added to Mixlists Over Time'),
+                YearHistogramChart(countsByYear: _addedOverTimeCounts()),
+                const Divider(height: 32),
                 SectionHeader('Songs on Mixlists (${_songs.length})'),
                 if (_songs.isEmpty)
                   const EmptySectionTile()

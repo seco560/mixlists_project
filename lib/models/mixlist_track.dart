@@ -21,6 +21,7 @@ class MixlistTrack {
     required this.albumId,
     required this.albumName,
     required this.albumCoverImageURL,
+    required this.albumReleaseDate,
     this.durationMs,
     this.isExplicit,
     this.popularity,
@@ -45,6 +46,11 @@ class MixlistTrack {
   final String albumName;
   final String albumCoverImageURL;
 
+  /// `Albums.releaseDate` verbatim -- inconsistently formatted (a bare
+  /// "2013" or a full "2017-08-25"), so consumers that need just the year
+  /// take the first 4 characters rather than parsing it as a full date.
+  final String albumReleaseDate;
+
   // Nullable: these come from a LEFT JOIN against SongsExtraData, so a
   // song without an extra-data row (none exist in the current seed data,
   // but nothing guarantees that -- there's no enforced foreign key, see
@@ -68,6 +74,7 @@ class MixlistTrack {
       albumId: map['albumId'] as int,
       albumName: map['albumName'] as String,
       albumCoverImageURL: map['albumCoverImageURL'] as String,
+      albumReleaseDate: map['albumReleaseDate'] as String,
       durationMs: map['durationMs'] as int?,
       isExplicit: explicitText == null
           ? null
