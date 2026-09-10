@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/helpers/app_database.dart';
-import 'package:mixlists_project/helpers/get_it_init.dart';
-import 'package:mixlists_project/helpers/music_library_repository.dart';
-import 'package:mixlists_project/screens/home_screen.dart';
+import 'package:mixlists_project/data/database/app_database.dart';
+import 'package:mixlists_project/get_it_init.dart';
+import 'package:mixlists_project/data/repository/music_library_repository.dart';
+import 'package:mixlists_project/screens/home/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

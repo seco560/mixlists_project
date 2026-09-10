@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/helpers/get_it_init.dart';
-import 'package:mixlists_project/helpers/music_library_repository.dart';
-import 'package:mixlists_project/models/mixlist.dart';
-import 'package:mixlists_project/screens/mixlist_detail_screen.dart';
+import 'package:mixlists_project/get_it_init.dart';
+import 'package:mixlists_project/data/repository/music_library_repository.dart';
+import 'package:mixlists_project/models/entities/mixlist.dart';
+import 'package:mixlists_project/widgets/mixlist_tile.dart';
 
 class AllMixlistsScreen extends StatefulWidget {
   const AllMixlistsScreen({super.key});
 
   @override
-  State<AllMixlistsScreen> createState() => _DemoHomeScreenState();
+  State<AllMixlistsScreen> createState() => _AllMixlistsScreenState();
 }
 
-class _DemoHomeScreenState extends State<AllMixlistsScreen> {
+class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
   List<Mixlist> _mixlists = []; // can be refactored with FutureBuilder
   bool _isLoading = false;
 
@@ -24,7 +24,7 @@ class _DemoHomeScreenState extends State<AllMixlistsScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final result = await getIt<MusicLibraryRepository>().mixlists.getAll();
+      final result = await getIt<MusicLibraryRepository>().getAllMixlists();
 
       setState(() {
         _mixlists = result;
@@ -60,28 +60,6 @@ class _DemoHomeScreenState extends State<AllMixlistsScreen> {
               itemBuilder: (context, index) =>
                   MixlistTile(mixlist: _mixlists[index]),
             ),
-    );
-  }
-}
-
-class MixlistTile extends StatelessWidget {
-  final Mixlist mixlist;
-
-  const MixlistTile({super.key, required this.mixlist});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text("${mixlist.id}) ${mixlist.title}", style: TextStyle(fontSize: 20, fontWeight: .bold)),
-      subtitle: Text(mixlist.dateCreated.split('T')[0], style: TextStyle(fontSize: 16, fontWeight: .w600)),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MixlistDetailScreen(mixlist: mixlist),
-          ),
-        );
-      },
     );
   }
 }

@@ -1,41 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/models/mixlist_summary.dart';
-
-// Text scale shared by any screen listing a song alongside the mixlist(s)
-// it's featured on -- originally introduced on `MixlistDetailScreen`'s
-// track tiles, kept here so `ArtistDetailScreen`/`AlbumDetailScreen` don't
-// drift out of step with each other or the rest of the app.
-const titleTextStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.bold);
-const subtitleTextStyle = TextStyle(fontSize: 14, fontWeight: FontWeight.w500);
-const metaTextStyle = TextStyle(fontSize: 12);
-const compactTitleTextStyle = TextStyle(fontSize: 12, fontWeight: FontWeight.w600);
-
-class SectionHeader extends StatelessWidget {
-  const SectionHeader(this.title, {super.key});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-    );
-  }
-}
-
-class EmptySectionTile extends StatelessWidget {
-  const EmptySectionTile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Text('—'),
-    );
-  }
-}
+import 'package:mixlists_project/models/view_models/mixlist_summary.dart';
+import 'package:mixlists_project/widgets/text_styles.dart';
 
 /// A song paired with every mixlist it's on (always at least one -- a
 /// song only exists in this library because it's featured on a mixlist).

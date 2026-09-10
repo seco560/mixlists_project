@@ -1,6 +1,6 @@
+import '../entities/mixlist.dart';
 import 'album_overview.dart';
 import 'artist_overview.dart';
-import 'mixlist.dart';
 import 'song_search_result.dart';
 
 /// The grouped result of a library-wide search -- one list per entity

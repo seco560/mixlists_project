@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/helpers/get_it_init.dart';
-import 'package:mixlists_project/helpers/music_library_repository.dart';
-import 'package:mixlists_project/models/artist_overview.dart';
-import 'package:mixlists_project/screens/artist_detail_screen.dart';
+import 'package:mixlists_project/get_it_init.dart';
+import 'package:mixlists_project/data/repository/music_library_repository.dart';
+import 'package:mixlists_project/models/view_models/artist_overview.dart';
+import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
+import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
 
 class AllArtistsScreen extends StatefulWidget {
   const AllArtistsScreen({super.key});
@@ -259,7 +260,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < _columnLabels.length; i++)
-          _HeaderCell(
+          ArtistTableHeaderCell(
             width: widths[i],
             label: _columnLabels[i],
             textStyle: _columnLabels[i] == 'Mixlists' ? _headerTextStyle.copyWith(fontSize: 12) : _headerTextStyle,
@@ -283,7 +284,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _Cell(
+                ArtistTableCell(
                   width: widths[0],
                   numeric: _columnIsNumeric[0],
                   child: Icon(
@@ -292,12 +293,12 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                         : Icons.expand_more,
                   ),
                 ),
-                _Cell(
+                ArtistTableCell(
                   width: widths[1],
                   numeric: _columnIsNumeric[1],
                   child: const Text('—', style: _countTextStyle),
                 ),
-                _Cell(
+                ArtistTableCell(
                   width: widths[2],
                   numeric: _columnIsNumeric[2],
                   child: Text(
@@ -309,17 +310,17 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                _Cell(
+                ArtistTableCell(
                   width: widths[3],
                   numeric: _columnIsNumeric[3],
                   child: const Text('1', style: _countTextStyle),
                 ),
-                _Cell(
+                ArtistTableCell(
                   width: widths[4],
                   numeric: _columnIsNumeric[4],
                   child: const Text('1', style: _countTextStyle),
                 ),
-                _Cell(
+                ArtistTableCell(
                   width: widths[5],
                   numeric: _columnIsNumeric[5],
                   child: const Text('1', style: _countTextStyle),
@@ -346,17 +347,17 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _Cell(
+              ArtistTableCell(
                 width: widths[0],
                 numeric: _columnIsNumeric[0],
                 child: Text('$rowNumber', style: _countTextStyle),
               ),
-              _Cell(
+              ArtistTableCell(
                 width: widths[1],
                 numeric: _columnIsNumeric[1],
                 child: Text('${artist.id}', style: _countTextStyle),
               ),
-              _Cell(
+              ArtistTableCell(
                 width: widths[2],
                 numeric: _columnIsNumeric[2],
                 child: Text(
@@ -365,7 +366,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              _Cell(
+              ArtistTableCell(
                 width: widths[3],
                 numeric: _columnIsNumeric[3],
                 child: Text(
@@ -373,12 +374,12 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                   style: _countTextStyle,
                 ),
               ),
-              _Cell(
+              ArtistTableCell(
                 width: widths[4],
                 numeric: _columnIsNumeric[4],
                 child: Text('${artist.albums.length}', style: _countTextStyle),
               ),
-              _Cell(
+              ArtistTableCell(
                 width: widths[5],
                 numeric: _columnIsNumeric[5],
                 child: Text(
@@ -395,80 +396,3 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
   }
 }
 
-class _HeaderCell extends StatelessWidget {
-  const _HeaderCell({
-    required this.width,
-    required this.label,
-    required this.textStyle,
-    required this.numeric,
-    required this.isSorted,
-    required this.sortAscending,
-    this.onTap,
-  });
-
-  final double width;
-  final String label;
-  final TextStyle textStyle;
-  final bool numeric;
-  final bool isSorted;
-  final bool sortAscending;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final content = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      child: Row(
-        mainAxisAlignment: numeric
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        children: [
-          Flexible(
-            child: Text(
-              label,
-              style: textStyle,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          if (isSorted) ...[
-            const SizedBox(width: 4),
-            Icon(
-              sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
-              size: 14,
-            ),
-          ],
-        ],
-      ),
-    );
-    return SizedBox(
-      width: width,
-      child: onTap == null ? content : InkWell(onTap: onTap, child: content),
-    );
-  }
-}
-
-class _Cell extends StatelessWidget {
-  const _Cell({
-    required this.width,
-    required this.numeric,
-    required this.child,
-  });
-
-  final double width;
-  final bool numeric;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: Align(
-          alignment: numeric ? Alignment.centerRight : Alignment.centerLeft,
-          child: child,
-        ),
-      ),
-    );
-  }
-}

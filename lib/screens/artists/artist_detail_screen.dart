@@ -1,14 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/helpers/get_it_init.dart';
-import 'package:mixlists_project/helpers/music_library_repository.dart';
-import 'package:mixlists_project/models/album_overview.dart';
-import 'package:mixlists_project/models/artist_overview.dart';
-import 'package:mixlists_project/models/artist_song_appearance.dart';
-import 'package:mixlists_project/screens/album_detail_screen.dart';
-import 'package:mixlists_project/screens/mixlist_detail_screen.dart';
-import 'package:mixlists_project/screens/song_mixlist_tile.dart';
-import 'package:mixlists_project/screens/year_histogram_chart.dart';
+import 'package:mixlists_project/get_it_init.dart';
+import 'package:mixlists_project/data/repository/music_library_repository.dart';
+import 'package:mixlists_project/models/view_models/album_overview.dart';
+import 'package:mixlists_project/models/view_models/artist_overview.dart';
+import 'package:mixlists_project/models/view_models/artist_song_appearance.dart';
+import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
+import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
+import 'package:mixlists_project/widgets/section_header.dart';
+import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
+import 'package:mixlists_project/widgets/text_styles.dart';
+import 'package:mixlists_project/widgets/year_histogram_chart.dart';
 
 class ArtistDetailScreen extends StatefulWidget {
   const ArtistDetailScreen({super.key, required this.artist});
@@ -65,8 +67,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
   }
 
   Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
-    final fullMixlistData = await getIt<MusicLibraryRepository>().mixlists
-        .getById(mixlistId);
+    final fullMixlistData = await getIt<MusicLibraryRepository>().getMixlistById(mixlistId);
     if (!mounted || fullMixlistData == null) return;
     Navigator.push(
       context,

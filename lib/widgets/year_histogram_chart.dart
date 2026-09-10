@@ -1,8 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
-import 'song_mixlist_tile.dart' show metaTextStyle;
+import 'package:mixlists_project/widgets/text_styles.dart' show metaTextStyle;
 
 /// A simple bar chart of a per-year count, e.g. how many songs by an
 /// artist were added to a mixlist each year, or how many tracks on a
