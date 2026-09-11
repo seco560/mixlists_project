@@ -6,9 +6,10 @@ import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/models/entities/mixlist.dart';
 import 'package:mixlists_project/models/view_models/mixlist_summary.dart';
 import 'package:mixlists_project/models/view_models/mixlist_track.dart';
+import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/track_tile.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
-import 'package:mixlists_project/widgets/year_histogram_chart.dart';
+import 'package:mixlists_project/widgets/year_album_art_histogram.dart';
 
 class MixlistDetailScreen extends StatefulWidget {
   const MixlistDetailScreen({
@@ -54,20 +55,32 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     return "$minutes:${seconds < 10 ? '0' : ''}$seconds";
   }
 
-  /// How many tracks on this mixlist were released in each year, keyed by
-  /// the first 4 characters of `Albums.releaseDate` -- that column is
-  /// inconsistently formatted (a bare "2013" vs. a full "2017-08-25"), but
-  /// both always start with the 4-digit year.
-  Map<int, int> _releaseYearCounts() {
-    final counts = <int, int>{};
+  /// This mixlist's tracks, bucketed by the calendar year of the first 4
+  /// characters of `Albums.releaseDate` -- that column is inconsistently
+  /// formatted (a bare "2013" vs. a full "2017-08-25"), but both always
+  /// start with the 4-digit year. Unlike the artist screen's "added over
+  /// time" chart, bucketing by `SongsMixlists.dateAdded` here doesn't say
+  /// much -- a mixlist's tracks are mostly all added in the same window,
+  /// with the rare outlier just being a song re-added after Spotify pulled
+  /// it -- so release year is the more meaningful axis for one mixlist.
+  Map<int, List<AlbumArtHistogramEntry>> _releaseYearEntries() {
+    final entries = <int, List<AlbumArtHistogramEntry>>{};
     for (final track in _tracks) {
       final releaseDate = track.albumReleaseDate;
       if (releaseDate.length < 4) continue;
       final year = int.tryParse(releaseDate.substring(0, 4));
       if (year == null) continue;
-      counts[year] = (counts[year] ?? 0) + 1;
+      entries
+          .putIfAbsent(year, () => [])
+          .add(
+            AlbumArtHistogramEntry(
+              imageUrl: track.albumCoverImageURL,
+              tooltip: '${track.albumName}\n${track.songName}',
+              onTap: () => _openAlbum(track.albumId),
+            ),
+          );
     }
-    return counts;
+    return entries;
   }
 
   Future<void> _loadData() async {
@@ -153,6 +166,18 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     );
   }
 
+  Future<void> _openAlbum(int albumId) async {
+    final overview = await getIt<MusicLibraryRepository>()
+        .getAlbumOverviewById(albumId);
+    if (!mounted || overview == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AlbumDetailScreen(album: overview),
+      ),
+    );
+  }
+
   Widget _buildTrackTile(MixlistTrack track) {
     final otherMixlists =
         (_duplicateSongIndex[track.songId] ?? const <MixlistSummary>[])
@@ -196,8 +221,8 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
                   ] +
                   [
                     Divider(color: Colors.blueGrey),
-                    SectionHeader('Release Year Spread'),
-                    YearHistogramChart(countsByYear: _releaseYearCounts()),
+                    SectionHeader('Album Release Year Spread'),
+                    YearAlbumArtHistogram(entriesByYear: _releaseYearEntries()),
                     const SizedBox(height: 40),
                   ],
             ),

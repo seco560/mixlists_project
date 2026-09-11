@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/get_it_init.dart';
@@ -10,7 +12,7 @@ import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
-import 'package:mixlists_project/widgets/year_histogram_chart.dart';
+import 'package:mixlists_project/widgets/year_album_art_histogram.dart';
 
 class ArtistDetailScreen extends StatefulWidget {
   const ArtistDetailScreen({super.key, required this.artist});
@@ -50,20 +52,44 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
     }
   }
 
-  /// How many times any of this artist's songs were added to a mixlist,
-  /// bucketed by the calendar year of `SongsMixlists.dateAdded` -- reuses
-  /// the `datesAdded` already carried by each [ArtistSongAppearance] (one
-  /// entry per mixlist a song is on), so no extra query is needed.
-  Map<int, int> _addedOverTimeCounts() {
-    final counts = <int, int>{};
+  /// This artist's songs, bucketed by the calendar year of
+  /// `SongsMixlists.dateAdded` -- reuses the parallel `datesAdded`/
+  /// `mixlists` lists already carried by each [ArtistSongAppearance] (same
+  /// order, ascending -- one entry per mixlist a song is on), so no extra
+  /// query is needed.
+  ///
+  /// Years between the earliest and latest with no additions still get a
+  /// key (an empty list), so `YearAlbumArtHistogram` renders them as a
+  /// blank column instead of skipping the gap -- unlike a single mixlist's
+  /// release-year spread, seeing the quiet years matters here.
+  Map<int, List<AlbumArtHistogramEntry>> _addedOverTimeEntries() {
+    final entries = <int, List<AlbumArtHistogramEntry>>{};
     for (final song in _songs) {
-      for (final dateAdded in song.datesAdded) {
-        final year = DateTime.tryParse(dateAdded)?.year;
+      for (var i = 0; i < song.datesAdded.length; i++) {
+        final year = DateTime.tryParse(song.datesAdded[i])?.year;
         if (year == null) continue;
-        counts[year] = (counts[year] ?? 0) + 1;
+        final mixlist = i < song.mixlists.length ? song.mixlists[i] : null;
+        entries
+            .putIfAbsent(year, () => [])
+            .add(
+              AlbumArtHistogramEntry(
+                imageUrl: song.albumCoverImageURL,
+                tooltip: '${song.songName} — ${mixlist?.title ?? ''}',
+                onTap: mixlist == null
+                    ? null
+                    : () => _openMixlist(mixlist.id, song.songId),
+              ),
+            );
       }
     }
-    return counts;
+    if (entries.isNotEmpty) {
+      final minYear = entries.keys.reduce(min);
+      final maxYear = entries.keys.reduce(max);
+      for (var year = minYear; year <= maxYear; year++) {
+        entries.putIfAbsent(year, () => []);
+      }
+    }
+    return entries;
   }
 
   Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
@@ -96,7 +122,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
           : ListView(
               children: [
                 SectionHeader('Added to Mixlists Over Time'),
-                YearHistogramChart(countsByYear: _addedOverTimeCounts()),
+                YearAlbumArtHistogram(entriesByYear: _addedOverTimeEntries()),
                 const Divider(height: 32),
                 SectionHeader('Songs on Mixlists (${_songs.length})'),
                 if (_songs.isEmpty)
@@ -151,6 +177,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                                 name: album.name,
                                 releaseDate: album.releaseDate,
                                 coverImageURL: album.coverImageURL,
+                                artistId: artist.id,
                                 artistName: artist.name,
                               ),
                             ),

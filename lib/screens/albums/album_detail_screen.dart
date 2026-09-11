@@ -4,6 +4,8 @@ import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/models/view_models/album_overview.dart';
 import 'package:mixlists_project/models/view_models/album_song_appearance.dart';
+import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
+import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
@@ -45,6 +47,18 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _openArtist(int artistId) async {
+    final overview = await getIt<MusicLibraryRepository>()
+        .getArtistOverviewById(artistId);
+    if (!mounted || overview == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ArtistDetailScreen(artist: overview),
+      ),
+    );
   }
 
   Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
@@ -95,7 +109,10 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                           crossAxisAlignment: .start,
                           children: [
                             Text(album.name, style: titleTextStyle),
-                            Text(album.artistName, style: subtitleTextStyle),
+                            HoverableLink(
+                              text: album.artistName,
+                              onTap: () => _openArtist(album.artistId),
+                            ),
                             Text(
                               album.releaseDate.split('T')[0],
                               style: metaTextStyle,
@@ -114,7 +131,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                   for (final song in _songs)
                     SongMixlistTile(
                       songId: song.songId,
-                      title: song.songName,
+                      title: '${song.albumTrackNumber}) ${song.songName}',
                       leadingImageUrl: album.coverImageURL,
                       subtitle: Text(
                         'On ${song.mixlists.length} mixlist${song.mixlists.length == 1 ? '' : 's'}',

@@ -9,6 +9,7 @@ class ArtistOverview {
     required this.albums,
     required this.mixlists,
     required this.uniqueSongCount,
+    required this.appearanceCount,
   });
 
   final int id;
@@ -19,4 +20,9 @@ class ArtistOverview {
   /// Distinct songs by this artist that appear in at least one mixlist --
   /// i.e. `COUNT(DISTINCT song)`, not the number of (song, mixlist) pairs.
   final int uniqueSongCount;
+
+  /// The number of (song, mixlist) pairs -- every time one of this
+  /// artist's songs was added to a mixlist, counted once per mixlist. A
+  /// song on 3 mixlists contributes 3 here but 1 to [uniqueSongCount].
+  final int appearanceCount;
 }

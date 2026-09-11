@@ -79,6 +79,7 @@ extension SearchQueries on MusicLibraryRepository {
         al.name          AS name,
         al.releaseDate   AS releaseDate,
         al.coverImageURL AS coverImageURL,
+        ar.id            AS artistId,
         ar.name          AS artistName
       FROM Albums al
       JOIN Artists ar ON ar.id = al.artist

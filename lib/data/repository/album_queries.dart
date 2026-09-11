@@ -16,6 +16,7 @@ extension AlbumQueries on MusicLibraryRepository {
         al.name          AS name,
         al.releaseDate   AS releaseDate,
         al.coverImageURL AS coverImageURL,
+        ar.id            AS artistId,
         ar.name          AS artistName
       FROM Albums al
       JOIN Artists ar ON ar.id = al.artist
@@ -66,6 +67,7 @@ extension AlbumQueries on MusicLibraryRepository {
         appearance = AlbumSongAppearance(
           songId: songId,
           songName: row['songName'] as String,
+          albumTrackNumber: row['albumTrackNumber'] as int,
           mixlists: [],
           datesAdded: [],
         );
@@ -95,6 +97,7 @@ extension AlbumQueries on MusicLibraryRepository {
         al.name          AS name,
         al.releaseDate   AS releaseDate,
         al.coverImageURL AS coverImageURL,
+        ar.id            AS artistId,
         ar.name          AS artistName
       FROM Albums al
       JOIN Artists ar ON ar.id = al.artist

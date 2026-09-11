@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// A full-width, tappable "go to this section" row for the home screen --
-/// stacking these instead of sitting three `ElevatedButton`s side by side
-/// in a `Row` means nothing has to squeeze to fit a narrow width.
 class HomeNavCard extends StatelessWidget {
   const HomeNavCard({
     super.key,

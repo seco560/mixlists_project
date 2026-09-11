@@ -72,7 +72,10 @@ extension ArtistQueries on MusicLibraryRepository {
     }
 
     final songCountRows = await _db.rawQuery('''
-      SELECT al.artist AS artistId, COUNT(DISTINCT s.id) AS songCount
+      SELECT
+        al.artist              AS artistId,
+        COUNT(DISTINCT s.id)   AS songCount,
+        COUNT(*)               AS appearanceCount
       FROM SongsMixlists sm
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
@@ -81,6 +84,10 @@ extension ArtistQueries on MusicLibraryRepository {
     final songCountByArtist = <int, int>{
       for (final row in songCountRows)
         row['artistId'] as int: row['songCount'] as int,
+    };
+    final appearanceCountByArtist = <int, int>{
+      for (final row in songCountRows)
+        row['artistId'] as int: row['appearanceCount'] as int,
     };
 
     return allArtists
@@ -91,6 +98,7 @@ extension ArtistQueries on MusicLibraryRepository {
             albums: albumsByArtist[artist.id] ?? const [],
             mixlists: mixlistsByArtist[artist.id] ?? const [],
             uniqueSongCount: songCountByArtist[artist.id] ?? 0,
+            appearanceCount: appearanceCountByArtist[artist.id] ?? 0,
           ),
         )
         .toList();
@@ -217,7 +225,7 @@ extension ArtistQueries on MusicLibraryRepository {
 
     final songCountRows = await _db.rawQuery(
       '''
-      SELECT COUNT(DISTINCT s.id) AS songCount
+      SELECT COUNT(DISTINCT s.id) AS songCount, COUNT(*) AS appearanceCount
       FROM SongsMixlists sm
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
@@ -232,6 +240,7 @@ extension ArtistQueries on MusicLibraryRepository {
       albums: albums,
       mixlists: mixlists,
       uniqueSongCount: songCountRows.first['songCount'] as int,
+      appearanceCount: songCountRows.first['appearanceCount'] as int,
     );
   }
 
@@ -301,7 +310,10 @@ extension ArtistQueries on MusicLibraryRepository {
     }
 
     final songCountRows = await _db.rawQuery('''
-      SELECT al.artist AS artistId, COUNT(DISTINCT s.id) AS songCount
+      SELECT
+        al.artist              AS artistId,
+        COUNT(DISTINCT s.id)   AS songCount,
+        COUNT(*)               AS appearanceCount
       FROM SongsMixlists sm
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
@@ -312,6 +324,10 @@ extension ArtistQueries on MusicLibraryRepository {
       for (final row in songCountRows)
         row['artistId'] as int: row['songCount'] as int,
     };
+    final appearanceCountByArtist = <int, int>{
+      for (final row in songCountRows)
+        row['artistId'] as int: row['appearanceCount'] as int,
+    };
 
     return matched
         .map(
@@ -321,6 +337,7 @@ extension ArtistQueries on MusicLibraryRepository {
             albums: albumsByArtist[artist.id] ?? const [],
             mixlists: mixlistsByArtist[artist.id] ?? const [],
             uniqueSongCount: songCountByArtist[artist.id] ?? 0,
+            appearanceCount: appearanceCountByArtist[artist.id] ?? 0,
           ),
         )
         .toList();

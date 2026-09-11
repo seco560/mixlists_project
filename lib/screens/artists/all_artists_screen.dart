@@ -20,8 +20,8 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
   // widths and drift out of alignment. Hand-rolling the rows with a shared
   // width per column keeps them locked together.
   //
-  // Only Name stretches: the other five are narrow, fixed-content columns
-  // (a row number, an id, three counts), so any extra screen width goes
+  // Only Name stretches: the other six are narrow, fixed-content columns
+  // (a row number, an id, four counts), so any extra screen width goes
   // entirely to Name instead of leaving it cramped while the rest sit
   // needlessly wide.
   //
@@ -29,19 +29,26 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
   // id -- purely a glance-at-a-row-and-know-where-it-sits column, so it's
   // not sortable itself (there's nothing to sort it *by* other than the
   // order everything else already produces).
+  //
+  // "Appearances" sits right next to "Songs" since the two are easy to
+  // mix up: Songs is how many distinct songs made it onto a mixlist,
+  // Appearances is how many times any of them did -- a song on 3
+  // mixlists is 1 Song but 3 Appearances.
   static const _columnLabels = [
     '#',
     'ID',
     'Name',
     'Songs',
+    'Appearances',
     'Albums',
     'Mixlists',
   ];
-  static const _fixedColumnWidths = [60.0, 60.0, 90.0, 90.0, 80.0];
+  static const _fixedColumnWidths = [60.0, 60.0, 90.0, 100.0, 90.0, 80.0];
   static const _minNameWidth = 220.0;
-  static const _columnIsNumeric = [true, true, false, true, true, true];
-  static const _columnIsSortable = [false, true, true, true, true, true];
+  static const _columnIsNumeric = [true, true, false, true, true, true, true];
+  static const _columnIsSortable = [false, true, true, true, true, true, true];
   static const _nameColumnIndex = 2;
+  static const _smallHeaderFontLabels = {'Appearances', 'Mixlists'};
 
   // Text scale borrowed from `AllMixlistsScreen`'s `MixlistTile`: a bold
   // ~20px title for the row's identity (here, the artist name) and a
@@ -161,14 +168,21 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
               : b.uniqueSongCount.compareTo(a.uniqueSongCount),
         );
         break;
-      case 4: // Albums
+      case 4: // Appearances
+        artists.sort(
+          (a, b) => ascending
+              ? a.appearanceCount.compareTo(b.appearanceCount)
+              : b.appearanceCount.compareTo(a.appearanceCount),
+        );
+        break;
+      case 5: // Albums
         artists.sort(
           (a, b) => ascending
               ? a.albums.length.compareTo(b.albums.length)
               : b.albums.length.compareTo(a.albums.length),
         );
         break;
-      case 5: // Mixlists
+      case 6: // Mixlists
         artists.sort(
           (a, b) => ascending
               ? a.mixlists.length.compareTo(b.mixlists.length)
@@ -263,7 +277,9 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
           ArtistTableHeaderCell(
             width: widths[i],
             label: _columnLabels[i],
-            textStyle: _columnLabels[i] == 'Mixlists' ? _headerTextStyle.copyWith(fontSize: 12) : _headerTextStyle,
+            textStyle: _smallHeaderFontLabels.contains(_columnLabels[i])
+                ? _headerTextStyle.copyWith(fontSize: 12)
+                : _headerTextStyle,
             numeric: _columnIsNumeric[i],
             isSorted: _sortColumnIndex == i,
             sortAscending: _sortAscending,
@@ -325,6 +341,11 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                   numeric: _columnIsNumeric[5],
                   child: const Text('1', style: _countTextStyle),
                 ),
+                ArtistTableCell(
+                  width: widths[6],
+                  numeric: _columnIsNumeric[6],
+                  child: const Text('1', style: _countTextStyle),
+                ),
               ],
             ),
             const Divider(height: 1),
@@ -377,11 +398,19 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
               ArtistTableCell(
                 width: widths[4],
                 numeric: _columnIsNumeric[4],
-                child: Text('${artist.albums.length}', style: _countTextStyle),
+                child: Text(
+                  '${artist.appearanceCount}',
+                  style: _countTextStyle,
+                ),
               ),
               ArtistTableCell(
                 width: widths[5],
                 numeric: _columnIsNumeric[5],
+                child: Text('${artist.albums.length}', style: _countTextStyle),
+              ),
+              ArtistTableCell(
+                width: widths[6],
+                numeric: _columnIsNumeric[6],
                 child: Text(
                   '${artist.mixlists.length}',
                   style: _countTextStyle,

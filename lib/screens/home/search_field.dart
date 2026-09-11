@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/screens/search/search_results_screen.dart';
 
-/// The home screen's search field -- kept as its own stateful widget (with
-/// its own `TextEditingController`) purely so it can clear itself after a
-/// search fires, without making `HomeScreen` itself stateful.
 class SearchField extends StatefulWidget {
   const SearchField({super.key});
 

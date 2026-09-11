@@ -6,12 +6,16 @@ class AlbumSongAppearance {
   const AlbumSongAppearance({
     required this.songId,
     required this.songName,
+    required this.albumTrackNumber,
     required this.mixlists,
     required this.datesAdded,
   });
 
   final int songId;
   final String songName;
+
+  /// `SongsExtraData.albumTrackNumber`.
+  final int albumTrackNumber;
   final List<MixlistSummary> mixlists;
 
   /// When this song was added to each mixlist in [mixlists] (same order) --

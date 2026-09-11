@@ -11,6 +11,7 @@ class AlbumOverview {
     required this.name,
     required this.releaseDate,
     required this.coverImageURL,
+    required this.artistId,
     required this.artistName,
   });
 
@@ -18,6 +19,7 @@ class AlbumOverview {
   final String name;
   final String releaseDate;
   final String coverImageURL;
+  final int artistId;
   final String artistName;
 
   factory AlbumOverview.fromMap(Map<String, Object?> map) {
@@ -26,6 +28,7 @@ class AlbumOverview {
       name: map['name'] as String,
       releaseDate: map['releaseDate'] as String,
       coverImageURL: map['coverImageURL'] as String,
+      artistId: map['artistId'] as int,
       artistName: map['artistName'] as String,
     );
   }
