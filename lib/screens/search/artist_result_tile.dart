@@ -16,8 +16,8 @@ class ArtistResultTile extends StatelessWidget {
     return ListTile(
       title: Text(artist.name, style: titleTextStyle),
       subtitle: Text(
-        '${artist.albums.length} album${artist.albums.length == 1 ? '' : 's'} • '
-        '${artist.uniqueSongCount} song${artist.uniqueSongCount == 1 ? '' : 's'} on mixlists',
+        '${artist.uniqueSongCount} song${artist.uniqueSongCount == 1 ? '' : 's'} on mixlists • '
+        '${artist.albums.length} album${artist.albums.length == 1 ? '' : 's'}',
         style: metaTextStyle,
       ),
       onTap: onTap,
