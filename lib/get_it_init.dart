@@ -1,4 +1,4 @@
 import 'package:get_it/get_it.dart';
 
-/// Declare cheeky getIt global to access throughout the app
+// Prevents importing main.dart whenever we access getIt.
 final getIt = GetIt.instance;

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/text_styles.dart' show metaTextStyle;
 
-/// One piece of album art to show in a [YearAlbumArtHistogram] column, with
-/// the tooltip text to show when hovering/long-pressing just that thumbnail.
 class AlbumArtHistogramEntry {
   const AlbumArtHistogramEntry({
     required this.imageUrl,
@@ -14,8 +12,6 @@ class AlbumArtHistogramEntry {
   final String imageUrl;
   final String tooltip;
 
-  /// Called when this thumbnail is tapped, e.g. to navigate to whatever it
-  /// represents (a mixlist, an album...). Null leaves the thumbnail inert.
   final VoidCallback? onTap;
 }
 
@@ -37,7 +33,6 @@ class AlbumArtHistogramEntry {
 class YearAlbumArtHistogram extends StatefulWidget {
   const YearAlbumArtHistogram({super.key, required this.entriesByYear});
 
-  /// Year -> the songs added that year.
   final Map<int, List<AlbumArtHistogramEntry>> entriesByYear;
 
   static const _columnWidth = 40.0;

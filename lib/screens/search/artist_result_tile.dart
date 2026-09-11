@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mixlists_project/models/view_models/artist_overview.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
-/// Artists section row -- no reusable artist ListTile exists elsewhere in
-/// the app (AllArtistsScreen builds a bespoke sortable table), so this is
-/// new. Subtitle reuses fields ArtistOverview already carries.
 class ArtistResultTile extends StatelessWidget {
   const ArtistResultTile({super.key, required this.artist, required this.onTap});
 

@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:mixlists_project/models/view_models/mixlist_summary.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
-/// A song paired with every mixlist it's on (always at least one -- a
-/// song only exists in this library because it's featured on a mixlist).
-/// A song with a single mixlist appearance taps straight through to it --
-/// one with more than one expands in place to list them, same "tap to
-/// reveal" idea as `MixlistDetailScreen`'s duplicate-track handling.
+/// This one you may want to modify to behave like the one that's in use
+/// over in the main mixlists detail screen i.e. with the nice little
+/// pop-down animation.
 class SongMixlistTile extends StatefulWidget {
   const SongMixlistTile({
     super.key,

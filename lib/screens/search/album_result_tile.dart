@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:mixlists_project/models/view_models/album_overview.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
-/// Albums section row -- same visual shape as the inline ListTile
-/// ArtistDetailScreen builds per-album (48x48 cover, titleTextStyle,
-/// metaTextStyle release date), plus an artistName line since search
-/// results aren't pre-scoped to one artist the way that screen is.
 class AlbumResultTile extends StatelessWidget {
   const AlbumResultTile({super.key, required this.album, required this.onTap});
 
@@ -18,8 +14,8 @@ class AlbumResultTile extends StatelessWidget {
     return ListTile(
       leading: CachedNetworkImage(
         imageUrl: album.coverImageURL,
-        width: 48,
-        height: 48,
+        width: 50,
+        height: 50,
       ),
       title: Text(album.name, style: titleTextStyle),
       subtitle: Column(

@@ -12,7 +12,7 @@ class AllMixlistsScreen extends StatefulWidget {
 }
 
 class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
-  List<Mixlist> _mixlists = []; // can be refactored with FutureBuilder
+  List<Mixlist> _mixlists = [];
   bool _isLoading = false;
 
   @override

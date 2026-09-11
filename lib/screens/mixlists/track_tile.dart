@@ -26,19 +26,14 @@ class TrackTile extends StatefulWidget {
   final void Function(int mixlistId, int songId) onOtherMixlistTap;
   final String mixlistCreationDate;
 
-  /// True for the one track (if any) this screen was navigated to for --
-  /// flashes red then yellow then settles into a lingering green
-  /// background so it stays easy to spot.
   final bool isHighlighted;
 
   @override
   State<TrackTile> createState() => _TrackTileState();
 }
 
+/// Holds the sacred keys to the highlight animation.
 class _TrackTileState extends State<TrackTile> with TickerProviderStateMixin {
-  // Washed-out red -> yellow -> a pleasant green that the tile then just
-  // keeps as its background -- a one-way trip, not a pulse, so the green
-  // stays on screen as a permanent "you scrolled in from here" marker.
   static final _highlightRed = Colors.red.withValues(alpha: 0.35);
   static final _highlightYellow = Colors.yellow.withValues(alpha: 0.4);
   static final _highlightGreen = Colors.green.withValues(alpha: 0.3);

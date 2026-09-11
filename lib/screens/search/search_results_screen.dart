@@ -100,9 +100,6 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     );
   }
 
-  /// Only sections with at least one result are shown at all (no heading
-  /// for an empty category), separated by a divider between whichever
-  /// sections do end up present.
   List<Widget> _buildSections(SearchResults results) {
     final sections = <List<Widget>>[
       if (results.mixlists.isNotEmpty)
