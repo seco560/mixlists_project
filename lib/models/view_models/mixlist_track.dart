@@ -1,13 +1,5 @@
-/// A single track within a mixlist, carrying the song/album/artist and
-/// audio-metadata fields a track-list or player screen needs.
-///
-/// Unlike [Song], [Album], etc., this isn't backed by one table -- it's
-/// the shape of a SQL JOIN across SongsMixlists, Songs, Albums, and
-/// SongsExtraData (see MusicLibraryRepository.getTracksForMixlist).
-/// Building a small purpose-built class like this for a query result,
-/// instead of trying to force the row into one of the table models, is
-/// the usual pattern once a query stops being "all/some columns of one
-/// table."
+/// Shows pretty well why extra song data does not really need to be its own
+/// separate table. Most useful queries use data from there anyway.
 class MixlistTrack {
   const MixlistTrack({
     required this.position,
@@ -36,25 +28,12 @@ class MixlistTrack {
   final String artistNames;
   final String artistURIs;
 
-  /// The album's artist (Albums.artist) -- resolves `artistNames` (a free
-  /// text field with no foreign key, see the class doc) to a navigable
-  /// Artists row. Covers the common case correctly; a track whose
-  /// `artistNames` lists collaborators beyond the album's own artist still
-  /// only links to that one.
   final int artistId;
   final int albumId;
   final String albumName;
   final String albumCoverImageURL;
-
-  /// `Albums.releaseDate` verbatim -- inconsistently formatted (a bare
-  /// "2013" or a full "2017-08-25"), so consumers that need just the year
-  /// take the first 4 characters rather than parsing it as a full date.
   final String albumReleaseDate;
 
-  // Nullable: these come from a LEFT JOIN against SongsExtraData, so a
-  // song without an extra-data row (none exist in the current seed data,
-  // but nothing guarantees that -- there's no enforced foreign key, see
-  // CHANGES.md) still shows up in the track list instead of vanishing.
   final int? durationMs;
   final bool? isExplicit;
   final int? popularity;

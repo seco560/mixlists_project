@@ -1,10 +1,3 @@
-/// An Album paired with its artist's name, for screens that list every
-/// album across every artist and need to sort/show by artist without a
-/// second lookup per row.
-///
-/// Unlike [Album], this isn't backed by one table -- it's the shape of a
-/// SQL JOIN across Albums and Artists (see
-/// MusicLibraryRepository.getAlbumOverviews()).
 class AlbumOverview {
   const AlbumOverview({
     required this.id,

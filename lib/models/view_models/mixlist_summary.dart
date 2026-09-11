@@ -1,4 +1,5 @@
-/// Just enough to show "also appears in ..."
+/// Used for "also appears in..." worth investigating other places
+/// it can be reused.
 class MixlistSummary {
   const MixlistSummary({
     required this.id,

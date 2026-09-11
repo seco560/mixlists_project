@@ -3,9 +3,6 @@ import 'album_overview.dart';
 import 'artist_overview.dart';
 import 'song_search_result.dart';
 
-/// The grouped result of a library-wide search -- one list per entity
-/// type, already in the fixed order the Search Results screen renders
-/// them: Mixlists, Artists, Albums, Songs.
 class SearchResults {
   const SearchResults({
     required this.mixlists,

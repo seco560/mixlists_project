@@ -1,4 +1,3 @@
-/// Just enough of an Album to show in an artist's album column.
 class AlbumSummary {
   const AlbumSummary({
     required this.id,

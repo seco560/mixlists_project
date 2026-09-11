@@ -38,8 +38,8 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
     '#',
     'ID',
     'Name',
-    'Songs',
     'Appearances',
+    'Songs',
     'Albums',
     'Mixlists',
   ];
@@ -161,18 +161,18 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
               : b.name.toLowerCase().compareTo(a.name.toLowerCase()),
         );
         break;
-      case 3: // Songs
-        artists.sort(
-          (a, b) => ascending
-              ? a.uniqueSongCount.compareTo(b.uniqueSongCount)
-              : b.uniqueSongCount.compareTo(a.uniqueSongCount),
-        );
-        break;
-      case 4: // Appearances
+      case 3: // Appearances
         artists.sort(
           (a, b) => ascending
               ? a.appearanceCount.compareTo(b.appearanceCount)
               : b.appearanceCount.compareTo(a.appearanceCount),
+        );
+        break;
+      case 4: // Songs
+        artists.sort(
+          (a, b) => ascending
+              ? a.uniqueSongCount.compareTo(b.uniqueSongCount)
+              : b.uniqueSongCount.compareTo(a.uniqueSongCount),
         );
         break;
       case 5: // Albums
@@ -391,7 +391,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                 width: widths[3],
                 numeric: _columnIsNumeric[3],
                 child: Text(
-                  '${artist.uniqueSongCount}',
+                  '${artist.appearanceCount}',
                   style: _countTextStyle,
                 ),
               ),
@@ -399,10 +399,11 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                 width: widths[4],
                 numeric: _columnIsNumeric[4],
                 child: Text(
-                  '${artist.appearanceCount}',
+                  '${artist.uniqueSongCount}',
                   style: _countTextStyle,
                 ),
               ),
+
               ArtistTableCell(
                 width: widths[5],
                 numeric: _columnIsNumeric[5],
@@ -424,4 +425,3 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
     );
   }
 }
-
