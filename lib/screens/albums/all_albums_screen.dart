@@ -60,18 +60,11 @@ class _AllAlbumsScreenState extends State<AllAlbumsScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _albums.isEmpty
           ? const Center(child: Text("No data found"))
-          // Deliberately not SliverGridDelegateWithMaxCrossAxisExtent: it
-          // stretches every tile to exactly fill each row, so tiles
-          // visibly grow and shrink as the window is resized. A real
-          // Finder icon grid keeps a fixed icon size and just changes how
-          // many columns fit, with leftover width left as trailing
-          // margin -- this LayoutBuilder computes that column count
-          // itself and pins the grid to a matching fixed-size box so
-          // tile size never moves.
           : Padding(
               padding: const EdgeInsets.all(_gridPadding),
               child: LayoutBuilder(
                 builder: (context, constraints) {
+                  // Prevent tile size from modifying when resizing
                   final columns = _columnsThatFit(constraints.maxWidth);
                   final gridWidth =
                       columns * AlbumGridTile.width +

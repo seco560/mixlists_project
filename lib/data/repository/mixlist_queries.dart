@@ -1,18 +1,11 @@
 part of 'music_library_repository.dart';
 
-/// Mixlist-centered queries: the plain `Mixlists` table reads that used to
-/// live on `MixlistDao` (folded in here -- it was the only DAO whose
-/// methods were actually used anywhere in the app), the mixlist track
-/// list, and the cross-mixlist duplicate-song index.
 extension MixlistQueries on MusicLibraryRepository {
   /// Every mixlist, oldest-created first. Was `MixlistDao.getAll()`.
   Future<List<Mixlist>> getAllMixlists() async {
     final rows = await _db.query('Mixlists', orderBy: 'dateCreated ASC');
     return rows.map(Mixlist.fromMap).toList();
   }
-
-  /// A single mixlist by id, or null if it doesn't exist. Was
-  /// `MixlistDao.getById(int)`.
   Future<Mixlist?> getMixlistById(int id) async {
     final rows = await _db.query(
       'Mixlists',
@@ -66,13 +59,6 @@ extension MixlistQueries on MusicLibraryRepository {
   /// so `containsKey` doubles as the "is this a duplicate?" check.
   Future<Map<int, List<MixlistSummary>>> get duplicateSongIndex {
     return _duplicateSongIndexFuture ??= _loadDuplicateSongIndex();
-  }
-
-  /// Forces the next [duplicateSongIndex] access to recompute from the
-  /// database instead of returning the cached map. Only needed once
-  /// SongsMixlists can actually change at runtime.
-  void invalidateDuplicateSongIndex() {
-    _duplicateSongIndexFuture = null;
   }
 
   Future<Map<int, List<MixlistSummary>>> _loadDuplicateSongIndex() async {

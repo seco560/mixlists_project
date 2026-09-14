@@ -5,6 +5,10 @@ import 'package:mixlists_project/models/view_models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
 
+/// Hardcoded bespoke grid bonanza. There is a valuable reusable widget
+/// buried deep within this, but as it is now it's woefully utterly
+/// inextensible. You're better off reimplementing the same general shape
+/// as a different widget if you need another grid (say, for All Songs Screen)
 class AllArtistsScreen extends StatefulWidget {
   const AllArtistsScreen({super.key});
 
@@ -13,27 +17,6 @@ class AllArtistsScreen extends StatefulWidget {
 }
 
 class _AllArtistsScreenState extends State<AllArtistsScreen> {
-  // Column widths, shared by the header row and every body row --
-  // `DataTable` sizes columns from its own content, which is exactly what
-  // breaks once the header is pulled out into its own always-visible
-  // widget: header-only and body-only tables would each compute their own
-  // widths and drift out of alignment. Hand-rolling the rows with a shared
-  // width per column keeps them locked together.
-  //
-  // Only Name stretches: the other six are narrow, fixed-content columns
-  // (a row number, an id, four counts), so any extra screen width goes
-  // entirely to Name instead of leaving it cramped while the rest sit
-  // needlessly wide.
-  //
-  // "#" is the row's position in the current sort order, not the artist's
-  // id -- purely a glance-at-a-row-and-know-where-it-sits column, so it's
-  // not sortable itself (there's nothing to sort it *by* other than the
-  // order everything else already produces).
-  //
-  // "Appearances" sits right next to "Songs" since the two are easy to
-  // mix up: Songs is how many distinct songs made it onto a mixlist,
-  // Appearances is how many times any of them did -- a song on 3
-  // mixlists is 1 Song but 3 Appearances.
   static const _columnLabels = [
     '#',
     'ID',
@@ -50,10 +33,6 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
   static const _nameColumnIndex = 2;
   static const _smallHeaderFontLabels = {'Appearances', 'Mixlists'};
 
-  // Text scale borrowed from `AllMixlistsScreen`'s `MixlistTile`: a bold
-  // ~20px title for the row's identity (here, the artist name) and a
-  // semi-bold ~16px weight for everything else, so this table doesn't
-  // read as plainer than the rest of the app.
   static const _headerTextStyle = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.bold,
@@ -86,21 +65,12 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
   bool _sortAscending = true;
   bool _oneHitWondersExpanded = false;
 
-  // The header's horizontal scroll is driven programmatically (see
-  // _syncHeaderScroll) to track the body's, rather than being dragged
-  // directly, so the two stay aligned without a "linked scroll controller"
-  // package.
   final _headerHorizontalController = ScrollController();
   final _bodyHorizontalController = ScrollController();
 
-  /// One song, from one album, on one mixlist -- these make up most of the
-  /// row count on a large library, so they're collapsed into a single
-  /// summary row by default instead of each getting a full row built up
-  /// front.
+  /// If an artist features only once, show them underneath
   static bool _isOneHitWonder(ArtistOverview artist) =>
-      artist.uniqueSongCount == 1 &&
-      artist.albums.length == 1 &&
-      artist.mixlists.length == 1;
+      artist.uniqueSongCount == 1;
 
   @override
   void initState() {
@@ -199,8 +169,6 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
         _sortAscending = !_sortAscending;
       } else {
         _sortColumnIndex = columnIndex;
-        // New column: numeric columns default to descending (higher
-        // values first), Name defaults to ascending (A-Z).
         _sortAscending = columnIndex == _nameColumnIndex;
       }
       _sortArtists(_artists, _sortColumnIndex, _sortAscending);

@@ -9,7 +9,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 const String _dbAssetPath = 'assets/database/mixlists.db';
 const String _dbFileName = 'mixlists.db';
 
-const int _dbVersion = 2; // Claude proudly noticed my FKs singular misspelling
+const int _dbVersion = 2;
 
 Future<Database> openAppDatabase() async {
   _initFfiIfNeeded();
