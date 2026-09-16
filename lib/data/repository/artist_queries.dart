@@ -233,63 +233,6 @@ extension ArtistQueries on MusicLibraryRepository {
     );
   }
 
-  /// Rows come back ordered by `SongsMixlists.dateAdded` (when *this song*
-  /// was added to *that* mixlist -- not the mixlist's own creation date),
-  /// so both a song's `mixlists`/`datesAdded` lists end up chronological,
-  /// and the returned list itself is sorted by each song's earliest
-  /// `dateAdded`.
-  Future<List<ArtistSongAppearance>> getArtistSongAppearances(
-    int artistId,
-  ) async {
-    final rows = await _db.rawQuery(
-      '''
-      SELECT DISTINCT
-        s.id              AS songId,
-        s.name            AS songName,
-        al.name           AS albumName,
-        al.coverImageURL  AS albumCoverImageURL,
-        m.id              AS mixlistId,
-        m.title           AS mixlistTitle,
-        m.dateCreated     AS dateCreated,
-        sm.dateAdded      AS dateAddedToMixlist
-      FROM Songs s
-      JOIN Albums al ON al.id = s.album
-      JOIN SongsMixlists sm ON sm.song = s.id
-      JOIN Mixlists m ON m.id = sm.mixlist
-      WHERE al.artist = ?
-      ORDER BY sm.dateAdded ASC
-    ''',
-      [artistId],
-    );
-
-    final appearancesBySong = <int, ArtistSongAppearance>{};
-    for (final row in rows) {
-      final songId = row['songId'] as int;
-      final mixlist = MixlistSummary(
-        id: row['mixlistId'] as int,
-        title: row['mixlistTitle'] as String,
-        dateCreated: row['dateCreated'] as String,
-      );
-      final dateAdded = row['dateAddedToMixlist'] as String;
-      final existing = appearancesBySong[songId];
-      if (existing == null) {
-        appearancesBySong[songId] = ArtistSongAppearance(
-          songId: songId,
-          songName: row['songName'] as String,
-          albumName: row['albumName'] as String,
-          albumCoverImageURL: row['albumCoverImageURL'] as String,
-          mixlists: [mixlist],
-          datesAdded: [dateAdded],
-        );
-      } else {
-        existing.mixlists.add(mixlist);
-        existing.datesAdded.add(dateAdded);
-      }
-    }
-    return appearancesBySong.values.toList()
-      ..sort((a, b) => a.datesAdded.first.compareTo(b.datesAdded.first));
-  }
-
   /// Builds full [ArtistOverview]s for an already-known set of artists --
   /// the scoped counterpart of the three grouping queries inside
   /// [getArtistOverviews], restricted by `WHERE artist IN (...)` instead
