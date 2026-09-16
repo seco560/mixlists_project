@@ -19,32 +19,12 @@ part 'album_queries.dart';
 part 'search_queries.dart';
 part 'mixlist_ingestion_queries.dart';
 
-/// The single object screens talk to for data access. It owns any query
-/// that touches more than one table -- sqflite's `db.query()` convenience
-/// method only builds single-table SELECTs (it's a thin wrapper that
-/// assembles `SELECT ... FROM <one table> WHERE ...`, no `join()` argument),
-/// so anything needing a JOIN, a GROUP BY, or hand-written SQL for any
-/// other reason goes through `db.rawQuery()` instead.
-///
-/// The actual query methods live in the four `part` files above (one per
-/// entity the query group is centered on, as `extension`s on this class)
-/// rather than in this file's class body -- they're still fully part of
-/// this one class from every caller's perspective (same
-/// `getIt<MusicLibraryRepository>().someMethod()` call syntax) and share
-/// full access to this class's private members, since `part`/`part of`
-/// files are one library. This field is the one piece of mutable state any
-/// of them touch, so it stays here on the class itself (extensions can add
-/// methods/getters but not fields).
+  /// Read-only access for now; strengthen when we implement editing DB entries
 class MusicLibraryRepository {
   MusicLibraryRepository(this._db);
 
   final Database _db;
 
-  // This assumes SongsMixlists doesn't change during the app's lifetime,
-  // which is true today (the database is read-only, seeded data). If you
-  // add editing later (adding/removing a song from a mixlist), call
-  // `invalidateDuplicateSongIndex()` after that write so the next read
-  // recomputes it. Read/written by `MixlistQueries` in mixlist_queries.dart.
   Future<Map<int, List<MixlistSummary>>>? _duplicateSongIndexFuture;
 
   Future<void> close() => _db.close();

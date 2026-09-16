@@ -1,12 +1,9 @@
 part of 'music_library_repository.dart';
 
-/// Library-wide search.
 extension SearchQueries on MusicLibraryRepository {
   /// Every match across the library for [rawQuery], grouped by entity
   /// type in the order the Search Results screen renders them. A bare
-  /// 4-digit query (e.g. "1975") additionally matches Albums by release
-  /// year, on top of (not instead of) the normal name search -- see
-  /// [_searchAlbums].
+  /// 4-digit query (e.g. "1975") additionally matches Albums by release year
   Future<SearchResults> searchLibrary(String rawQuery) async {
     final query = rawQuery.trim();
     if (query.isEmpty) {
@@ -59,10 +56,6 @@ extension SearchQueries on MusicLibraryRepository {
     return _artistOverviewsFor(rows.map(Artist.fromMap).toList());
   }
 
-  /// Albums matching [query] by name, and (only when [isYearQuery]) also
-  /// by release year. `releaseDate` is inconsistently formatted (bare
-  /// "2013" vs. full "2017-08-25"), so year matching uses a prefix LIKE
-  /// ('YYYY%') rather than `=` or a `substr()` that assumes one format.
   Future<List<AlbumOverview>> _searchAlbums(
     String query,
     String likePattern, {

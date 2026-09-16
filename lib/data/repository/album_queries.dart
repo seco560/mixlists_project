@@ -1,14 +1,6 @@
 part of 'music_library_repository.dart';
 
-/// Album-centered queries.
 extension AlbumQueries on MusicLibraryRepository {
-  /// Every album with its artist's name attached, for the "browse all
-  /// albums" screen -- one JOIN, no grouping needed since (unlike
-  /// getArtistOverviews) each Album has exactly one Artist.
-  ///
-  /// Sorted by artist name then release date, so the flat grid still reads
-  /// as "each artist's discography, oldest to newest" even with no section
-  /// headers.
   Future<List<AlbumOverview>> getAlbumOverviews() async {
     final rows = await _db.rawQuery('''
       SELECT
@@ -26,15 +18,27 @@ extension AlbumQueries on MusicLibraryRepository {
     return rows.map(AlbumOverview.fromMap).toList();
   }
 
-  /// Every song on [albumId]'s album, each with every mixlist it appears
-  /// in -- the per-album detail screen's version of
-  /// `getArtistSongAppearances()`, scoped to one album instead of every
-  /// album by an artist. Every song is guaranteed at least one mixlist
-  /// (that's how a song ends up in this library at all), so this is an
-  /// inner JOIN throughout, same as `getArtistSongAppearances`.
-  ///
-  /// Ordered by the album's own track listing (`SongsExtraData.
-  /// albumTrackNumber`, falling back to song id for anything missing one).
+
+  Future<AlbumOverview?> getAlbumOverviewById(int albumId) async {
+    final rows = await _db.rawQuery(
+      '''
+      SELECT
+        al.id            AS id,
+        al.name          AS name,
+        al.releaseDate   AS releaseDate,
+        al.coverImageURL AS coverImageURL,
+        ar.id            AS artistId,
+        ar.name          AS artistName
+      FROM Albums al
+      JOIN Artists ar ON ar.id = al.artist
+      WHERE al.id = ?
+    ''',
+      [albumId],
+    );
+    if (rows.isEmpty) return null;
+    return AlbumOverview.fromMap(rows.first);
+  }
+
   Future<List<AlbumSongAppearance>> getAlbumSongAppearances(
     int albumId,
   ) async {
@@ -84,28 +88,5 @@ extension AlbumQueries on MusicLibraryRepository {
       appearance.datesAdded.add(row['dateAddedToMixlist'] as String);
     }
     return [for (final songId in songOrder) appearancesBySong[songId]!];
-  }
-
-  /// A single album, in the same shape as [getAlbumOverviews] returns, for
-  /// navigating to an [AlbumOverview]-driven screen when only an id is on
-  /// hand, like from a [MixlistTrack].
-  Future<AlbumOverview?> getAlbumOverviewById(int albumId) async {
-    final rows = await _db.rawQuery(
-      '''
-      SELECT
-        al.id            AS id,
-        al.name          AS name,
-        al.releaseDate   AS releaseDate,
-        al.coverImageURL AS coverImageURL,
-        ar.id            AS artistId,
-        ar.name          AS artistName
-      FROM Albums al
-      JOIN Artists ar ON ar.id = al.artist
-      WHERE al.id = ?
-    ''',
-      [albumId],
-    );
-    if (rows.isEmpty) return null;
-    return AlbumOverview.fromMap(rows.first);
   }
 }

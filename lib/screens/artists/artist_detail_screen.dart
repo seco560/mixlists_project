@@ -58,10 +58,9 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
   /// order, ascending -- one entry per mixlist a song is on), so no extra
   /// query is needed.
   ///
-  /// Years between the earliest and latest with no additions still get a
-  /// key (an empty list), so `YearAlbumArtHistogram` renders them as a
-  /// blank column instead of skipping the gap -- unlike a single mixlist's
-  /// release-year spread, seeing the quiet years matters here.
+  /// Years between the earliest and latest with no additions still feature, 
+  /// so `YearAlbumArtHistogram` renders them as a
+  /// blank column instead of skipping the gap.
   Map<int, List<AlbumArtHistogramEntry>> _addedOverTimeEntries() {
     final entries = <int, List<AlbumArtHistogramEntry>>{};
     for (final song in _songs) {
