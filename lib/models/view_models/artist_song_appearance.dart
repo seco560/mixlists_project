@@ -13,7 +13,7 @@ class ArtistSongAppearance {
   final int songId;
   final String songName;
   final String albumName;
-  final String albumCoverImageURL;
+  final String? albumCoverImageURL;
   final List<MixlistSummary> mixlists;
 
   final List<String> datesAdded;

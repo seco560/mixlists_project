@@ -1,5 +1,7 @@
+import 'package:mixlists_project/data/import/mixlist_csv_parser.dart';
 import 'package:mixlists_project/models/entities/artist.dart';
 import 'package:mixlists_project/models/entities/mixlist.dart';
+import 'package:mixlists_project/models/entities/song_extra_data.dart';
 import 'package:mixlists_project/models/view_models/album_overview.dart';
 import 'package:mixlists_project/models/view_models/album_song_appearance.dart';
 import 'package:mixlists_project/models/view_models/album_summary.dart';
@@ -15,6 +17,7 @@ part 'mixlist_queries.dart';
 part 'artist_queries.dart';
 part 'album_queries.dart';
 part 'search_queries.dart';
+part 'mixlist_ingestion_queries.dart';
 
 /// The single object screens talk to for data access. It owns any query
 /// that touches more than one table -- sqflite's `db.query()` convenience

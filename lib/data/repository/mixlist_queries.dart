@@ -46,11 +46,24 @@ extension MixlistQueries on MusicLibraryRepository {
         ed.durationMs      AS durationMs,
         ed.explicit        AS explicit,
         ed.popularity      AS popularity,
-        ed.audioPreviewURL AS audioPreviewURL
+        ed.audioPreviewURL AS audioPreviewURL,
+        af.danceability    AS danceability,
+        af.energy          AS energy,
+        af.key             AS key,
+        af.loudness        AS loudness,
+        af.mode            AS mode,
+        af.speechiness     AS speechiness,
+        af.acousticness    AS acousticness,
+        af.instrumentalness AS instrumentalness,
+        af.liveness        AS liveness,
+        af.valence         AS valence,
+        af.tempo           AS tempo,
+        af.timeSignature   AS timeSignature
       FROM SongsMixlists sm
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
       LEFT JOIN SongsExtraData ed ON ed.song = s.id
+      LEFT JOIN SongsAudioFeatures af ON af.song = s.id
       WHERE sm.mixlist = ?
       ORDER BY sm.positionIndex ASC
     ''',

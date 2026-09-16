@@ -12,7 +12,7 @@ class AlbumSongAppearance {
   final int songId;
   final String songName;
 
-  final int albumTrackNumber;
+  final int? albumTrackNumber;
   final List<MixlistSummary> mixlists;
 
   final List<String> datesAdded;

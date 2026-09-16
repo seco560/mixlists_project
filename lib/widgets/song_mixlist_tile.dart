@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/models/view_models/mixlist_summary.dart';
+import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 /// This one you may want to modify to behave like the one that's in use
@@ -20,7 +20,7 @@ class SongMixlistTile extends StatefulWidget {
   final int songId;
   final String title;
   final Widget subtitle;
-  final String leadingImageUrl;
+  final String? leadingImageUrl;
   final List<MixlistSummary> mixlists;
   final void Function(int mixlistId, int songId) onOpenMixlist;
 
@@ -40,10 +40,10 @@ class _SongMixlistTileState extends State<SongMixlistTile> {
       crossAxisAlignment: .start,
       children: [
         ListTile(
-          leading: CachedNetworkImage(
+          leading: AlbumArtThumbnail(
             imageUrl: widget.leadingImageUrl,
-            width: 48,
-            height: 48,
+            size: 48,
+            borderRadius: 0,
           ),
           title: Text(widget.title, style: titleTextStyle),
           subtitle: widget.subtitle,

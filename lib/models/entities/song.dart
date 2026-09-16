@@ -3,7 +3,7 @@ class Song {
   final String spotifyURI;
   final String name;
   final String artists;
-  final String artistsURIs;
+  final String? artistsURIs;
   final int albumID;
 
   Song({
@@ -21,11 +21,11 @@ class Song {
       spotifyURI: map['spotifyURI'] as String,
       name: map['name'] as String,
       artists: map['artists'] as String,
-      artistsURIs: map['artistsURIs'] as String,
+      artistsURIs: map['artistsURIs'] as String?,
       albumID: map['album'] as int,
     );
   }
- 
+
   Map<String, Object?> toMap() {
     return {
       'id': id,

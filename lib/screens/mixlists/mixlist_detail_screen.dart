@@ -8,6 +8,7 @@ import 'package:mixlists_project/models/view_models/mixlist_summary.dart';
 import 'package:mixlists_project/models/view_models/mixlist_track.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/track_tile.dart';
+import 'package:mixlists_project/widgets/mixlist_audio_feature_chart.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/year_album_art_histogram.dart';
 
@@ -223,6 +224,9 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
                     Divider(color: Colors.blueGrey),
                     SectionHeader('Album Release Year Spread'),
                     YearAlbumArtHistogram(entriesByYear: _releaseYearEntries()),
+                    Divider(color: Colors.blueGrey),
+                    SectionHeader('Audio Features'),
+                    MixlistAudioFeatureChart(tracks: _tracks),
                     const SizedBox(height: 40),
                   ],
             ),

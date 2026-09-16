@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/models/view_models/album_overview.dart';
+import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 class AlbumResultTile extends StatelessWidget {
@@ -12,10 +12,10 @@ class AlbumResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: CachedNetworkImage(
+      leading: AlbumArtThumbnail(
         imageUrl: album.coverImageURL,
-        width: 50,
-        height: 50,
+        size: 50,
+        borderRadius: 0,
       ),
       title: Text(album.name, style: titleTextStyle),
       subtitle: Column(

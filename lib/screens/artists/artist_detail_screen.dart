@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
@@ -9,6 +8,7 @@ import 'package:mixlists_project/models/view_models/artist_overview.dart';
 import 'package:mixlists_project/models/view_models/artist_song_appearance.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
+import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
@@ -153,10 +153,10 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                 else
                   for (final album in artist.albums)
                     ListTile(
-                      leading: CachedNetworkImage(
+                      leading: AlbumArtThumbnail(
                         imageUrl: album.coverImageURL,
-                        width: 48,
-                        height: 48,
+                        size: 48,
+                        borderRadius: 0,
                       ),
                       title: Text(album.name, style: titleTextStyle),
                       subtitle: Text(

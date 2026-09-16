@@ -1,12 +1,12 @@
 class SongExtraData {
   final int id;
-  final int discNumber;
-  final int albumTrackNumber;
+  final int? discNumber;
+  final int? albumTrackNumber;
   final int durationMs;
-  final String audioPreviewURL;
+  final String? audioPreviewURL;
   final bool isExplicit;
   final int popularity;
-  final String isrc;
+  final String? isrc;
   final int songID;
 
   SongExtraData({
@@ -24,17 +24,17 @@ class SongExtraData {
   factory SongExtraData.fromMap(Map<String, Object?> map) {
     return SongExtraData(
       id: map['id'] as int,
-      discNumber: map['discNumber'] as int,
-      albumTrackNumber: map['albumTrackNumber'] as int,
+      discNumber: map['discNumber'] as int?,
+      albumTrackNumber: map['albumTrackNumber'] as int?,
       durationMs: map['durationMs'] as int,
-      audioPreviewURL: map['audioPreviewURL'] as String,
+      audioPreviewURL: map['audioPreviewURL'] as String?,
       isExplicit: (map['explicit'] as String).toLowerCase() == 'true', // stored as text rather than SQLite 1/0 bool
       popularity: map['popularity'] as int,
-      isrc: map['ISRC'] as String,
+      isrc: map['ISRC'] as String?,
       songID: map['song'] as int,
     );
   }
- 
+
   Map<String, Object?> toMap() {
     return {
       'id': id,

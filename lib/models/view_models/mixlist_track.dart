@@ -18,6 +18,18 @@ class MixlistTrack {
     this.isExplicit,
     this.popularity,
     this.audioPreviewURL,
+    this.danceability,
+    this.energy,
+    this.key,
+    this.loudness,
+    this.mode,
+    this.speechiness,
+    this.acousticness,
+    this.instrumentalness,
+    this.liveness,
+    this.valence,
+    this.tempo,
+    this.timeSignature,
   });
 
   final int position;
@@ -26,18 +38,31 @@ class MixlistTrack {
   final String songSpotifyURI;
   final String songName;
   final String artistNames;
-  final String artistURIs;
+  final String? artistURIs;
 
   final int artistId;
   final int albumId;
   final String albumName;
-  final String albumCoverImageURL;
+  final String? albumCoverImageURL;
   final String albumReleaseDate;
 
   final int? durationMs;
   final bool? isExplicit;
   final int? popularity;
   final String? audioPreviewURL;
+
+  final double? danceability;
+  final double? energy;
+  final int? key;
+  final double? loudness;
+  final int? mode;
+  final double? speechiness;
+  final double? acousticness;
+  final double? instrumentalness;
+  final double? liveness;
+  final double? valence;
+  final double? tempo;
+  final int? timeSignature;
 
   factory MixlistTrack.fromMap(Map<String, Object?> map) {
     final explicitText = map['explicit'] as String?;
@@ -48,11 +73,11 @@ class MixlistTrack {
       songSpotifyURI: map['songSpotifyURI'] as String,
       songName: map['songName'] as String,
       artistNames: map['artists'] as String,
-      artistURIs: map['artistsURIs'] as String,
+      artistURIs: map['artistsURIs'] as String?,
       artistId: map['artistId'] as int,
       albumId: map['albumId'] as int,
       albumName: map['albumName'] as String,
-      albumCoverImageURL: map['albumCoverImageURL'] as String,
+      albumCoverImageURL: map['albumCoverImageURL'] as String?,
       albumReleaseDate: map['albumReleaseDate'] as String,
       durationMs: map['durationMs'] as int?,
       isExplicit: explicitText == null
@@ -60,6 +85,18 @@ class MixlistTrack {
           : explicitText.toLowerCase() == 'true',
       popularity: map['popularity'] as int?,
       audioPreviewURL: map['audioPreviewURL'] as String?,
+      danceability: map['danceability'] as double?,
+      energy: map['energy'] as double?,
+      key: map['key'] as int?,
+      loudness: map['loudness'] as double?,
+      mode: map['mode'] as int?,
+      speechiness: map['speechiness'] as double?,
+      acousticness: map['acousticness'] as double?,
+      instrumentalness: map['instrumentalness'] as double?,
+      liveness: map['liveness'] as double?,
+      valence: map['valence'] as double?,
+      tempo: map['tempo'] as double?,
+      timeSignature: map['timeSignature'] as int?,
     );
   }
 

@@ -122,7 +122,7 @@ extension SearchQueries on MusicLibraryRepository {
           songId: songId,
           songName: row['songName'] as String,
           albumName: row['albumName'] as String,
-          albumCoverImageURL: row['albumCoverImageURL'] as String,
+          albumCoverImageURL: row['albumCoverImageURL'] as String?,
           artistNames: row['artistNames'] as String,
           mixlists: [],
         );

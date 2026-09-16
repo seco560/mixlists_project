@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:mixlists_project/data/database/schema_v3.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -9,7 +10,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 const String _dbAssetPath = 'assets/database/mixlists.db';
 const String _dbFileName = 'mixlists.db';
 
-const int _dbVersion = 2; // Claude proudly noticed my FKs singular misspelling
+const int _dbVersion = 3; // Claude proudly noticed my FKs singular misspelling
 
 Future<Database> openAppDatabase() async {
   _initFfiIfNeeded();
@@ -31,6 +32,7 @@ Future<Database> openAppDatabase() async {
       final checkForData = await db.rawQuery("SELECT * FROM Mixlists;");
       if (checkForData.isEmpty) {
         await _createSchemaV2(db);
+        await applySchemaV3(db);
       }
     },
     onUpgrade: (db, oldVersion, newVersion) async {
@@ -51,9 +53,13 @@ Future<Database> openAppDatabase() async {
           'CREATE INDEX IF NOT EXISTS idx_sm_song ON SongsMixlists(song)',
         );
       }
+      if (oldVersion < 3) {
+        await applySchemaV3(db);
+      }
     },
   );
 }
+
 
 void _initFfiIfNeeded() {
   if (Platform.isLinux) {

@@ -9,7 +9,7 @@ class AlbumArtHistogramEntry {
     this.onTap,
   });
 
-  final String imageUrl;
+  final String? imageUrl;
   final String tooltip;
 
   final VoidCallback? onTap;

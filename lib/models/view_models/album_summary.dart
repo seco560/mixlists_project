@@ -9,5 +9,5 @@ class AlbumSummary {
   final int id;
   final String name;
   final String releaseDate;
-  final String coverImageURL;
+  final String? coverImageURL;
 }

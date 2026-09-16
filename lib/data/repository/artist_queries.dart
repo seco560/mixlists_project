@@ -40,7 +40,7 @@ extension ArtistQueries on MusicLibraryRepository {
               id: row['albumId'] as int,
               name: row['albumName'] as String,
               releaseDate: row['releaseDate'] as String,
-              coverImageURL: row['coverImageURL'] as String,
+              coverImageURL: row['coverImageURL'] as String?,
             ),
           );
     }
@@ -152,7 +152,7 @@ extension ArtistQueries on MusicLibraryRepository {
           songId: songId,
           songName: row['songName'] as String,
           albumName: row['albumName'] as String,
-          albumCoverImageURL: row['albumCoverImageURL'] as String,
+          albumCoverImageURL: row['albumCoverImageURL'] as String?,
           mixlists: [mixlist],
           datesAdded: [dateAdded],
         );
@@ -195,7 +195,7 @@ extension ArtistQueries on MusicLibraryRepository {
           id: row['albumId'] as int,
           name: row['albumName'] as String,
           releaseDate: row['releaseDate'] as String,
-          coverImageURL: row['coverImageURL'] as String,
+          coverImageURL: row['coverImageURL'] as String?,
         ),
     ];
 
@@ -277,7 +277,7 @@ extension ArtistQueries on MusicLibraryRepository {
               id: row['albumId'] as int,
               name: row['albumName'] as String,
               releaseDate: row['releaseDate'] as String,
-              coverImageURL: row['coverImageURL'] as String,
+              coverImageURL: row['coverImageURL'] as String?,
             ),
           );
     }

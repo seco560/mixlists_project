@@ -1,7 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/models/view_models/album_overview.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
+import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 
 // Text scale borrowed from ArtistDetailScreen/MixlistDetailScreen's tiles,
 // shrunk one notch since a grid tile has far less width than a full-width
@@ -51,24 +51,10 @@ class AlbumGridTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          ClipRRect(
-            borderRadius: .circular(4),
-            child: SizedBox(
-              width: width,
-              height: width,
-              child: CachedNetworkImage(
-                imageUrl: album.coverImageURL,
-                fit: .cover,
-                placeholder: (context, url) => Container(
-                  color: Colors.grey.shade300,
-                  child: const Icon(Icons.album, color: Colors.grey),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  color: Colors.grey.shade300,
-                  child: const Icon(Icons.broken_image, color: Colors.grey),
-                ),
-              ),
-            ),
+          AlbumArtThumbnail(
+            imageUrl: album.coverImageURL,
+            size: width,
+            borderRadius: 4,
           ),
           const SizedBox(height: 6),
           Text(

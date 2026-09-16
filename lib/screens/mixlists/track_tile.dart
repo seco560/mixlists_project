@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
@@ -8,6 +7,7 @@ import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
+import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 
 class TrackTile extends StatefulWidget {
   const TrackTile({
@@ -217,9 +217,10 @@ class _TrackTileState extends State<TrackTile> with TickerProviderStateMixin {
                 ),
               ],
             ),
-            leading: CachedNetworkImage(
+            leading: AlbumArtThumbnail(
               imageUrl: track.albumCoverImageURL,
-              width: 50,
+              size: 50,
+              borderRadius: 0,
             ),
           ),
         ),

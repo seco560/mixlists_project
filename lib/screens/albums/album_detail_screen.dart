@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
@@ -7,6 +6,7 @@ import 'package:mixlists_project/models/view_models/album_song_appearance.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
+import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
@@ -94,14 +94,10 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      ClipRRect(
-                        borderRadius: .circular(4),
-                        child: CachedNetworkImage(
-                          imageUrl: album.coverImageURL,
-                          width: 96,
-                          height: 96,
-                          fit: .cover,
-                        ),
+                      AlbumArtThumbnail(
+                        imageUrl: album.coverImageURL,
+                        size: 96,
+                        borderRadius: 4,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -131,7 +127,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                   for (final song in _songs)
                     SongMixlistTile(
                       songId: song.songId,
-                      title: '${song.albumTrackNumber}) ${song.songName}',
+                      title: '${song.albumTrackNumber ?? '?'}) ${song.songName}',
                       leadingImageUrl: album.coverImageURL,
                       subtitle: Text(
                         'On ${song.mixlists.length} mixlist${song.mixlists.length == 1 ? '' : 's'}',

@@ -67,7 +67,7 @@ extension AlbumQueries on MusicLibraryRepository {
         appearance = AlbumSongAppearance(
           songId: songId,
           songName: row['songName'] as String,
-          albumTrackNumber: row['albumTrackNumber'] as int,
+          albumTrackNumber: row['albumTrackNumber'] as int?,
           mixlists: [],
           datesAdded: [],
         );
