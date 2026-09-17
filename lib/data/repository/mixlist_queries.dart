@@ -66,10 +66,9 @@ extension MixlistQueries on MusicLibraryRepository {
     return rows.map(MixlistTrack.fromMap).toList();
   }
 
-  /// Maps a song's id to every mixlist it appears in, for songs that
-  /// appear in more than one. Songs that only appear once are absent
-  /// from the map entirely (rather than mapped to a single-item list),
-  /// so `containsKey` doubles as the "is this a duplicate?" check.
+  /// Maps a song's id to every mixlist it's on, for songs on more than
+  /// one -- absent from the map otherwise, so `containsKey` doubles as
+  /// the "is this a duplicate?" check.
   Future<Map<int, List<MixlistSummary>>> get duplicateSongIndex {
     return _duplicateSongIndexFuture ??= _loadDuplicateSongIndex();
   }

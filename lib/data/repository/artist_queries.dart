@@ -1,10 +1,8 @@
 part of 'music_library_repository.dart';
 
 extension ArtistQueries on MusicLibraryRepository {
-  /// Every artist, with the albums they released (Albums.artist), every
-  /// mixlist a song off one of those albums appears in
-  /// (Albums -> Songs -> SongsMixlists -> Mixlists), and how many
-  /// distinct songs of theirs show up across all mixlists.
+  /// Every artist, with their albums, every mixlist their songs appear
+  /// in, and their distinct song count across all mixlists.
   Future<List<ArtistOverview>> getArtistOverviews() async {
     final artistRows = await _db.query('Artists', orderBy: 'name ASC');
     final allArtists = artistRows.map(Artist.fromMap).toList();
@@ -93,15 +91,9 @@ extension ArtistQueries on MusicLibraryRepository {
         .toList();
   }
 
-  /// Every song of [artistId]'s that's featured in a mixlist, each with
-  /// every mixlist it appears in -- the per-artist detail screen's version
-  /// of `getArtistOverviews()`, joined one level further to the song.
-  ///
-  /// Rows come back ordered by `SongsMixlists.dateAdded` (when *this song*
-  /// was added to *that* mixlist -- not the mixlist's own creation date),
-  /// so both a song's `mixlists`/`datesAdded` lists end up chronological,
-  /// and the returned list itself is sorted by each song's earliest
-  /// `dateAdded`.
+  /// Every song of [artistId]'s featured in a mixlist, each with every
+  /// mixlist it appears in, ordered by `SongsMixlists.dateAdded` (per-song
+  /// add date, not the mixlist's creation date).
   Future<List<ArtistSongAppearance>> getArtistSongAppearances(
     int artistId,
   ) async {
@@ -154,11 +146,8 @@ extension ArtistQueries on MusicLibraryRepository {
       ..sort((a, b) => a.datesAdded.first.compareTo(b.datesAdded.first));
   }
 
-  /// A single artist, in the same shape as [getArtistOverviews] returns,
-  /// for navigating to an [ArtistOverview]-driven screen (e.g. the artist
-  /// detail screen) when only an id is on hand, like from a [MixlistTrack].
-  /// Scoped queries rather than reusing [getArtistOverviews] and filtering,
-  /// so this stays cheap regardless of library size.
+  /// A single artist in the same shape [getArtistOverviews] returns, via
+  /// scoped queries so this stays cheap regardless of library size.
   Future<ArtistOverview?> getArtistOverviewById(int artistId) async {
     final artistRows = await _db.query(
       'Artists',
@@ -233,11 +222,8 @@ extension ArtistQueries on MusicLibraryRepository {
     );
   }
 
-  /// Builds full [ArtistOverview]s for an already-known set of artists --
-  /// the scoped counterpart of the three grouping queries inside
-  /// [getArtistOverviews], restricted by `WHERE artist IN (...)` instead
-  /// of running unscoped over the whole library. Used by `SearchQueries`
-  /// in search_queries.dart.
+  /// Scoped counterpart of [getArtistOverviews] restricted to a known set
+  /// of artists via `WHERE artist IN (...)`. Used by `SearchQueries`.
   Future<List<ArtistOverview>> _artistOverviewsFor(
     List<Artist> matched,
   ) async {

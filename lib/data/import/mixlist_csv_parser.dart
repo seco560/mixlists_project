@@ -2,10 +2,7 @@ import 'package:csv/csv.dart' show csv;
 import 'package:path/path.dart' as p;
 
 /// One parsed, type-checked row from a mixlist CSV export. Fields absent
-/// from a given file's header (the newer, URI-light export format is
-/// missing several columns the original Exportify format had) come back
-/// null rather than throwing -- callers store "unavailable" as SQL NULL,
-/// never as an empty string.
+/// from a given file's header come back null, stored as SQL NULL.
 class MixlistCsvRow {
   final String trackURI;
   final String trackName;
@@ -91,11 +88,9 @@ class MixlistCsvParseException implements Exception {
       : 'CSV parse error at row $rowNumber: $message';
 }
 
-/// Canonical field -> candidate CSV header names, checked against a given
-/// file's actual header in priority order (first candidate present wins).
-/// One parser handles both the original Exportify-style header and the
-/// newer, richer export's header this way -- a third export tool showing
-/// up later is a one-line addition here, not a new code path.
+/// Canonical field -> candidate CSV header names, checked in priority
+/// order (first candidate present wins), so one parser handles multiple
+/// export formats.
 const Map<String, List<String>> _headerAliases = {
   'trackURI': ['Track URI'],
   'trackName': ['Track Name'],

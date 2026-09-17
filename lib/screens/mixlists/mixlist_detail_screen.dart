@@ -21,9 +21,8 @@ class MixlistDetailScreen extends StatefulWidget {
 
   final Mixlist mixlist;
 
-  /// When arriving from a specific song (an artist's "songs on mixlists"
-  /// entry, or an "also appears in" chip), the id of that song -- its
-  /// track gets scrolled into view and highlighted once the list is up.
+  /// When arriving from a specific song, its track gets scrolled into
+  /// view and highlighted once the list is up.
   final int? highlightSongId;
 
   @override
@@ -56,14 +55,8 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     return "$minutes:${seconds < 10 ? '0' : ''}$seconds";
   }
 
-  /// This mixlist's tracks, bucketed by the calendar year of the first 4
-  /// characters of `Albums.releaseDate` -- that column is inconsistently
-  /// formatted (a bare "2013" vs. a full "2017-08-25"), but both always
-  /// start with the 4-digit year. Unlike the artist screen's "added over
-  /// time" chart, bucketing by `SongsMixlists.dateAdded` here doesn't say
-  /// much -- a mixlist's tracks are mostly all added in the same window,
-  /// with the rare outlier just being a song re-added after Spotify pulled
-  /// it -- so release year is the more meaningful axis for one mixlist.
+  /// Tracks bucketed by the calendar year prefix of `Albums.releaseDate`
+  /// (handles both a bare "2013" and a full "2017-08-25").
   Map<int, List<AlbumArtHistogramEntry>> _releaseYearEntries() {
     final entries = <int, List<AlbumArtHistogramEntry>>{};
     for (final track in _tracks) {
@@ -129,11 +122,8 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted) return;
 
-    // ListView only mounts tiles near the viewport, so a track far down a
-    // long mixlist may not exist in the tree yet -- key.currentContext is
-    // null and there's nothing for ensureVisible to scroll to. Jump close
-    // to its estimated position (by fraction of the list) to force it to
-    // build, then let ensureVisible do the precise, animated alignment.
+    // A far-off track may not be built yet; jump near its estimated
+    // position to force it to build, then let ensureVisible align it.
     if (key.currentContext == null && _scrollController.hasClients) {
       final fraction = _tracks.length <= 1 ? 0.0 : index / (_tracks.length - 1);
       _scrollController.jumpTo(

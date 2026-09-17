@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// The artist/album name in a track's subtitle, tappable to jump to that
-/// artist's or album's detail screen. Underlines on hover so it reads as a
-/// link -- there's no other in-app precedent for a
-/// tappable substring (existing nav taps are always a whole row), so this
-/// is a fresh small widget rather than a shared one.
+/// A tappable substring (e.g. artist/album name) that underlines on hover
+/// so it reads as a link.
 class HoverableLink extends StatefulWidget {
   const HoverableLink({super.key, required this.text, required this.onTap});
 

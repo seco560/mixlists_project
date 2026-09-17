@@ -5,10 +5,8 @@ import 'package:mixlists_project/models/view_models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
 
-/// Hardcoded bespoke grid bonanza. There is a valuable reusable widget
-/// buried deep within this, but as it is now it's woefully utterly
-/// inextensible. You're better off reimplementing the same general shape
-/// as a different widget if you need another grid (say, for All Songs Screen)
+/// Hardcoded bespoke grid; not extensible enough to reuse for another
+/// grid, reimplement the general shape as a new widget instead.
 class AllArtistsScreen extends StatefulWidget {
   const AllArtistsScreen({super.key});
 

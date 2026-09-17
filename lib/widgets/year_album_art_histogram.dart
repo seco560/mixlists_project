@@ -15,21 +15,8 @@ class AlbumArtHistogramEntry {
   final VoidCallback? onTap;
 }
 
-/// The album-art counterpart to `YearHistogramChart`: instead of a solid
-/// bar, each year is a column stacked with the cover art of the songs
-/// added that year, so the chart reads as a grid of album art while still
-/// being laid out as one column per year in a horizontally-scrollable row.
-///
-/// A year renders only if it's a key in [entriesByYear] -- an absent year
-/// isn't shown at all, unlike `YearHistogramChart`, which always fills
-/// gaps between the lowest and highest year with an empty bar. There's no
-/// bar here to make a gap meaningful against, so it's on the caller to
-/// decide whether gap years matter for what it's charting; if they do,
-/// include them explicitly with an empty list (see
-/// `ArtistDetailScreen._addedOverTimeEntries`).
-///
-/// There is no chart-level tooltip -- each thumbnail carries its own via
-/// [AlbumArtHistogramEntry.tooltip].
+/// Album-art counterpart to `YearHistogramChart`: each year is a column of
+/// cover art. Only renders years present as keys in [entriesByYear].
 class YearAlbumArtHistogram extends StatefulWidget {
   const YearAlbumArtHistogram({super.key, required this.entriesByYear});
 

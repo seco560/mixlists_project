@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:mixlists_project/data/database/schema_v3.dart';
 import 'package:path/path.dart';
@@ -69,18 +68,13 @@ void _initFfiIfNeeded() {
 }
 
 Future<void> _copyDatabaseFromAssets(String destinationPath) async {
-  try {
-    await Directory(dirname(destinationPath)).create(recursive: true);
-    final data = await rootBundle.load(_dbAssetPath);
-    final bytes = data.buffer.asUint8List(
-      data.offsetInBytes,
-      data.lengthInBytes,
-    );
-    await File(destinationPath).writeAsBytes(bytes);
-  } catch (e) {
-    if (kDebugMode) print('Error copying database from assets: $e');
-    rethrow;
-  }
+  await Directory(dirname(destinationPath)).create(recursive: true);
+  final data = await rootBundle.load(_dbAssetPath);
+  final bytes = data.buffer.asUint8List(
+    data.offsetInBytes,
+    data.lengthInBytes,
+  );
+  await File(destinationPath).writeAsBytes(bytes);
 }
 
 /// Used as back-up in case existing DB is empty.

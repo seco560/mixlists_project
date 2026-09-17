@@ -52,15 +52,9 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
     }
   }
 
-  /// This artist's songs, bucketed by the calendar year of
-  /// `SongsMixlists.dateAdded` -- reuses the parallel `datesAdded`/
-  /// `mixlists` lists already carried by each [ArtistSongAppearance] (same
-  /// order, ascending -- one entry per mixlist a song is on), so no extra
-  /// query is needed.
-  ///
-  /// Years between the earliest and latest with no additions still feature, 
-  /// so `YearAlbumArtHistogram` renders them as a
-  /// blank column instead of skipping the gap.
+  /// Songs bucketed by calendar year of `SongsMixlists.dateAdded`. Years
+  /// with no additions are still included (empty) so the histogram shows
+  /// a blank column instead of skipping the gap.
   Map<int, List<AlbumArtHistogramEntry>> _addedOverTimeEntries() {
     final entries = <int, List<AlbumArtHistogramEntry>>{};
     for (final song in _songs) {
@@ -167,10 +161,8 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => AlbumDetailScreen(
-                              // AlbumSummary has no artist name (it's
-                              // always shown alongside the artist already,
-                              // like right here) -- fill it in from
-                              // `artist`, which we already have.
+                              // AlbumSummary has no artist name; fill it in
+                              // from `artist`, which we already have.
                               album: AlbumOverview(
                                 id: album.id,
                                 name: album.name,

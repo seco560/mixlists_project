@@ -5,8 +5,7 @@ import 'package:mixlists_project/models/view_models/mixlist_track.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
-/// The Spotify audio-feature fields available to chart, in the order they
-/// appear in the picker. Labels are what the dropdown shows.
+/// Spotify audio-feature fields available to chart, in picker order.
 enum AudioFeatureField {
   danceability('Danceability'),
   energy('Energy'),
@@ -31,12 +30,8 @@ const _keyNames = [
   'C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B',
 ];
 
-/// One bar per track on a mixlist, showing a single Spotify audio-feature
-/// value (picked from the dropdown), orderable either by the mixlist's own
-/// track order or by the selected value. Only ever one series/hue at a
-/// time -- switching features swaps the whole chart rather than adding a
-/// second axis. Tracks with no audio-feature data (older, never
-/// re-exported mixlists; see the CSV ingestion feature notes) render as a
+/// One bar per track, showing a single selected audio-feature value,
+/// orderable by track order or by value. Tracks with no data render as a
 /// muted "no data" marker instead of a misleading zero-height bar.
 class MixlistAudioFeatureChart extends StatefulWidget {
   const MixlistAudioFeatureChart({super.key, required this.tracks});
@@ -54,11 +49,8 @@ class _MixlistAudioFeatureChartState extends State<MixlistAudioFeatureChart> {
 
   static const _barWidth = 28.0;
   static const _maxBarHeight = 120.0;
-  // Space below the bar for the album art thumbnail + track position label
-  // (SizedBox(4) + art(24) + SizedBox(2) + label line, with slack for the
-  // label's real rendered height) -- must be >= _TrackBar's actual footer
-  // height, since the chart area's fixed height and the y-axis's alignment
-  // both assume every column's footer fits within this much space.
+  // Must be >= _TrackBar's actual footer height (art + label), since the
+  // chart's fixed height and y-axis alignment both assume it fits here.
   static const _footerHeight = 56.0;
   static const _artSize = 24.0;
 
@@ -149,12 +141,8 @@ class _MixlistAudioFeatureChartState extends State<MixlistAudioFeatureChart> {
       );
     }
 
-    // Loudness is (almost) always <= 0dB -- floor the domain at the
-    // quietest track present, ceiling at 0, so a taller bar always means
-    // "louder." Every other field floors at 0 and ceilings at the loudest
-    // value actually present in this mixlist, so the chart uses its full
-    // height to show relative variation within the mixlist rather than
-    // against each field's theoretical range.
+    // Loudness is ~always <= 0dB, so a taller bar means "louder"; other
+    // fields floor at 0 and ceiling at the max value present in this mixlist.
     double domainMin;
     double domainMax;
     if (_field == AudioFeatureField.loudness) {
@@ -342,14 +330,8 @@ class _TrackBar extends StatelessWidget {
   }
 }
 
-/// A lightweight, illustrative y-axis for the bar area only (not the album
-/// art / label footer below it) -- three ticks (max, midpoint, min) plus a
-/// vertical rule, positioned to align exactly with where the bars
-/// themselves are drawn. "Illustrative" rather than exact: this chart's
-/// domain is recomputed per field/mixlist (see the domain comment in
-/// MixlistAudioFeatureChart.build), so the ticks exist to give a sense of
-/// scale and range, not to support precise readoff -- exact values are a
-/// hover away on every bar.
+/// Illustrative y-axis (max/mid/min ticks) for the bar area; not meant for
+/// precise readoff since exact values are a hover away on every bar.
 class _YAxis extends StatelessWidget {
   const _YAxis({
     required this.domainMin,
@@ -393,10 +375,7 @@ class _YAxis extends StatelessWidget {
             bottom: 0,
             child: Container(width: 1, color: axisColor),
           ),
-          // Anchored to their own edge (not centered past it) so the label
-          // text never extends outside the SizedBox's bounds -- Stack
-          // clips to its bounds by default, so a centered label at the
-          // very top/bottom would have its far side clipped off.
+          // Anchored to its own edge, not centered, so the label isn't clipped.
           Positioned(right: 0, top: 0, child: tickRow(domainMax)),
           Positioned(
             right: 0,
