@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/import/mixlist_csv_parser.dart';
+import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/data/import/mixlist_import_service.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/get_it_init.dart';

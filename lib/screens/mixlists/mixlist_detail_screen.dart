@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
-import 'package:mixlists_project/models/entities/mixlist.dart';
 import 'package:mixlists_project/models/view_models/mixlist_summary.dart';
 import 'package:mixlists_project/models/view_models/mixlist_track.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';

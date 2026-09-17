@@ -397,6 +397,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  mixlists_core:
+    dependency: "direct main"
+    description:
+      path: mixlists_core
+      ref: main
+      resolved-ref: f89c131389884c47c8d7a8a3e7fed37d53885bc8
+      url: "https://github.com/seco560/mixlists_importer.git"
+    source: git
+    version: "0.1.0"
   native_toolchain_c:
     dependency: transitive
     description:

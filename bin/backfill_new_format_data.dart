@@ -26,10 +26,8 @@
 
 import 'dart:io';
 
-import 'package:mixlists_project/data/database/schema_v3.dart';
-import 'package:mixlists_project/data/import/mixlist_csv_parser.dart';
+import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
-import 'package:mixlists_project/models/entities/song_extra_data.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -174,7 +172,7 @@ Future<void> main(List<String> args) async {
     } else {
       final title = MixlistCsvParser.titleFromFilePath(file.path);
       try {
-        await repo.importMixlistFromCsvRows(
+        await repo.ingestion.importMixlistFromCsvRows(
           title: title,
           description: '',
           rows: rows,
@@ -287,13 +285,13 @@ Future<void> _backfillIntoExistingMixlist(
         }
         summary.songsBackfilled++;
       } else {
-        final artistId = await repo.getOrCreateArtistId(
+        final artistId = await repo.ingestion.getOrCreateArtistId(
           txn,
           spotifyURI: row.albumArtistURI,
           name: row.albumArtistName,
           genres: row.genres,
         );
-        final albumId = await repo.getOrCreateAlbumId(
+        final albumId = await repo.ingestion.getOrCreateAlbumId(
           txn,
           spotifyURI: row.albumURI,
           name: row.albumName,
@@ -306,7 +304,7 @@ Future<void> _backfillIntoExistingMixlist(
             (await txn.rawQuery('SELECT COUNT(*) AS c FROM Songs'))
                 .first['c']
                 as int;
-        songId = await repo.getOrCreateSongId(
+        songId = await repo.ingestion.getOrCreateSongId(
           txn,
           spotifyURI: row.trackURI,
           name: row.trackName,
@@ -343,7 +341,7 @@ Future<void> _backfillIntoExistingMixlist(
         }
       }
 
-      await repo.upsertSongAudioFeatures(txn, songId: songId, row: row);
+      await repo.ingestion.upsertSongAudioFeatures(txn, songId: songId, row: row);
 
       final smExists = await txn.query(
         'SongsMixlists',

@@ -1,7 +1,4 @@
-import 'package:mixlists_project/data/import/mixlist_csv_parser.dart';
-import 'package:mixlists_project/models/entities/artist.dart';
-import 'package:mixlists_project/models/entities/mixlist.dart';
-import 'package:mixlists_project/models/entities/song_extra_data.dart';
+import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/models/view_models/album_overview.dart';
 import 'package:mixlists_project/models/view_models/album_song_appearance.dart';
 import 'package:mixlists_project/models/view_models/album_summary.dart';
@@ -17,13 +14,16 @@ part 'mixlist_queries.dart';
 part 'artist_queries.dart';
 part 'album_queries.dart';
 part 'search_queries.dart';
-part 'mixlist_ingestion_queries.dart';
 
   /// Read-only access for now; strengthen when we implement editing DB entries
 class MusicLibraryRepository {
-  MusicLibraryRepository(this._db);
+  MusicLibraryRepository(this._db) : ingestion = MixlistIngestion(_db);
 
   final Database _db;
+
+  /// Get-or-create/dedup logic lives in `package:mixlists_core` now, shared
+  /// with the Mixlists Importer CLI -- see [MixlistIngestion].
+  final MixlistIngestion ingestion;
 
   Future<Map<int, List<MixlistSummary>>>? _duplicateSongIndexFuture;
 

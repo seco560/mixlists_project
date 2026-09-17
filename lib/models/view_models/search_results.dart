@@ -1,4 +1,5 @@
-import '../entities/mixlist.dart';
+import 'package:mixlists_core/mixlists_core.dart';
+
 import 'album_overview.dart';
 import 'artist_overview.dart';
 import 'song_search_result.dart';

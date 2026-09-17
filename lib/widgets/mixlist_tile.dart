@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/models/entities/mixlist.dart';
+import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 
 class MixlistTile extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:mixlists_project/data/import/mixlist_csv_parser.dart';
+import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 
 /// Result of the file-pick step: the parsed rows plus a pre-filled title,
@@ -51,7 +51,7 @@ class MixlistImportService {
     required String description,
     required List<MixlistCsvRow> rows,
   }) {
-    return _repository.importMixlistFromCsvRows(
+    return _repository.ingestion.importMixlistFromCsvRows(
       title: title,
       description: description,
       rows: rows,
