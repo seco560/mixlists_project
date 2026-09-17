@@ -19,9 +19,15 @@ Future<Database> openAppDatabase() async {
       : await getApplicationSupportDirectory();
   final path = join(appDirectory.path, _dbFileName);
 
-  if (!await File(path).exists()) {
-    await _copyDatabaseFromAssets(path);
-  }
+  // Method 1 - only load DB froom assets if it hasn't been copied to app files
+  // if (!await File(path).exists()) {
+  //   await _copyDatabaseFromAssets(path);
+  // }
+
+  // Method 2 - always copy DB from assets. Still in dev mode, we may modify DB
+  // directly; in final release, modifications will only be allowed from app
+  // itself and initial data ingestion will likely be done from other sources.
+  await _copyDatabaseFromAssets(path);
 
   return openDatabase(
     path,
@@ -59,7 +65,6 @@ Future<Database> openAppDatabase() async {
   );
 }
 
-
 void _initFfiIfNeeded() {
   if (Platform.isLinux) {
     sqfliteFfiInit();
@@ -70,10 +75,7 @@ void _initFfiIfNeeded() {
 Future<void> _copyDatabaseFromAssets(String destinationPath) async {
   await Directory(dirname(destinationPath)).create(recursive: true);
   final data = await rootBundle.load(_dbAssetPath);
-  final bytes = data.buffer.asUint8List(
-    data.offsetInBytes,
-    data.lengthInBytes,
-  );
+  final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   await File(destinationPath).writeAsBytes(bytes);
 }
 
