@@ -400,9 +400,11 @@ packages:
   mixlists_core:
     dependency: "direct main"
     description:
-      path: "../../Mixlists Importer/mixlists_core"
-      relative: true
-    source: path
+      path: mixlists_core
+      ref: main
+      resolved-ref: "9d7f02d560aa3b3f8b06fd6b1cba27a147e2b40b"
+      url: "https://github.com/seco560/mixlists_importer.git"
+    source: git
     version: "0.1.0"
   native_toolchain_c:
     dependency: transitive

@@ -1,4 +1,5 @@
 import 'package:mixlists_core/mixlists_core.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/data/models/album_song_appearance.dart';
 import 'package:mixlists_project/data/models/album_summary.dart';

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
@@ -9,6 +10,7 @@ import 'package:mixlists_project/data/models/artist_song_appearance.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
@@ -24,6 +26,12 @@ class ArtistDetailScreen extends StatefulWidget {
 }
 
 class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
+  /// Starts as whatever the caller passed in, then gets replaced by a
+  /// freshly-fetched, filter-scoped overview on every load -- this
+  /// screen doesn't otherwise re-query albums/mixlists independently, so
+  /// `artist.albums`/`artist.mixlists` must come from here, not
+  /// `widget.artist`, for the filter to actually affect what's shown.
+  late ArtistOverview _artist = widget.artist;
   List<ArtistSongAppearance> _songs = [];
   bool _isLoading = true;
   String? _error;
@@ -31,16 +39,34 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
   @override
   void initState() {
     super.initState();
+    getIt<MixlistFilterController>().addListener(_loadData);
     _loadData();
   }
 
+  @override
+  void dispose() {
+    getIt<MixlistFilterController>().removeListener(_loadData);
+    super.dispose();
+  }
+
   Future<void> _loadData() async {
+    final filter = getIt<MixlistFilterController>().value;
     try {
-      final songs = await getIt<MusicLibraryRepository>()
-          .getArtistSongAppearances(widget.artist.id);
+      final repository = getIt<MusicLibraryRepository>();
+      final songsFuture = repository.getArtistSongAppearances(
+        widget.artist.id,
+        filter: filter,
+      );
+      final artistFuture = repository.getArtistOverviewById(
+        widget.artist.id,
+        filter: filter,
+      );
+      final songs = await songsFuture;
+      final artist = await artistFuture;
       if (!mounted) return;
       setState(() {
         _songs = songs;
+        if (artist != null) _artist = artist;
         _isLoading = false;
       });
     } catch (e) {
@@ -102,12 +128,13 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final artist = widget.artist;
+    final artist = _artist;
     return Scaffold(
       appBar: AppBar(
         title: Text(artist.name),
         centerTitle: true,
         backgroundColor: Colors.lightBlueAccent,
+        actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

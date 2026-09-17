@@ -2,8 +2,15 @@ part of 'music_library_repository.dart';
 
 extension ArtistQueries on MusicLibraryRepository {
   /// Every artist, with their albums, every mixlist their songs appear
-  /// in, and their distinct song count across all mixlists.
-  Future<List<ArtistOverview>> getArtistOverviews() async {
+  /// in, and their distinct song count across all mixlists -- all scoped
+  /// to [filter] when it isn't [MixlistFilter.all]. Filtered, an artist
+  /// with zero qualifying appearances is dropped entirely, and an
+  /// artist's `albums` only lists albums with >=1 qualifying song.
+  Future<List<ArtistOverview>> getArtistOverviews({
+    MixlistFilter filter = MixlistFilter.all,
+  }) async {
+    final filterSql = _mixlistFilterSql(filter, 'm');
+
     final artistRows = await _db.query('Artists', orderBy: 'name ASC');
     final allArtists = artistRows.map(Artist.fromMap).toList();
 
@@ -17,14 +24,32 @@ extension ArtistQueries on MusicLibraryRepository {
       FROM Albums
       ORDER BY releaseDate ASC
     ''');
+
+    Set<int>? qualifyingAlbumIds;
+    if (filter != MixlistFilter.all) {
+      final rows = await _db.rawQuery('''
+        SELECT DISTINCT al.id AS albumId
+        FROM Albums al
+        JOIN Songs s ON s.album = al.id
+        JOIN SongsMixlists sm ON sm.song = s.id
+        JOIN Mixlists m ON m.id = sm.mixlist
+        WHERE 1=1 $filterSql
+      ''');
+      qualifyingAlbumIds = {for (final row in rows) row['albumId'] as int};
+    }
+
     final albumsByArtist = <int, List<AlbumSummary>>{};
     for (final row in albumRows) {
+      final albumId = row['albumId'] as int;
+      if (qualifyingAlbumIds != null && !qualifyingAlbumIds.contains(albumId)) {
+        continue;
+      }
       final artistId = row['artistId'] as int;
       albumsByArtist
           .putIfAbsent(artistId, () => [])
           .add(
             AlbumSummary(
-              id: row['albumId'] as int,
+              id: albumId,
               name: row['albumName'] as String,
               releaseDate: row['releaseDate'] as String,
               coverImageURL: row['coverImageURL'] as String?,
@@ -42,6 +67,7 @@ extension ArtistQueries on MusicLibraryRepository {
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
       JOIN Mixlists m ON m.id = sm.mixlist
+      WHERE 1=1 $filterSql
       ORDER BY m.dateCreated ASC
     ''');
     final mixlistsByArtist = <int, List<MixlistSummary>>{};
@@ -66,6 +92,8 @@ extension ArtistQueries on MusicLibraryRepository {
       FROM SongsMixlists sm
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
+      JOIN Mixlists m ON m.id = sm.mixlist
+      WHERE 1=1 $filterSql
       GROUP BY al.artist
     ''');
     final songCountByArtist = <int, int>{
@@ -77,7 +105,11 @@ extension ArtistQueries on MusicLibraryRepository {
         row['artistId'] as int: row['appearanceCount'] as int,
     };
 
-    return allArtists
+    final artistsToShow = filter == MixlistFilter.all
+        ? allArtists
+        : allArtists.where((a) => (songCountByArtist[a.id] ?? 0) > 0).toList();
+
+    return artistsToShow
         .map(
           (artist) => ArtistOverview(
             id: artist.id,
@@ -93,10 +125,14 @@ extension ArtistQueries on MusicLibraryRepository {
 
   /// Every song of [artistId]'s featured in a mixlist, each with every
   /// mixlist it appears in, ordered by `SongsMixlists.dateAdded` (per-song
-  /// add date, not the mixlist's creation date).
+  /// add date, not the mixlist's creation date). Scoped to [filter]: a
+  /// song with no qualifying appearance is dropped entirely (an inner
+  /// join through `Mixlists`/`SongsMixlists` naturally excludes it).
   Future<List<ArtistSongAppearance>> getArtistSongAppearances(
-    int artistId,
-  ) async {
+    int artistId, {
+    MixlistFilter filter = MixlistFilter.all,
+  }) async {
+    final filterSql = _mixlistFilterSql(filter, 'm');
     final rows = await _db.rawQuery(
       '''
       SELECT DISTINCT
@@ -112,7 +148,7 @@ extension ArtistQueries on MusicLibraryRepository {
       JOIN Albums al ON al.id = s.album
       JOIN SongsMixlists sm ON sm.song = s.id
       JOIN Mixlists m ON m.id = sm.mixlist
-      WHERE al.artist = ?
+      WHERE al.artist = ? $filterSql
       ORDER BY sm.dateAdded ASC
     ''',
       [artistId],
@@ -148,7 +184,14 @@ extension ArtistQueries on MusicLibraryRepository {
 
   /// A single artist in the same shape [getArtistOverviews] returns, via
   /// scoped queries so this stays cheap regardless of library size.
-  Future<ArtistOverview?> getArtistOverviewById(int artistId) async {
+  /// Always returns the artist (if it exists) even under a [filter] that
+  /// excludes all of its appearances -- filtering thins what's *inside*
+  /// the overview, it doesn't make an already-selected artist disappear.
+  Future<ArtistOverview?> getArtistOverviewById(
+    int artistId, {
+    MixlistFilter filter = MixlistFilter.all,
+  }) async {
+    final filterSql = _mixlistFilterSql(filter, 'm');
     final artistRows = await _db.query(
       'Artists',
       where: 'id = ?',
@@ -167,14 +210,33 @@ extension ArtistQueries on MusicLibraryRepository {
     ''',
       [artistId],
     );
+
+    Set<int>? qualifyingAlbumIds;
+    if (filter != MixlistFilter.all) {
+      final rows = await _db.rawQuery(
+        '''
+        SELECT DISTINCT al.id AS albumId
+        FROM Albums al
+        JOIN Songs s ON s.album = al.id
+        JOIN SongsMixlists sm ON sm.song = s.id
+        JOIN Mixlists m ON m.id = sm.mixlist
+        WHERE al.artist = ? $filterSql
+      ''',
+        [artistId],
+      );
+      qualifyingAlbumIds = {for (final row in rows) row['albumId'] as int};
+    }
+
     final albums = [
       for (final row in albumRows)
-        AlbumSummary(
-          id: row['albumId'] as int,
-          name: row['albumName'] as String,
-          releaseDate: row['releaseDate'] as String,
-          coverImageURL: row['coverImageURL'] as String?,
-        ),
+        if (qualifyingAlbumIds == null ||
+            qualifyingAlbumIds.contains(row['albumId'] as int))
+          AlbumSummary(
+            id: row['albumId'] as int,
+            name: row['albumName'] as String,
+            releaseDate: row['releaseDate'] as String,
+            coverImageURL: row['coverImageURL'] as String?,
+          ),
     ];
 
     final mixlistRows = await _db.rawQuery(
@@ -187,7 +249,7 @@ extension ArtistQueries on MusicLibraryRepository {
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
       JOIN Mixlists m ON m.id = sm.mixlist
-      WHERE al.artist = ?
+      WHERE al.artist = ? $filterSql
       ORDER BY m.dateCreated ASC
     ''',
       [artistId],
@@ -207,7 +269,8 @@ extension ArtistQueries on MusicLibraryRepository {
       FROM SongsMixlists sm
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
-      WHERE al.artist = ?
+      JOIN Mixlists m ON m.id = sm.mixlist
+      WHERE al.artist = ? $filterSql
     ''',
       [artistId],
     );
@@ -224,6 +287,8 @@ extension ArtistQueries on MusicLibraryRepository {
 
   /// Scoped counterpart of [getArtistOverviews] restricted to a known set
   /// of artists via `WHERE artist IN (...)`. Used by `SearchQueries`.
+  /// Not mixlist-filter-aware -- search results aren't one of the
+  /// filtered screens.
   Future<List<ArtistOverview>> _artistOverviewsFor(
     List<Artist> matched,
   ) async {

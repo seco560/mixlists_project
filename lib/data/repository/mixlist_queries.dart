@@ -1,13 +1,36 @@
 part of 'music_library_repository.dart';
 
+/// A SQL fragment (`AND $alias.is_mixlists = 0/1`, or empty for
+/// [MixlistFilter.all]) to append to a `WHERE`/`ON` clause that already
+/// joins in a `Mixlists` row aliased as [alias]. The three states are a
+/// fixed, closed set (not user input), so interpolating the literal
+/// 0/1 directly is fine -- no injection surface.
+String _mixlistFilterSql(MixlistFilter filter, String alias) {
+  switch (filter) {
+    case MixlistFilter.all:
+      return '';
+    case MixlistFilter.mixlistsOnly:
+      return 'AND $alias.is_mixlists = 1';
+    case MixlistFilter.nonMixlistsOnly:
+      return 'AND $alias.is_mixlists = 0';
+  }
+}
+
 extension MixlistQueries on MusicLibraryRepository {
   /// Every mixlist, oldest-created first. `id` order is chronological
   /// order here (mixlists are never deleted, so ids never leave gaps) --
   /// `dateCreated` is not reliable for this, since it's backfilled from
   /// CSV track data and can drift (e.g. a track re-added to a playlist
   /// after Spotify dropped it). Was `MixlistDao.getAll()`.
-  Future<List<Mixlist>> getAllMixlists() async {
-    final rows = await _db.query('Mixlists', orderBy: 'id ASC');
+  Future<List<Mixlist>> getAllMixlists({
+    MixlistFilter filter = MixlistFilter.all,
+  }) async {
+    final where = switch (filter) {
+      MixlistFilter.all => null,
+      MixlistFilter.mixlistsOnly => 'is_mixlists = 1',
+      MixlistFilter.nonMixlistsOnly => 'is_mixlists = 0',
+    };
+    final rows = await _db.query('Mixlists', where: where, orderBy: 'id ASC');
     return rows.map(Mixlist.fromMap).toList();
   }
   Future<Mixlist?> getMixlistById(int id) async {
@@ -21,14 +44,44 @@ extension MixlistQueries on MusicLibraryRepository {
     return Mixlist.fromMap(rows.first);
   }
 
-  /// The mixlists immediately before/after [mixlist] by id -- see
-  /// `getAllMixlists` for why id order is used as chronological order.
+  /// The nearest mixlists before/after [mixlist] by id that also match
+  /// [filter] -- see `getAllMixlists` for why id order is chronological
+  /// order. [MixlistDetailScreen] doesn't show the filter toggle itself;
+  /// it inherits whatever the global filter was when navigated into, so
+  /// prev/next only ever step within that same filtered set (e.g.
+  /// browsing "mixlists only", next/previous skip over anything marked
+  /// as not a mixlist rather than landing on it). With
+  /// [MixlistFilter.all] this is equivalent to the old `id - 1`/`id + 1`
+  /// lookup, since ids never have gaps.
   Future<(Mixlist? previous, Mixlist? next)> getAdjacentMixlists(
-    Mixlist mixlist,
-  ) async {
-    final previous = await getMixlistById(mixlist.id - 1);
-    final next = await getMixlistById(mixlist.id + 1);
-    return (previous, next);
+    Mixlist mixlist, {
+    MixlistFilter filter = MixlistFilter.all,
+  }) async {
+    final filterWhere = switch (filter) {
+      MixlistFilter.all => null,
+      MixlistFilter.mixlistsOnly => 'is_mixlists = 1',
+      MixlistFilter.nonMixlistsOnly => 'is_mixlists = 0',
+    };
+
+    final previousRows = await _db.query(
+      'Mixlists',
+      where: filterWhere == null ? 'id < ?' : '(id < ?) AND ($filterWhere)',
+      whereArgs: [mixlist.id],
+      orderBy: 'id DESC',
+      limit: 1,
+    );
+    final nextRows = await _db.query(
+      'Mixlists',
+      where: filterWhere == null ? 'id > ?' : '(id > ?) AND ($filterWhere)',
+      whereArgs: [mixlist.id],
+      orderBy: 'id ASC',
+      limit: 1,
+    );
+
+    return (
+      previousRows.isEmpty ? null : Mixlist.fromMap(previousRows.first),
+      nextRows.isEmpty ? null : Mixlist.fromMap(nextRows.first),
+    );
   }
 
   /// Sets `is_mixlists` for every mixlist id in [flags] to the given

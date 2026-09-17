@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/mixlist_summary.dart';
@@ -84,7 +85,14 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     try {
       final tracksFuture = repository.getTracksForMixlist(widget.mixlist.id);
       final duplicateIndexFuture = repository.duplicateSongIndex;
-      final adjacentFuture = repository.getAdjacentMixlists(widget.mixlist);
+      // Deliberately not reactive to filter changes -- this screen has
+      // no toggle of its own, so it just inherits whatever the global
+      // filter was at the moment it was navigated into (read once here,
+      // not re-read if the filter changes on a screen underneath).
+      final adjacentFuture = repository.getAdjacentMixlists(
+        widget.mixlist,
+        filter: getIt<MixlistFilterController>().value,
+      );
       final tracks = await tracksFuture;
       final duplicateIndex = await duplicateIndexFuture;
       final adjacent = await adjacentFuture;

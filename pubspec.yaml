@@ -32,12 +32,6 @@ dev_dependencies:
 
   flutter_lints: ^6.0.0
 
-# TEMPORARY, remove before committing: iterating on mixlists_core locally
-# without needing a push-per-edit round trip to the git dependency above.
-dependency_overrides:
-  mixlists_core:
-    path: ../../Mixlists Importer/mixlists_core
-
 flutter:
 
   uses-material-design: true

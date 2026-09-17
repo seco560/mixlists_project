@@ -2,15 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/database/app_database.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/screens/home/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   final database = await openAppDatabase();
   getIt.registerSingleton<MusicLibraryRepository>(MusicLibraryRepository(database));
+  getIt.registerSingleton<MixlistFilterController>(MixlistFilterController());
   unawaited(getIt<MusicLibraryRepository>().duplicateSongIndex);
 
   runApp(const MixlistsMain());

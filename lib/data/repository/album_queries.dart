@@ -1,9 +1,24 @@
 part of 'music_library_repository.dart';
 
 extension AlbumQueries on MusicLibraryRepository {
-  Future<List<AlbumOverview>> getAlbumOverviews() async {
+  /// Every album, scoped to [filter] when it isn't [MixlistFilter.all]:
+  /// an album with zero songs appearing in a qualifying mixlist is
+  /// dropped entirely. `DISTINCT` because filtering joins through
+  /// Songs/SongsMixlists, which would otherwise multiply an album's row
+  /// once per qualifying song.
+  Future<List<AlbumOverview>> getAlbumOverviews({
+    MixlistFilter filter = MixlistFilter.all,
+  }) async {
+    final filterSql = _mixlistFilterSql(filter, 'm');
+    final extraJoins = filter == MixlistFilter.all
+        ? ''
+        : '''
+          JOIN Songs s ON s.album = al.id
+          JOIN SongsMixlists sm ON sm.song = s.id
+          JOIN Mixlists m ON m.id = sm.mixlist
+          ''';
     final rows = await _db.rawQuery('''
-      SELECT
+      SELECT DISTINCT
         al.id            AS id,
         al.name          AS name,
         al.releaseDate   AS releaseDate,
@@ -12,6 +27,8 @@ extension AlbumQueries on MusicLibraryRepository {
         ar.name          AS artistName
       FROM Albums al
       JOIN Artists ar ON ar.id = al.artist
+      $extraJoins
+      WHERE 1=1 $filterSql
       ORDER BY ar.name ASC, al.releaseDate ASC
     ''');
 
@@ -39,9 +56,13 @@ extension AlbumQueries on MusicLibraryRepository {
     return AlbumOverview.fromMap(rows.first);
   }
 
+  /// Scoped to [filter]: a song with no qualifying appearance is dropped
+  /// entirely (the inner join through Mixlists naturally excludes it).
   Future<List<AlbumSongAppearance>> getAlbumSongAppearances(
-    int albumId,
-  ) async {
+    int albumId, {
+    MixlistFilter filter = MixlistFilter.all,
+  }) async {
+    final filterSql = _mixlistFilterSql(filter, 'm');
     final rows = await _db.rawQuery(
       '''
       SELECT
@@ -56,7 +77,7 @@ extension AlbumQueries on MusicLibraryRepository {
       LEFT JOIN SongsExtraData se ON se.song = s.id
       JOIN SongsMixlists sm ON sm.song = s.id
       JOIN Mixlists m ON m.id = sm.mixlist
-      WHERE s.album = ?
+      WHERE s.album = ? $filterSql
       ORDER BY se.albumTrackNumber ASC, s.id ASC, sm.dateAdded ASC
     ''',
       [albumId],

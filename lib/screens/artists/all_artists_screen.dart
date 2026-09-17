@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
+import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 
 /// Hardcoded bespoke grid; not extensible enough to reuse for another
 /// grid, reimplement the general shape as a new widget instead.
@@ -74,12 +76,14 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
   void initState() {
     super.initState();
     _bodyHorizontalController.addListener(_syncHeaderScroll);
+    getIt<MixlistFilterController>().addListener(_loadData);
     _loadData();
   }
 
   @override
   void dispose() {
     _bodyHorizontalController.removeListener(_syncHeaderScroll);
+    getIt<MixlistFilterController>().removeListener(_loadData);
     _headerHorizontalController.dispose();
     _bodyHorizontalController.dispose();
     super.dispose();
@@ -94,7 +98,9 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final result = await getIt<MusicLibraryRepository>().getArtistOverviews();
+      final result = await getIt<MusicLibraryRepository>().getArtistOverviews(
+        filter: getIt<MixlistFilterController>().value,
+      );
       _sortArtists(result, _sortColumnIndex, _sortAscending);
 
       setState(() {
@@ -183,6 +189,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
         title: Text("All Artists"),
         centerTitle: true,
         backgroundColor: Colors.lightBlueAccent,
+        actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/screens/albums/album_grid_tile.dart';
+import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 
 class AllAlbumsScreen extends StatefulWidget {
   const AllAlbumsScreen({super.key});
@@ -21,13 +23,22 @@ class _AllAlbumsScreenState extends State<AllAlbumsScreen> {
   @override
   void initState() {
     super.initState();
+    getIt<MixlistFilterController>().addListener(_loadData);
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    getIt<MixlistFilterController>().removeListener(_loadData);
+    super.dispose();
   }
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final result = await getIt<MusicLibraryRepository>().getAlbumOverviews();
+      final result = await getIt<MusicLibraryRepository>().getAlbumOverviews(
+        filter: getIt<MixlistFilterController>().value,
+      );
       setState(() {
         _albums = result;
         _isLoading = false;
@@ -55,6 +66,7 @@ class _AllAlbumsScreenState extends State<AllAlbumsScreen> {
         title: Text("All Albums"),
         centerTitle: true,
         backgroundColor: Colors.lightBlueAccent,
+        actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

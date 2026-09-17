@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
@@ -7,6 +8,7 @@ import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
@@ -28,13 +30,22 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
   @override
   void initState() {
     super.initState();
+    getIt<MixlistFilterController>().addListener(_loadData);
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    getIt<MixlistFilterController>().removeListener(_loadData);
+    super.dispose();
   }
 
   Future<void> _loadData() async {
     try {
-      final songs = await getIt<MusicLibraryRepository>()
-          .getAlbumSongAppearances(widget.album.id);
+      final songs = await getIt<MusicLibraryRepository>().getAlbumSongAppearances(
+        widget.album.id,
+        filter: getIt<MixlistFilterController>().value,
+      );
       if (!mounted) return;
       setState(() {
         _songs = songs;
@@ -84,6 +95,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
         title: Text(album.name),
         centerTitle: true,
         backgroundColor: Colors.lightBlueAccent,
+        actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

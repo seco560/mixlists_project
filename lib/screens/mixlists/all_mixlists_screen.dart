@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
+import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/mixlist_tile.dart';
 
 class AllMixlistsScreen extends StatefulWidget {
@@ -20,13 +23,29 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
   @override
   void initState() {
     super.initState();
+    getIt<MixlistFilterController>().addListener(_loadData);
     _loadData();
   }
+
+  @override
+  void dispose() {
+    getIt<MixlistFilterController>().removeListener(_loadData);
+    super.dispose();
+  }
+
+  /// While marking, always show every playlist regardless of the global
+  /// filter -- otherwise a currently-unmarked (or currently-marked)
+  /// playlist filtered out of view couldn't be toggled at all.
+  MixlistFilter get _effectiveFilter => _isMarkingMode
+      ? MixlistFilter.all
+      : getIt<MixlistFilterController>().value;
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final result = await getIt<MusicLibraryRepository>().getAllMixlists();
+      final result = await getIt<MusicLibraryRepository>().getAllMixlists(
+        filter: _effectiveFilter,
+      );
 
       setState(() {
         _mixlists = result;
@@ -47,7 +66,12 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
   void _startMarking() {
     setState(() {
       _isMarkingMode = true;
-      _markedIds = _mixlists.where((m) => m.isMixlist).map((m) => m.id).toSet();
+    });
+    _loadData().then((_) {
+      if (!mounted) return;
+      setState(() {
+        _markedIds = _mixlists.where((m) => m.isMixlist).map((m) => m.id).toSet();
+      });
     });
   }
 
@@ -56,6 +80,7 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
       _isMarkingMode = false;
       _markedIds = {};
     });
+    _loadData();
   }
 
   void _toggleMarked(int id) {
@@ -76,12 +101,14 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final showingAll = _effectiveFilter == MixlistFilter.all;
     return Scaffold(
       appBar: AppBar(
         title: Text("All Mixlists"),
         centerTitle: true,
         backgroundColor: Colors.lightBlueAccent,
         actions: [
+          if (!_isMarkingMode) const MixlistFilterToggle(),
           IconButton(
             icon: Icon(_isMarkingMode ? Icons.close : Icons.playlist_add_check),
             tooltip: _isMarkingMode ? 'Cancel marking' : 'Mark Mixlists',
@@ -100,6 +127,7 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
                 final mixlist = _mixlists[index];
                 return MixlistTile(
                   mixlist: mixlist,
+                  displayNumber: showingAll ? mixlist.id : index + 1,
                   isMarking: _isMarkingMode,
                   isMarked: _markedIds.contains(mixlist.id),
                   onToggleMarked: _toggleMarked,

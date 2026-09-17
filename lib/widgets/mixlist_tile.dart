@@ -4,17 +4,23 @@ import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 
 class MixlistTile extends StatelessWidget {
   final Mixlist mixlist;
+
+  /// What to show before the title -- the real `mixlist.id` when
+  /// browsing unfiltered, or a simple ascending position when a filter
+  /// is narrowing the list (display-only; `mixlist.id` is never changed).
+  final int displayNumber;
   final bool isMarking;
   final bool isMarked;
   final ValueChanged<int>? onToggleMarked;
 
-  const MixlistTile({
+  MixlistTile({
     super.key,
     required this.mixlist,
+    int? displayNumber,
     this.isMarking = false,
     this.isMarked = false,
     this.onToggleMarked,
-  });
+  }) : displayNumber = displayNumber ?? mixlist.id;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +31,7 @@ class MixlistTile extends StatelessWidget {
               onChanged: (_) => onToggleMarked?.call(mixlist.id),
             )
           : null,
-      title: Text("${mixlist.id}) ${mixlist.title}", style: TextStyle(fontSize: 20, fontWeight: .bold)),
+      title: Text("$displayNumber) ${mixlist.title}", style: TextStyle(fontSize: 20, fontWeight: .bold)),
       subtitle: Text(mixlist.dateCreated.split('T')[0], style: TextStyle(fontSize: 16, fontWeight: .w600)),
       onTap: isMarking
           ? () => onToggleMarked?.call(mixlist.id)

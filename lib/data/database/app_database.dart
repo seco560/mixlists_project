@@ -19,12 +19,7 @@ Future<Database> openAppDatabase() async {
       : await getApplicationSupportDirectory();
   final path = join(appDirectory.path, _dbFileName);
 
-  // Copy-once-if-missing: the app now writes data of its own (e.g. the
-  // "Mark Mixlists" feature) that must survive a restart, which an
-  // always-copy-from-assets policy would silently wipe. To pick up a
-  // fresh bundled db during development, delete the app-support copy
-  // (see db_asset_sync_workflow project notes) rather than relying on
-  // every launch re-copying it.
+  // Copy-once-if-missing - old assets load flow fallback
   if (!await File(path).exists()) {
     await _copyDatabaseFromAssets(path);
   }
