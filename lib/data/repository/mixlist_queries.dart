@@ -1,9 +1,13 @@
 part of 'music_library_repository.dart';
 
 extension MixlistQueries on MusicLibraryRepository {
-  /// Every mixlist, oldest-created first. Was `MixlistDao.getAll()`.
+  /// Every mixlist, oldest-created first. `id` order is chronological
+  /// order here (mixlists are never deleted, so ids never leave gaps) --
+  /// `dateCreated` is not reliable for this, since it's backfilled from
+  /// CSV track data and can drift (e.g. a track re-added to a playlist
+  /// after Spotify dropped it). Was `MixlistDao.getAll()`.
   Future<List<Mixlist>> getAllMixlists() async {
-    final rows = await _db.query('Mixlists', orderBy: 'dateCreated ASC');
+    final rows = await _db.query('Mixlists', orderBy: 'id ASC');
     return rows.map(Mixlist.fromMap).toList();
   }
   Future<Mixlist?> getMixlistById(int id) async {
@@ -15,6 +19,16 @@ extension MixlistQueries on MusicLibraryRepository {
     );
     if (rows.isEmpty) return null;
     return Mixlist.fromMap(rows.first);
+  }
+
+  /// The mixlists immediately before/after [mixlist] by id -- see
+  /// `getAllMixlists` for why id order is used as chronological order.
+  Future<(Mixlist? previous, Mixlist? next)> getAdjacentMixlists(
+    Mixlist mixlist,
+  ) async {
+    final previous = await getMixlistById(mixlist.id - 1);
+    final next = await getMixlistById(mixlist.id + 1);
+    return (previous, next);
   }
 
   /// All tracks in [mixlistId], in playback order, with the album name

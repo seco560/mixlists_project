@@ -130,7 +130,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                       title: '${song.albumTrackNumber ?? '?'}) ${song.songName}',
                       leadingImageUrl: album.coverImageURL,
                       subtitle: Text(
-                        'On ${song.mixlists.length} mixlist${song.mixlists.length == 1 ? '' : 's'}',
+                        'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',
                         style: subtitleTextStyle,
                       ),
                       mixlists: song.mixlists,

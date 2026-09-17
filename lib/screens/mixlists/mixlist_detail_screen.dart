@@ -33,6 +33,8 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   List<MixlistTrack> _tracks = [];
   Map<int, List<MixlistSummary>> _duplicateSongIndex = {};
   Map<int, GlobalKey> _trackKeys = {};
+  Mixlist? _previousMixlist;
+  Mixlist? _nextMixlist;
   bool _isLoading = true;
   String? _error;
   final ScrollController _scrollController = ScrollController();
@@ -82,13 +84,17 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     try {
       final tracksFuture = repository.getTracksForMixlist(widget.mixlist.id);
       final duplicateIndexFuture = repository.duplicateSongIndex;
+      final adjacentFuture = repository.getAdjacentMixlists(widget.mixlist);
       final tracks = await tracksFuture;
       final duplicateIndex = await duplicateIndexFuture;
+      final adjacent = await adjacentFuture;
       if (!mounted) return;
       setState(() {
         _tracks = tracks;
         _duplicateSongIndex = duplicateIndex;
         _trackKeys = {for (final t in tracks) t.position: GlobalKey()};
+        _previousMixlist = adjacent.$1;
+        _nextMixlist = adjacent.$2;
         _isLoading = false;
       });
       unawaited(_scrollToHighlightedTrack());
@@ -143,6 +149,15 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     );
   }
 
+  void _goToMixlist(Mixlist mixlist) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MixlistDetailScreen(mixlist: mixlist),
+      ),
+    );
+  }
+
   Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
     final fullMixlistData = await getIt<MusicLibraryRepository>().getMixlistById(mixlistId);
     if (!mounted || fullMixlistData == null) return;
@@ -186,6 +201,75 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     );
   }
 
+  Widget _buildMixlistNavButton({
+    required IconData icon,
+    required String label,
+    required Mixlist? mixlist,
+    required bool alignEnd,
+  }) {
+    final children = [
+      Icon(icon),
+      const SizedBox(width: 8),
+      Flexible(
+        child: Column(
+          crossAxisAlignment: alignEnd
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(label, style: const TextStyle(fontSize: 12)),
+            Text(
+              mixlist?.title ?? '—',
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            if (mixlist != null)
+              Text(
+                mixlist.dateCreated.split('T')[0],
+                style: const TextStyle(fontSize: 12),
+              ),
+          ],
+        ),
+      ),
+    ];
+    return Expanded(
+      child: InkWell(
+        onTap: mixlist == null ? null : () => _goToMixlist(mixlist),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Opacity(
+            opacity: mixlist == null ? 0.4 : 1,
+            child: Row(
+              mainAxisAlignment: alignEnd
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
+              children: alignEnd ? children.reversed.toList() : children,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMixlistNavigationPane() {
+    return Row(
+      children: [
+        _buildMixlistNavButton(
+          icon: Icons.arrow_back,
+          label: 'Previous mixlist',
+          mixlist: _previousMixlist,
+          alignEnd: false,
+        ),
+        _buildMixlistNavButton(
+          icon: Icons.arrow_forward,
+          label: 'Next mixlist',
+          mixlist: _nextMixlist,
+          alignEnd: true,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -203,6 +287,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
               controller: _scrollController,
               children:
                   [
+                    _buildMixlistNavigationPane(),
                     Divider(color: Colors.blueGrey),
                     for (var i = 0; i < _tracks.length; i++) ...[
                       _buildTrackTile(_tracks[i]),
@@ -217,7 +302,9 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
                     Divider(color: Colors.blueGrey),
                     SectionHeader('Audio Features'),
                     MixlistAudioFeatureChart(tracks: _tracks),
-                    const SizedBox(height: 40),
+                    Divider(color: Colors.blueGrey),
+                    _buildMixlistNavigationPane(),
+                    const SizedBox(height: 16),
                   ],
             ),
     );

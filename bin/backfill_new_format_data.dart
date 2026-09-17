@@ -21,6 +21,9 @@
 // of assets/database/mixlists.db to sanity-check the printed summary
 // before pointing it at the real file.
 
+// Print statements are the only output this script has.
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:mixlists_project/data/database/schema_v3.dart';
