@@ -31,6 +31,21 @@ extension MixlistQueries on MusicLibraryRepository {
     return (previous, next);
   }
 
+  /// Sets `is_mixlists` for every mixlist id in [flags] to the given
+  /// value -- the write path for the "Mark Mixlists" screen.
+  Future<void> setMixlistFlags(Map<int, bool> flags) async {
+    final batch = _db.batch();
+    for (final entry in flags.entries) {
+      batch.update(
+        'Mixlists',
+        {'is_mixlists': entry.value ? 1 : 0},
+        where: 'id = ?',
+        whereArgs: [entry.key],
+      );
+    }
+    await batch.commit(noResult: true);
+  }
+
   /// All tracks in [mixlistId], in playback order, with the album name
   /// / cover art and duration / explicit / popularity fields a track
   /// list or "now playing" screen needs -- fetched with one JOIN

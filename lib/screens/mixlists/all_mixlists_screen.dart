@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
-import 'package:mixlists_project/screens/mixlists/add_mixlist_screen.dart';
 import 'package:mixlists_project/widgets/mixlist_tile.dart';
 
 class AllMixlistsScreen extends StatefulWidget {
@@ -15,6 +14,8 @@ class AllMixlistsScreen extends StatefulWidget {
 class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
   List<Mixlist> _mixlists = [];
   bool _isLoading = false;
+  bool _isMarkingMode = false;
+  Set<int> _markedIds = {};
 
   @override
   void initState() {
@@ -43,14 +44,34 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
     }
   }
 
-  Future<void> _openAddMixlistScreen() async {
-    final imported = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(builder: (context) => const AddMixlistScreen()),
-    );
-    if (imported == true) {
-      await _loadData();
-    }
+  void _startMarking() {
+    setState(() {
+      _isMarkingMode = true;
+      _markedIds = _mixlists.where((m) => m.isMixlist).map((m) => m.id).toSet();
+    });
+  }
+
+  void _cancelMarking() {
+    setState(() {
+      _isMarkingMode = false;
+      _markedIds = {};
+    });
+  }
+
+  void _toggleMarked(int id) {
+    setState(() {
+      if (!_markedIds.add(id)) _markedIds.remove(id);
+    });
+  }
+
+  Future<void> _finishMarking() async {
+    final flags = {for (final m in _mixlists) m.id: _markedIds.contains(m.id)};
+    await getIt<MusicLibraryRepository>().setMixlistFlags(flags);
+    setState(() {
+      _isMarkingMode = false;
+      _markedIds = {};
+    });
+    await _loadData();
   }
 
   @override
@@ -62,9 +83,9 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
         backgroundColor: Colors.lightBlueAccent,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: 'Add New Mixlist',
-            onPressed: _openAddMixlistScreen,
+            icon: Icon(_isMarkingMode ? Icons.close : Icons.playlist_add_check),
+            tooltip: _isMarkingMode ? 'Cancel marking' : 'Mark Mixlists',
+            onPressed: _isMarkingMode ? _cancelMarking : _startMarking,
           ),
         ],
       ),
@@ -75,9 +96,23 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
           : ListView.separated(
               separatorBuilder: (_, _) => Divider(color: Colors.blueGrey),
               itemCount: _mixlists.length,
-              itemBuilder: (context, index) =>
-                  MixlistTile(mixlist: _mixlists[index]),
+              itemBuilder: (context, index) {
+                final mixlist = _mixlists[index];
+                return MixlistTile(
+                  mixlist: mixlist,
+                  isMarking: _isMarkingMode,
+                  isMarked: _markedIds.contains(mixlist.id),
+                  onToggleMarked: _toggleMarked,
+                );
+              },
             ),
+      floatingActionButton: _isMarkingMode
+          ? FloatingActionButton.extended(
+              onPressed: _finishMarking,
+              icon: const Icon(Icons.check),
+              label: const Text('Done'),
+            )
+          : null,
     );
   }
 }

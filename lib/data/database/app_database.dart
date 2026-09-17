@@ -9,7 +9,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 const String _dbAssetPath = 'assets/database/mixlists.db';
 const String _dbFileName = 'mixlists.db';
 
-const int _dbVersion = 4;
+const int _dbVersion = 5;
 
 Future<Database> openAppDatabase() async {
   _initFfiIfNeeded();
@@ -19,15 +19,15 @@ Future<Database> openAppDatabase() async {
       : await getApplicationSupportDirectory();
   final path = join(appDirectory.path, _dbFileName);
 
-  // Method 1 - only load DB from assets if it hasn't been copied to app files
-  // if (!await File(path).exists()) {
-  //   await _copyDatabaseFromAssets(path);
-  // }
-
-  // Method 2 - always copy DB from assets. Still in dev mode, we may modify DB
-  // directly; in final release, modifications will only be allowed from app
-  // itself and initial data ingestion will likely be done from other sources.
-  await _copyDatabaseFromAssets(path);
+  // Copy-once-if-missing: the app now writes data of its own (e.g. the
+  // "Mark Mixlists" feature) that must survive a restart, which an
+  // always-copy-from-assets policy would silently wipe. To pick up a
+  // fresh bundled db during development, delete the app-support copy
+  // (see db_asset_sync_workflow project notes) rather than relying on
+  // every launch re-copying it.
+  if (!await File(path).exists()) {
+    await _copyDatabaseFromAssets(path);
+  }
 
   return openDatabase(
     path,
@@ -39,6 +39,7 @@ Future<Database> openAppDatabase() async {
         await createSchemaV2(db);
         await applySchemaV3(db);
         await applySchemaV4(db);
+        await applySchemaV5(db);
       }
     },
     onUpgrade: (db, oldVersion, newVersion) async {
@@ -50,6 +51,9 @@ Future<Database> openAppDatabase() async {
       }
       if (oldVersion < 4) {
         await applySchemaV4(db);
+      }
+      if (oldVersion < 5) {
+        await applySchemaV5(db);
       }
     },
   );
