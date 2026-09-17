@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
-import 'package:mixlists_project/models/view_models/album_overview.dart';
-import 'package:mixlists_project/models/view_models/album_song_appearance.dart';
+import 'package:mixlists_project/data/models/album_overview.dart';
+import 'package:mixlists_project/data/models/album_song_appearance.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
@@ -62,7 +62,8 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
   }
 
   Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
-    final fullMixlistData = await getIt<MusicLibraryRepository>().getMixlistById(mixlistId);
+    final fullMixlistData = await getIt<MusicLibraryRepository>()
+        .getMixlistById(mixlistId);
     if (!mounted || fullMixlistData == null) return;
     Navigator.push(
       context,
@@ -127,7 +128,8 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                   for (final song in _songs)
                     SongMixlistTile(
                       songId: song.songId,
-                      title: '${song.albumTrackNumber ?? '?'}) ${song.songName}',
+                      title:
+                          '${song.albumTrackNumber ?? '?'}) ${song.songName}',
                       leadingImageUrl: album.coverImageURL,
                       subtitle: Text(
                         'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',

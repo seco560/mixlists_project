@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/models/view_models/artist_overview.dart';
+import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 class ArtistResultTile extends StatelessWidget {
-  const ArtistResultTile({super.key, required this.artist, required this.onTap});
+  const ArtistResultTile({
+    super.key,
+    required this.artist,
+    required this.onTap,
+  });
 
   final ArtistOverview artist;
   final VoidCallback onTap;

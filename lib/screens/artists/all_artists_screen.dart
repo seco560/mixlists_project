@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
-import 'package:mixlists_project/models/view_models/artist_overview.dart';
+import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
 

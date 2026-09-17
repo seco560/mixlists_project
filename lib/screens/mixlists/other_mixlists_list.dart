@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/models/view_models/mixlist_summary.dart';
+import 'package:mixlists_project/data/models/mixlist_summary.dart';
 
 class OtherMixlistsList extends StatelessWidget {
-  const OtherMixlistsList({super.key, required this.mixlists, required this.onTap});
+  const OtherMixlistsList({
+    super.key,
+    required this.mixlists,
+    required this.onTap,
+  });
 
   final List<MixlistSummary> mixlists;
   final ValueChanged<int> onTap;

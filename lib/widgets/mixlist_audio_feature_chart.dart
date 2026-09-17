@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/models/view_models/mixlist_track.dart';
+import 'package:mixlists_project/data/models/mixlist_track.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 

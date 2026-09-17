@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
-import 'package:mixlists_project/models/view_models/album_overview.dart';
-import 'package:mixlists_project/models/view_models/artist_overview.dart';
-import 'package:mixlists_project/models/view_models/search_results.dart';
+import 'package:mixlists_project/data/models/album_overview.dart';
+import 'package:mixlists_project/data/models/artist_overview.dart';
+import 'package:mixlists_project/data/models/search_results.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
@@ -54,7 +54,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   }
 
   Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
-    final fullMixlistData = await getIt<MusicLibraryRepository>().getMixlistById(mixlistId);
+    final fullMixlistData = await getIt<MusicLibraryRepository>()
+        .getMixlistById(mixlistId);
     if (!mounted || fullMixlistData == null) return;
     Navigator.push(
       context,
@@ -70,7 +71,9 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   void _openArtist(ArtistOverview artist) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ArtistDetailScreen(artist: artist)),
+      MaterialPageRoute(
+        builder: (context) => ArtistDetailScreen(artist: artist),
+      ),
     );
   }
 

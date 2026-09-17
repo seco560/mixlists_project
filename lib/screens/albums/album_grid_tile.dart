@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/models/view_models/album_overview.dart';
+import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 
@@ -19,7 +19,7 @@ class AlbumGridTile extends StatelessWidget {
   const AlbumGridTile({super.key, required this.album});
 
   final AlbumOverview album;
-  
+
   static const double width = 200;
   static const double _textAreaHeight = 66;
   static const double height = width + _textAreaHeight;

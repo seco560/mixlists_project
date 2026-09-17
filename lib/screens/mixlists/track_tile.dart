@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
-import 'package:mixlists_project/models/view_models/mixlist_summary.dart';
-import 'package:mixlists_project/models/view_models/mixlist_track.dart';
+import 'package:mixlists_project/data/models/mixlist_summary.dart';
+import 'package:mixlists_project/data/models/mixlist_track.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
@@ -118,8 +118,9 @@ class _TrackTileState extends State<TrackTile> with TickerProviderStateMixin {
   }
 
   Future<void> _openAlbum(int albumId) async {
-    final overview = await getIt<MusicLibraryRepository>()
-        .getAlbumOverviewById(albumId);
+    final overview = await getIt<MusicLibraryRepository>().getAlbumOverviewById(
+      albumId,
+    );
     if (!mounted || overview == null) return;
     Navigator.push(
       context,

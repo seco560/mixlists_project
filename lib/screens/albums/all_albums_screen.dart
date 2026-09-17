@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
-import 'package:mixlists_project/models/view_models/album_overview.dart';
+import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/screens/albums/album_grid_tile.dart';
 
 class AllAlbumsScreen extends StatefulWidget {
@@ -74,13 +74,12 @@ class _AllAlbumsScreenState extends State<AllAlbumsScreen> {
                     child: SizedBox(
                       width: gridWidth,
                       child: GridView.builder(
-                        gridDelegate:
-                            SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: columns,
-                              mainAxisSpacing: _tileSpacing,
-                              crossAxisSpacing: _tileSpacing,
-                              mainAxisExtent: AlbumGridTile.height,
-                            ),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columns,
+                          mainAxisSpacing: _tileSpacing,
+                          crossAxisSpacing: _tileSpacing,
+                          mainAxisExtent: AlbumGridTile.height,
+                        ),
                         itemCount: _albums.length,
                         itemBuilder: (context, index) =>
                             AlbumGridTile(album: _albums[index]),

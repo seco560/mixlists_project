@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/models/view_models/mixlist_summary.dart';
+import 'package:mixlists_project/data/models/mixlist_summary.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
@@ -103,9 +103,7 @@ class _SongMixlistTileState extends State<SongMixlistTile>
                               overflow: .ellipsis,
                             ),
                             Text(
-                              (mixlists.first.dateCreated ?? '').split(
-                                'T',
-                              )[0],
+                              (mixlists.first.dateCreated ?? '').split('T')[0],
                               style: metaTextStyle,
                               textAlign: .right,
                             ),
