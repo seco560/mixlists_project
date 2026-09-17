@@ -46,13 +46,26 @@ class MixlistAudioFeatureChart extends StatefulWidget {
 class _MixlistAudioFeatureChartState extends State<MixlistAudioFeatureChart> {
   AudioFeatureField _field = AudioFeatureField.danceability;
   _SortMode _sortMode = _SortMode.trackOrder;
+  final _scrollController = ScrollController();
 
   static const _barWidth = 28.0;
   static const _maxBarHeight = 120.0;
-  // Must be >= _TrackBar's actual footer height (art + label), since the
-  // chart's fixed height and y-axis alignment both assume it fits here.
+  // Must be >= _TrackBar's actual footer height (art + label) plus
+  // _scrollbarClearance, since the chart's fixed height and y-axis
+  // alignment both assume it fits here.
   static const _footerHeight = 56.0;
+  // Extra slack below the footer so the horizontal Scrollbar's track
+  // doesn't render on top of the position-index text -- SingleChildScrollView
+  // leaves unused cross-axis space below its (unstretched) child, so this
+  // just needs to be taller than the chart actually requires.
+  static const _scrollbarClearance = 14.0;
   static const _artSize = 24.0;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   double? _valueFor(MixlistTrack track) {
     switch (_field) {
@@ -165,7 +178,7 @@ class _MixlistAudioFeatureChartState extends State<MixlistAudioFeatureChart> {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: _maxBarHeight + _footerHeight,
+          height: _maxBarHeight + _footerHeight + _scrollbarClearance,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -180,7 +193,9 @@ class _MixlistAudioFeatureChartState extends State<MixlistAudioFeatureChart> {
               ),
               Expanded(
                 child: Scrollbar(
+                  controller: _scrollController,
                   child: SingleChildScrollView(
+                    controller: _scrollController,
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.only(right: 16),
                     child: Row(
@@ -275,6 +290,11 @@ class _TrackBar extends StatelessWidget {
   final double artSize;
   final String Function(double) formatValue;
 
+  static const _positionTextStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+  );
+
   @override
   Widget build(BuildContext context) {
     final v = value;
@@ -323,7 +343,7 @@ class _TrackBar extends StatelessWidget {
             borderRadius: 3,
           ),
           const SizedBox(height: 2),
-          Text('${track.position}', style: metaTextStyle),
+          Text('${track.position}', style: _positionTextStyle),
         ],
       ),
     );

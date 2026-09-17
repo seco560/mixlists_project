@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/database/app_database.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
@@ -18,6 +19,15 @@ void main() async {
   runApp(const MixlistsMain());
 }
 
+/// Enable click-and-drag for mouse based interfaces
+class _AppScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    ...super.dragDevices,
+    PointerDeviceKind.mouse,
+  };
+}
+
 class MixlistsMain extends StatelessWidget {
   const MixlistsMain({super.key});
 
@@ -27,6 +37,7 @@ class MixlistsMain extends StatelessWidget {
       title: 'The Mixlists Project',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepOrange)),
       debugShowCheckedModeBanner: false,
+      scrollBehavior: _AppScrollBehavior(),
       home: HomeScreen(),
     );
   }
