@@ -4,6 +4,8 @@ import 'package:mixlists_project/screens/artists/all_artists_screen.dart';
 import 'package:mixlists_project/screens/home/home_nav_card.dart';
 import 'package:mixlists_project/screens/home/search_field.dart';
 import 'package:mixlists_project/screens/mixlists/all_mixlists_screen.dart';
+import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/text_styles.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -28,6 +30,15 @@ class HomeScreen extends StatelessWidget {
                       fontWeight: .bold,
                       color: Colors.blueGrey,
                     ),
+                  ),
+                  const SizedBox(height: 24),
+                  const MixlistFilterToggle(),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Show all playlists, only ones marked as mixlists, or '
+                    'only the ones that aren\'t.',
+                    textAlign: .center,
+                    style: metaTextStyle,
                   ),
                   const SizedBox(height: 24),
                   const SearchField(),

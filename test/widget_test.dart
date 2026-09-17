@@ -7,9 +7,22 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/main.dart';
 
 void main() {
+  setUp(() {
+    // Normally done by main() -- HomeScreen's MixlistFilterToggle needs
+    // this registered, and this test pumps MixlistsMain directly rather
+    // than going through main().
+    getIt.registerSingleton<MixlistFilterController>(MixlistFilterController());
+  });
+
+  tearDown(() {
+    getIt.reset();
+  });
+
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MixlistsMain());

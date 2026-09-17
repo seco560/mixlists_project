@@ -36,6 +36,10 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   Map<int, GlobalKey> _trackKeys = {};
   Mixlist? _previousMixlist;
   Mixlist? _nextMixlist;
+
+  /// Shown in the AppBar title in place of the raw id -- starts as the id
+  /// itself so the title has *something* before the position query resolves
+  late int _displayNumber = widget.mixlist.id;
   bool _isLoading = true;
   String? _error;
   final ScrollController _scrollController = ScrollController();
@@ -59,14 +63,17 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   }
 
   /// Tracks bucketed by the calendar year prefix of `Albums.releaseDate`
-  /// (handles both a bare "2013" and a full "2017-08-25").
   Map<int, List<AlbumArtHistogramEntry>> _releaseYearEntries() {
     final entries = <int, List<AlbumArtHistogramEntry>>{};
+    final seenAlbumIdsByYear = <int, Set<int>>{};
     for (final track in _tracks) {
       final releaseDate = track.albumReleaseDate;
       if (releaseDate.length < 4) continue;
       final year = int.tryParse(releaseDate.substring(0, 4));
       if (year == null) continue;
+      if (!(seenAlbumIdsByYear.putIfAbsent(year, () => {}).add(track.albumId))) {
+        continue;
+      }
       entries
           .putIfAbsent(year, () => [])
           .add(
@@ -85,24 +92,29 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     try {
       final tracksFuture = repository.getTracksForMixlist(widget.mixlist.id);
       final duplicateIndexFuture = repository.duplicateSongIndex;
-      // Deliberately not reactive to filter changes -- this screen has
-      // no toggle of its own, so it just inherits whatever the global
-      // filter was at the moment it was navigated into (read once here,
-      // not re-read if the filter changes on a screen underneath).
+      final filter = getIt<MixlistFilterController>().value;
       final adjacentFuture = repository.getAdjacentMixlists(
         widget.mixlist,
-        filter: getIt<MixlistFilterController>().value,
+        filter: filter,
       );
+      final positionFuture = repository.getMixlistPosition(
+        widget.mixlist.id,
+        filter: filter,
+      );
+
       final tracks = await tracksFuture;
       final duplicateIndex = await duplicateIndexFuture;
       final adjacent = await adjacentFuture;
+      final position = await positionFuture;
       if (!mounted) return;
+
       setState(() {
         _tracks = tracks;
         _duplicateSongIndex = duplicateIndex;
         _trackKeys = {for (final t in tracks) t.position: GlobalKey()};
         _previousMixlist = adjacent.$1;
         _nextMixlist = adjacent.$2;
+        _displayNumber = position;
         _isLoading = false;
       });
       unawaited(_scrollToHighlightedTrack());
@@ -285,7 +297,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "${widget.mixlist.id}) ${widget.mixlist.title} | ${widget.mixlist.dateCreated.split('T')[0]}",
+          "$_displayNumber) ${widget.mixlist.title} | ${widget.mixlist.dateCreated.split('T')[0]}",
         ),
         centerTitle: true,
       ),

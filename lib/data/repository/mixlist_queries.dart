@@ -84,6 +84,32 @@ extension MixlistQueries on MusicLibraryRepository {
     );
   }
 
+  /// The 1-based position of [mixlistId] within the id-ordered list under
+  /// [filter] -- the same number `AllMixlistsScreen` would show as this
+  /// mixlist's display number under that filter. Computed straight from
+  /// `(mixlistId, filter)` rather than passed in from wherever the
+  /// caller navigated from, since [MixlistDetailScreen] is reachable
+  /// from many places (the list itself, prev/next, a track's "other
+  /// mixlists" link) and a self-contained query stays correct regardless
+  /// of entry point instead of needing every call site to thread an
+  /// index through.
+  Future<int> getMixlistPosition(
+    int mixlistId, {
+    MixlistFilter filter = MixlistFilter.all,
+  }) async {
+    final filterWhere = switch (filter) {
+      MixlistFilter.all => null,
+      MixlistFilter.mixlistsOnly => 'is_mixlists = 1',
+      MixlistFilter.nonMixlistsOnly => 'is_mixlists = 0',
+    };
+    final where = filterWhere == null ? 'id <= ?' : '(id <= ?) AND ($filterWhere)';
+    final rows = await _db.rawQuery(
+      'SELECT COUNT(*) AS position FROM Mixlists WHERE $where',
+      [mixlistId],
+    );
+    return rows.first['position'] as int;
+  }
+
   /// Sets `is_mixlists` for every mixlist id in [flags] to the given
   /// value -- the write path for the "Mark Mixlists" screen.
   Future<void> setMixlistFlags(Map<int, bool> flags) async {
