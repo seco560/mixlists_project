@@ -4,6 +4,7 @@ import 'package:mixlists_project/screens/artists/all_artists_screen.dart';
 import 'package:mixlists_project/screens/home/home_nav_card.dart';
 import 'package:mixlists_project/screens/home/search_field.dart';
 import 'package:mixlists_project/screens/mixlists/all_mixlists_screen.dart';
+import 'package:mixlists_project/screens/songs/all_songs_screen.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
@@ -77,6 +78,19 @@ class HomeScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => AllAlbumsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  HomeNavCard(
+                    icon: Icons.music_note,
+                    label: 'Songs',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AllSongsScreen(),
                         ),
                       );
                     },

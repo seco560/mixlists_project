@@ -2,36 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
-import 'package:mixlists_project/data/models/artist_overview.dart';
-import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
-import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
+import 'package:mixlists_project/data/models/song_overview.dart';
+import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
+import 'package:mixlists_project/screens/songs/song_table_cell.dart';
+import 'package:mixlists_project/screens/songs/song_table_row.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 
-/// Hardcoded bespoke grid; not extensible enough to reuse for another
-/// grid, reimplement the general shape as a new widget instead.
-class AllArtistsScreen extends StatefulWidget {
-  const AllArtistsScreen({super.key});
+/// Hardcoded bespoke grid mirroring [AllArtistsScreen]; see that class's
+/// doc comment for why this is duplicated rather than shared.
+class AllSongsScreen extends StatefulWidget {
+  const AllSongsScreen({super.key});
 
   @override
-  State<AllArtistsScreen> createState() => _AllArtistsScreenState();
+  State<AllSongsScreen> createState() => _AllSongsScreenState();
 }
 
-class _AllArtistsScreenState extends State<AllArtistsScreen> {
-  static const _columnLabels = [
-    '#',
-    'Name',
-    'Appearances',
-    'Songs',
-    'Albums',
-    'Mixlists',
-  ];
-  static const _fixedColumnWidths = [60.0, 90.0, 100.0, 90.0, 80.0];
+class _AllSongsScreenState extends State<AllSongsScreen> {
+  static const _columnLabels = ['#', 'Name', 'Artist', 'Album', 'Appearances'];
+  static const _fixedColumnWidths = [60.0, 160.0, 160.0, 110.0];
   static const _minNameWidth = 220.0;
-  static const _columnIsNumeric = [true, false, true, true, true, true];
-  static const _columnIsSortable = [false, true, true, true, true, true];
+  static const _columnIsNumeric = [true, false, false, false, true];
+  static const _columnIsSortable = [false, true, true, true, true];
   static const _nameColumnIndex = 1;
-  static const _appearancesColumnIndex = 2;
-  static const _smallHeaderFontLabels = {'Appearances', 'Mixlists'};
+  static const _smallHeaderFontLabels = {'Appearances'};
 
   static const _headerTextStyle = TextStyle(
     fontSize: 14,
@@ -54,18 +47,17 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
     return [_fixedColumnWidths[0], nameWidth, ..._fixedColumnWidths.skip(1)];
   }
 
-  List<ArtistOverview> _artists = [];
+  List<SongOverview> _songs = [];
   bool _isLoading = false;
-  int _sortColumnIndex = _appearancesColumnIndex;
-  bool _sortAscending = false;
+  int _sortColumnIndex = _nameColumnIndex;
+  bool _sortAscending = true;
   bool _oneHitWondersExpanded = false;
 
   final _headerHorizontalController = ScrollController();
   final _bodyHorizontalController = ScrollController();
 
-  /// If an artist features only once, show them underneath
-  static bool _isOneHitWonder(ArtistOverview artist) =>
-      artist.uniqueSongCount == 1;
+  /// If a song features only once, show it underneath
+  static bool _isOneHitWonder(SongOverview song) => song.appearanceCount == 1;
 
   @override
   void initState() {
@@ -93,13 +85,13 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final result = await getIt<MusicLibraryRepository>().getArtistOverviews(
+      final result = await getIt<MusicLibraryRepository>().getSongOverviews(
         filter: getIt<MixlistFilterController>().value,
       );
-      _sortArtists(result, _sortColumnIndex, _sortAscending);
+      _sortSongs(result, _sortColumnIndex, _sortAscending);
 
       setState(() {
-        _artists = result;
+        _songs = result;
         _isLoading = false;
       });
     } catch (e) {
@@ -107,50 +99,43 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error loading artists: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error loading songs: $e')));
       }
     }
   }
 
-  void _sortArtists(
-    List<ArtistOverview> artists,
-    int columnIndex,
-    bool ascending,
-  ) {
+  void _sortSongs(List<SongOverview> songs, int columnIndex, bool ascending) {
     switch (columnIndex) {
       case 1: // Name
-        artists.sort(
+        songs.sort(
           (a, b) => ascending
               ? a.name.toLowerCase().compareTo(b.name.toLowerCase())
               : b.name.toLowerCase().compareTo(a.name.toLowerCase()),
         );
         break;
-      case 2: // Appearances
-        artists.sort(
+      case 2: // Artist
+        songs.sort(
+          (a, b) => ascending
+              ? a.artistNames.toLowerCase().compareTo(
+                  b.artistNames.toLowerCase(),
+                )
+              : b.artistNames.toLowerCase().compareTo(
+                  a.artistNames.toLowerCase(),
+                ),
+        );
+        break;
+      case 3: // Album
+        songs.sort(
+          (a, b) => ascending
+              ? a.albumName.toLowerCase().compareTo(b.albumName.toLowerCase())
+              : b.albumName.toLowerCase().compareTo(a.albumName.toLowerCase()),
+        );
+        break;
+      case 4: // Appearances
+        songs.sort(
           (a, b) => ascending
               ? a.appearanceCount.compareTo(b.appearanceCount)
               : b.appearanceCount.compareTo(a.appearanceCount),
-        );
-        break;
-      case 3: // Songs
-        artists.sort(
-          (a, b) => ascending
-              ? a.uniqueSongCount.compareTo(b.uniqueSongCount)
-              : b.uniqueSongCount.compareTo(a.uniqueSongCount),
-        );
-        break;
-      case 4: // Albums
-        artists.sort(
-          (a, b) => ascending
-              ? a.albums.length.compareTo(b.albums.length)
-              : b.albums.length.compareTo(a.albums.length),
-        );
-        break;
-      case 5: // Mixlists
-        artists.sort(
-          (a, b) => ascending
-              ? a.mixlists.length.compareTo(b.mixlists.length)
-              : b.mixlists.length.compareTo(a.mixlists.length),
         );
         break;
     }
@@ -165,25 +150,40 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
         _sortColumnIndex = columnIndex;
         _sortAscending = columnIndex == _nameColumnIndex;
       }
-      _sortArtists(_artists, _sortColumnIndex, _sortAscending);
+      _sortSongs(_songs, _sortColumnIndex, _sortAscending);
     });
+  }
+
+  Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
+    final fullMixlistData = await getIt<MusicLibraryRepository>()
+        .getMixlistById(mixlistId);
+    if (!mounted || fullMixlistData == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MixlistDetailScreen(
+          mixlist: fullMixlistData,
+          highlightSongId: highlightSongId,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final oneHitWonders = _artists.where(_isOneHitWonder).toList();
-    final regularArtists = _artists.where((a) => !_isOneHitWonder(a)).toList();
+    final oneHitWonders = _songs.where(_isOneHitWonder).toList();
+    final regularSongs = _songs.where((s) => !_isOneHitWonder(s)).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("All Artists"),
+        title: Text("All Songs"),
         centerTitle: true,
         backgroundColor: Colors.lightBlueAccent,
         actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _artists.isEmpty
+          : _songs.isEmpty
           ? const Center(child: Text("No data found"))
           : LayoutBuilder(
               builder: (context, constraints) {
@@ -206,8 +206,14 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                           scrollDirection: Axis.horizontal,
                           child: Column(
                             children: [
-                              for (var i = 0; i < regularArtists.length; i++)
-                                _buildRow(regularArtists[i], widths, i + 1),
+                              for (var i = 0; i < regularSongs.length; i++)
+                                SongTableRow(
+                                  key: ValueKey(regularSongs[i].id),
+                                  song: regularSongs[i],
+                                  widths: widths,
+                                  rowNumber: i + 1,
+                                  onOpenMixlist: _openMixlist,
+                                ),
                               if (oneHitWonders.isNotEmpty)
                                 _buildOneHitWondersRow(
                                   oneHitWonders.length,
@@ -215,10 +221,12 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                                 ),
                               if (_oneHitWondersExpanded)
                                 for (var i = 0; i < oneHitWonders.length; i++)
-                                  _buildRow(
-                                    oneHitWonders[i],
-                                    widths,
-                                    regularArtists.length + i + 1,
+                                  SongTableRow(
+                                    key: ValueKey(oneHitWonders[i].id),
+                                    song: oneHitWonders[i],
+                                    widths: widths,
+                                    rowNumber: regularSongs.length + i + 1,
+                                    onOpenMixlist: _openMixlist,
                                   ),
                             ],
                           ),
@@ -237,7 +245,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < _columnLabels.length; i++)
-          ArtistTableHeaderCell(
+          SongTableHeaderCell(
             width: widths[i],
             label: _columnLabels[i],
             textStyle: _smallHeaderFontLabels.contains(_columnLabels[i])
@@ -263,7 +271,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ArtistTableCell(
+                SongTableCell(
                   width: widths[0],
                   numeric: _columnIsNumeric[0],
                   child: Icon(
@@ -272,7 +280,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                         : Icons.expand_more,
                   ),
                 ),
-                ArtistTableCell(
+                SongTableCell(
                   width: widths[1],
                   numeric: _columnIsNumeric[1],
                   child: Text(
@@ -284,24 +292,19 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                ArtistTableCell(
+                SongTableCell(
                   width: widths[2],
                   numeric: _columnIsNumeric[2],
-                  child: const Text('1', style: _countTextStyle),
+                  child: const Text('—', style: _countTextStyle),
                 ),
-                ArtistTableCell(
+                SongTableCell(
                   width: widths[3],
                   numeric: _columnIsNumeric[3],
-                  child: const Text('1', style: _countTextStyle),
+                  child: const Text('—', style: _countTextStyle),
                 ),
-                ArtistTableCell(
+                SongTableCell(
                   width: widths[4],
                   numeric: _columnIsNumeric[4],
-                  child: const Text('1', style: _countTextStyle),
-                ),
-                ArtistTableCell(
-                  width: widths[5],
-                  numeric: _columnIsNumeric[5],
                   child: const Text('1', style: _countTextStyle),
                 ),
               ],
@@ -309,71 +312,6 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
             const Divider(height: 1),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildRow(ArtistOverview artist, List<double> widths, int rowNumber) {
-    return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ArtistDetailScreen(artist: artist),
-        ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ArtistTableCell(
-                width: widths[0],
-                numeric: _columnIsNumeric[0],
-                child: Text('$rowNumber', style: _countTextStyle),
-              ),
-              ArtistTableCell(
-                width: widths[1],
-                numeric: _columnIsNumeric[1],
-                child: Text(
-                  artist.name,
-                  style: _nameTextStyle,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              ArtistTableCell(
-                width: widths[2],
-                numeric: _columnIsNumeric[2],
-                child: Text(
-                  '${artist.appearanceCount}',
-                  style: _countTextStyle,
-                ),
-              ),
-              ArtistTableCell(
-                width: widths[3],
-                numeric: _columnIsNumeric[3],
-                child: Text(
-                  '${artist.uniqueSongCount}',
-                  style: _countTextStyle,
-                ),
-              ),
-
-              ArtistTableCell(
-                width: widths[4],
-                numeric: _columnIsNumeric[4],
-                child: Text('${artist.albums.length}', style: _countTextStyle),
-              ),
-              ArtistTableCell(
-                width: widths[5],
-                numeric: _columnIsNumeric[5],
-                child: Text(
-                  '${artist.mixlists.length}',
-                  style: _countTextStyle,
-                ),
-              ),
-            ],
-          ),
-          const Divider(height: 1),
-        ],
       ),
     );
   }
