@@ -175,22 +175,36 @@ extension MixlistQueries on MusicLibraryRepository {
   }
 
   /// Maps a song's id to every mixlist it's on, for songs on more than
-  /// one -- absent from the map otherwise, so `containsKey` doubles as
-  /// the "is this a duplicate?" check.
-  Future<Map<int, List<MixlistSummary>>> get duplicateSongIndex {
-    return _duplicateSongIndexFuture ??= _loadDuplicateSongIndex();
+  /// one within [filter] -- absent from the map otherwise, so
+  /// `containsKey` doubles as the "is this a duplicate?" check. Cached
+  /// per [filter], since which mixlists count toward "duplicate" (and
+  /// which appearances get listed) depends on it.
+  Future<Map<int, List<MixlistSummary>>> duplicateSongIndex({
+    MixlistFilter filter = MixlistFilter.all,
+  }) {
+    return _duplicateSongIndexFutures[filter] ??= _loadDuplicateSongIndex(
+      filter,
+    );
   }
 
-  Future<Map<int, List<MixlistSummary>>> _loadDuplicateSongIndex() async {
+  Future<Map<int, List<MixlistSummary>>> _loadDuplicateSongIndex(
+    MixlistFilter filter,
+  ) async {
+    final outerFilterSql = _mixlistFilterSql(filter, 'm');
+    final innerFilterSql = _mixlistFilterSql(filter, 'm2');
     final rows = await _db.rawQuery('''
       SELECT sm.song AS songId, m.id AS mixlistId, m.title AS mixlistTitle
       FROM SongsMixlists sm
       JOIN Mixlists m ON m.id = sm.mixlist
       WHERE sm.song IN (
-        SELECT song FROM SongsMixlists
-        GROUP BY song
-        HAVING COUNT(DISTINCT mixlist) > 1
+        SELECT sm2.song
+        FROM SongsMixlists sm2
+        JOIN Mixlists m2 ON m2.id = sm2.mixlist
+        WHERE 1 = 1 $innerFilterSql
+        GROUP BY sm2.song
+        HAVING COUNT(DISTINCT sm2.mixlist) > 1
       )
+      $outerFilterSql
       ORDER BY sm.song, m.title
     ''');
 

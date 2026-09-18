@@ -91,8 +91,10 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     final repository = getIt<MusicLibraryRepository>();
     try {
       final tracksFuture = repository.getTracksForMixlist(widget.mixlist.id);
-      final duplicateIndexFuture = repository.duplicateSongIndex;
       final filter = getIt<MixlistFilterController>().value;
+      final duplicateIndexFuture = repository.duplicateSongIndex(
+        filter: filter,
+      );
       final adjacentFuture = repository.getAdjacentMixlists(
         widget.mixlist,
         filter: filter,

@@ -26,7 +26,8 @@ class MusicLibraryRepository {
   /// with the Mixlists Importer CLI -- see [MixlistIngestion].
   final MixlistIngestion ingestion;
 
-  Future<Map<int, List<MixlistSummary>>>? _duplicateSongIndexFuture;
+  final Map<MixlistFilter, Future<Map<int, List<MixlistSummary>>>>
+  _duplicateSongIndexFutures = {};
 
   Future<void> close() => _db.close();
 }

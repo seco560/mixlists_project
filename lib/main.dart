@@ -14,7 +14,11 @@ void main() async {
   final database = await openAppDatabase();
   getIt.registerSingleton<MusicLibraryRepository>(MusicLibraryRepository(database));
   getIt.registerSingleton<MixlistFilterController>(MixlistFilterController());
-  unawaited(getIt<MusicLibraryRepository>().duplicateSongIndex);
+  unawaited(
+    getIt<MusicLibraryRepository>().duplicateSongIndex(
+      filter: getIt<MixlistFilterController>().value,
+    ),
+  );
 
   runApp(const MixlistsMain());
 }
