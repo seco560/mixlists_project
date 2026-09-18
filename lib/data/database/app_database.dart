@@ -56,7 +56,8 @@ Future<Database> openAppDatabase() async {
 
 DatabaseFactory _resolveDatabaseFactory() {
   if (kIsWeb) {
-    return databaseFactoryFfiWeb;
+    // Handles performance issues on mobile web
+    return databaseFactoryFfiWebNoWebWorker;
   }
   if (Platform.isLinux) {
     sqfliteFfiInit();

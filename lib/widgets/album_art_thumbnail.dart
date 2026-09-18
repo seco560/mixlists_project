@@ -21,6 +21,9 @@ class AlbumArtThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final url = imageUrl;
+    // Cap decode for performance considerations
+    final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+    final cacheDimension = (size * devicePixelRatio).round();
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: SizedBox(
@@ -31,6 +34,8 @@ class AlbumArtThumbnail extends StatelessWidget {
             : CachedNetworkImage(
                 imageUrl: url,
                 fit: BoxFit.cover,
+                memCacheWidth: cacheDimension,
+                memCacheHeight: cacheDimension,
                 placeholder: (context, url) => _placeholder(),
                 errorWidget: (context, url, error) => Container(
                   color: Colors.grey.shade300,
