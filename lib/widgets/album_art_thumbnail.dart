@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
 import 'package:flutter/material.dart';
 
 class AlbumArtThumbnail extends StatelessWidget {
@@ -36,6 +37,11 @@ class AlbumArtThumbnail extends StatelessWidget {
                 fit: BoxFit.cover,
                 memCacheWidth: cacheDimension,
                 memCacheHeight: cacheDimension,
+                // HtmlImage (the web default) hits a Flutter 3.47 engine
+                // regression where images render black once evicted from
+                // ImageCache, e.g. after navigating back. HttpGet decodes
+                // bytes normally instead, sidestepping that path.
+                imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
                 placeholder: (context, url) => _placeholder(),
                 errorWidget: (context, url, error) => Container(
                   color: Colors.grey.shade300,

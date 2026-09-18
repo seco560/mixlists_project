@@ -7,5 +7,5 @@ import 'mixlist_filter.dart';
 /// getIt singleton; screens add/remove a listener to reload their data
 /// when it changes, and [MixlistFilterToggle] reads/writes it directly.
 class MixlistFilterController extends ValueNotifier<MixlistFilter> {
-  MixlistFilterController() : super(MixlistFilter.all);
+  MixlistFilterController() : super(MixlistFilter.mixlistsOnly);
 }

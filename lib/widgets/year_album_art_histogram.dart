@@ -16,12 +16,7 @@ class AlbumArtHistogramEntry {
 }
 
 /// Album-art counterpart to `YearHistogramChart`: each year is a block of
-/// cover art, wrapped into sub-columns of at most [_maxRowsPerColumn] so a
-/// year with lots of entries grows sideways instead of forcing a long
-/// vertical scroll. Entries fill column-major (top-to-bottom within a
-/// sub-column, then start the next sub-column to the right), preserving
-/// whatever chronological order [entriesByYear] already puts them in.
-/// Only renders years present as keys in [entriesByYear].
+/// cover art wrapped into sub-columns so a busy year grows sideways.
 class YearAlbumArtHistogram extends StatefulWidget {
   const YearAlbumArtHistogram({super.key, required this.entriesByYear});
 
@@ -30,21 +25,15 @@ class YearAlbumArtHistogram extends StatefulWidget {
   static const _maxRowsPerColumn = 6;
   static const _thumbnailSize = 48.0;
 
-  /// Uniform spacing between grid items themselves -- both the vertical
-  /// gap within a sub-column and the horizontal gap between sub-columns
-  /// of the same year, so the grid reads as one evenly-spaced unit.
+  /// Gap between items within a sub-column and between sub-columns alike.
   static const _gridItemSpacing = 6.0;
 
-  /// Total width of the vertical divider between years (and bookending
-  /// the first/last year) -- deliberately larger than [_gridItemSpacing]
-  /// so a year's sub-columns still read as one group and the divider
-  /// line itself gets breathing room on both sides.
+  /// Wider than [_gridItemSpacing] so a year's sub-columns still read as
+  /// one group, with room for the divider line itself.
   static const _yearDividerWidth = 24.0;
 
-  /// Fixed height for the year-label row (rather than however tall the
-  /// text happens to render) so the horizontal divider line has a known,
-  /// consistent distance from the bottom to sit at across every year --
-  /// see the `Positioned` divider in `_YearAlbumArtHistogramState.build`.
+  /// Fixed so the divider (see `Positioned` below) sits at a consistent
+  /// height across every year regardless of label text.
   static const _yearLabelHeight = 20.0;
   static const _labelGap = 6.0;
 
@@ -81,14 +70,11 @@ class _YearAlbumArtHistogramState extends State<YearAlbumArtHistogram> {
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-        // Stack so one continuous horizontal line can be drawn across the
-        // whole width, on top of the per-year content underneath it,
-        // rather than a separate short line per year block.
+        // Stack so one continuous divider line can be drawn across the
+        // whole width instead of a separate one per year block.
         child: Stack(
           children: [
-            // IntrinsicHeight so VerticalDivider (which otherwise wants
-            // to fill an already-bounded height) gets a real height to
-            // fill, sized to the tallest year block.
+            // Gives VerticalDivider a real (not unbounded) height to fill.
             IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -96,10 +82,8 @@ class _YearAlbumArtHistogramState extends State<YearAlbumArtHistogram> {
                   divider,
                   for (var i = 0; i < years.length; i++) ...[
                     if (i > 0) divider,
-                    // Stretched to the full (intrinsic) row height by the
-                    // Row above so the divider has something to fill --
-                    // Align keeps the block's own content bottom-aligned
-                    // within that space, same as before.
+                    // Row stretches this to full height; Align keeps the
+                    // block's own content bottom-aligned within it.
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: _YearArtBlock(
@@ -107,7 +91,8 @@ class _YearAlbumArtHistogramState extends State<YearAlbumArtHistogram> {
                         entries: entriesByYear[years[i]] ?? const [],
                         thumbnailSize: YearAlbumArtHistogram._thumbnailSize,
                         gridItemSpacing: YearAlbumArtHistogram._gridItemSpacing,
-                        maxRowsPerColumn: YearAlbumArtHistogram._maxRowsPerColumn,
+                        maxRowsPerColumn:
+                            YearAlbumArtHistogram._maxRowsPerColumn,
                       ),
                     ),
                   ],
@@ -115,14 +100,13 @@ class _YearAlbumArtHistogramState extends State<YearAlbumArtHistogram> {
                 ],
               ),
             ),
-            // Every year block is bottom-aligned and its trailing
-            // (gap + fixed-height label) section is the same height for
-            // all of them, so this sits at a consistent distance from
-            // the bottom regardless of how tall any given year's art is.
+            // Every block's trailing (gap + label) section is the same
+            // fixed height, so this divider lands at a consistent depth.
             const Positioned(
               left: 0,
               right: 0,
-              bottom: YearAlbumArtHistogram._yearLabelHeight +
+              bottom:
+                  YearAlbumArtHistogram._yearLabelHeight +
                   YearAlbumArtHistogram._labelGap / 2,
               child: Divider(height: 1, thickness: 1, color: Colors.blueGrey),
             ),
@@ -169,10 +153,7 @@ class _YearArtBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subColumns = _subColumns;
-    // IntrinsicWidth so the Divider below (which otherwise wants to fill
-    // unbounded width, since this Column sits in an Align with no width
-    // constraint of its own) gets a real width to stretch across, sized
-    // to the block's own content.
+    // Gives the Divider below a real (not unbounded) width to stretch across.
     return IntrinsicWidth(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -181,10 +162,8 @@ class _YearArtBlock extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             mainAxisSize: MainAxisSize.min,
-            // A year's last sub-column can be shorter than the others (its
-            // entry count isn't always a multiple of maxRowsPerColumn) --
-            // bottom-align so it settles to the floor like the rest,
-            // rather than floating at the top with a gap underneath.
+            // Bottom-align so a shorter last sub-column settles to the
+            // floor like the rest instead of floating with a gap under it.
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               for (var i = 0; i < subColumns.length; i++) ...[
