@@ -4,4 +4,10 @@ import 'package:flutter/material.dart';
 const titleTextStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.bold);
 const subtitleTextStyle = TextStyle(fontSize: 14, fontWeight: FontWeight.w500);
 const metaTextStyle = TextStyle(fontSize: 12);
-const compactTitleTextStyle = TextStyle(fontSize: 12, fontWeight: FontWeight.w600);
+const compactTitleTextStyle = TextStyle(
+  fontSize: 12,
+  fontWeight: FontWeight.w600,
+);
+
+/// Width below which a screen/tile should switch to its condensed layout.
+const compactLayoutBreakpoint = 560.0;

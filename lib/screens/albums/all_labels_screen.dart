@@ -11,12 +11,8 @@ import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
-/// Every distinct record label, derived from
-/// [MusicLibraryRepository.getAlbumOverviews] rather than a dedicated
-/// query -- it's already filter-scoped and carries each album's label,
-/// so grouping happens in Dart. Albums with no label are listed
-/// individually, collapsed at the bottom, the same pattern
-/// [AllArtistsScreen]/[AllSongsScreen] use for one-hit wonders.
+/// Every distinct record label, grouped in Dart from [MusicLibraryRepository.getAlbumOverviews].
+/// Albums with no label are collapsed at the bottom, one-hit-wonder style.
 class AllLabelsScreen extends StatefulWidget {
   const AllLabelsScreen({super.key});
 
@@ -103,10 +99,7 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
     );
   }
 
-  /// [_labels] sorted per [_sortOrder] -- computed on demand rather than
-  /// stored, since re-sorting doesn't need a reload, just a rebuild.
-  /// [_labels] itself stays alphabetical, the natural order to sort
-  /// from either way.
+  /// [_labels] sorted per [_sortOrder] -- computed on demand, not stored.
   List<String> get _sortedLabels {
     if (_sortOrder == CategorySortOrder.alphabetical) return _labels;
     final labels = List.of(_labels);

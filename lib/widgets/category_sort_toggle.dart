@@ -10,11 +10,8 @@ enum CategorySortOrder {
   alphabetical,
 }
 
-/// Two-state segmented toggle between [CategorySortOrder]s -- drop into
-/// an AppBar's `actions` next to [MixlistFilterToggle]. Unlike that
-/// toggle, this one is screen-local state (each browse-by-category
-/// screen controls its own list ordering), so it's a plain controlled
-/// widget rather than reading a shared getIt controller.
+/// Two-state segmented toggle between [CategorySortOrder]s -- screen-local
+/// state, unlike [MixlistFilterToggle], so it's a plain controlled widget.
 class CategorySortToggle extends StatelessWidget {
   const CategorySortToggle({
     super.key,

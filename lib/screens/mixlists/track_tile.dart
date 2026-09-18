@@ -10,6 +10,7 @@ import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/explicit_badge.dart';
 import 'package:mixlists_project/widgets/quick_style_page_route.dart';
+import 'package:mixlists_project/widgets/text_styles.dart';
 
 class TrackTile extends StatefulWidget {
   const TrackTile({
@@ -145,127 +146,212 @@ class _TrackTileState extends State<TrackTile> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildTitle(MixlistTrack track, {required bool isCompact}) {
+    return Row(
+      mainAxisSize: .min,
+      children: [
+        Flexible(
+          child: Text(
+            "${track.position}) ${track.songName}",
+            style: TextStyle(fontSize: isCompact ? 15 : 18, fontWeight: .bold),
+            overflow: .ellipsis,
+          ),
+        ),
+        if (track.isExplicit == true) ...[
+          const SizedBox(width: 6),
+          const ExplicitBadge(),
+        ],
+      ],
+    );
+  }
+
+  /// Desktop/wide layout -- unchanged from before mobile/web made
+  /// condensing necessary.
+  Widget _buildWideTile(MixlistTrack track, bool hasDuplicates) {
+    return ListTile(
+      title: _buildTitle(track, isCompact: false),
+      subtitle: Wrap(
+        crossAxisAlignment: .center,
+        children: [
+          HoverableLink(
+            text: track.artistNames,
+            onTap: () => _openArtist(track.artistId),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4),
+            child: Text('•', style: TextStyle(fontSize: 14, fontWeight: .w500)),
+          ),
+          HoverableLink(
+            text: track.albumName,
+            onTap: () => _openAlbum(track.albumId),
+          ),
+        ],
+      ),
+      trailing: Row(
+        mainAxisSize: .min,
+        children: [
+          if (hasDuplicates)
+            Padding(
+              padding: .only(right: 8.0),
+              child: ActionChip(
+                avatar: const Icon(Icons.repeat, size: 16),
+                label: Text('${widget.otherMixlists.length}'),
+                onPressed: _toggleExpanded,
+              ),
+            ),
+          Text(
+            widget.durationLabel,
+            style: TextStyle(fontSize: 20, fontWeight: .bold),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Column(
+              mainAxisAlignment: .center,
+              children: [
+                Text(
+                  widget.track.dateAdded.split("T")[0],
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    color:
+                        widget.mixlistCreationDate ==
+                            widget.track.dateAdded.split("T")[0]
+                        ? Colors.green.shade400
+                        : Colors.blue.shade700,
+                  ),
+                ),
+                Text(
+                  widget.track.dateAdded.split("T")[1].split("Z")[0],
+                  style: TextStyle(fontSize: 12.0),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      leading: AlbumArtThumbnail(
+        imageUrl: track.albumCoverImageURL,
+        size: 50,
+        borderRadius: 0,
+      ),
+    );
+  }
+
+  /// Condensed mobile layout -- fixed-height single-line title/subtitle,
+  /// duplicate-mixlist badge moved onto the album art instead of trailing.
+  Widget _buildCompactTile(MixlistTrack track, bool hasDuplicates) {
+    final art = AlbumArtThumbnail(
+      imageUrl: track.albumCoverImageURL,
+      size: 44,
+      borderRadius: 4,
+    );
+    return ListTile(
+      leading: hasDuplicates
+          ? GestureDetector(
+              onTap: _toggleExpanded,
+              child: Badge(
+                label: Text('${widget.otherMixlists.length}'),
+                child: art,
+              ),
+            )
+          : art,
+      title: _buildTitle(track, isCompact: true),
+      subtitle: Row(
+        children: [
+          Flexible(
+            child: HoverableLink(
+              text: track.artistNames,
+              onTap: () => _openArtist(track.artistId),
+              overflow: .ellipsis,
+              maxLines: 1,
+            ),
+          ),
+          const Text(' • ', style: TextStyle(fontSize: 12)),
+          Flexible(
+            child: HoverableLink(
+              text: track.albumName,
+              onTap: () => _openAlbum(track.albumId),
+              overflow: .ellipsis,
+              maxLines: 1,
+            ),
+          ),
+        ],
+      ),
+      trailing: Column(
+        mainAxisSize: .min,
+        crossAxisAlignment: .end,
+        children: [
+          Text(
+            widget.durationLabel,
+            style: TextStyle(fontSize: 15, fontWeight: .bold),
+          ),
+          Text(
+            widget.track.dateAdded.split("T")[0],
+            style: TextStyle(
+              fontSize: 11.0,
+              color:
+                  widget.mixlistCreationDate ==
+                      widget.track.dateAdded.split("T")[0]
+                  ? Colors.green.shade400
+                  : Colors.blue.shade700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOtherMixlistsPanel(
+    MixlistTrack track, {
+    required bool isCompact,
+  }) {
+    return Align(
+      alignment: .topRight,
+      child: SizeTransition(
+        sizeFactor: _revealAnimation,
+        alignment: .bottomLeft,
+        child: ScaleTransition(
+          scale: _popAnimation,
+          alignment: .topRight,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Align(
+              alignment: isCompact ? .centerLeft : .centerRight,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: isCompact ? 280 : 330),
+                child: OtherMixlistsList(
+                  mixlists: widget.otherMixlists,
+                  onTap: (mixlistId) =>
+                      widget.onOtherMixlistTap(mixlistId, track.songId),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final track = widget.track;
     final hasDuplicates = widget.otherMixlists.isNotEmpty;
 
-    return Column(
-      crossAxisAlignment: .start,
-      children: [
-        _wrapWithHighlight(
-          ListTile(
-            title: Row(
-              mainAxisSize: .min,
-              children: [
-                Flexible(
-                  child: Text(
-                    "${track.position}) ${track.songName}",
-                    style: TextStyle(fontSize: 18, fontWeight: .bold),
-                    overflow: .ellipsis,
-                  ),
-                ),
-                if (track.isExplicit == true) ...[
-                  const SizedBox(width: 6),
-                  const ExplicitBadge(),
-                ],
-              ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < compactLayoutBreakpoint;
+        return Column(
+          crossAxisAlignment: .start,
+          children: [
+            _wrapWithHighlight(
+              isCompact
+                  ? _buildCompactTile(track, hasDuplicates)
+                  : _buildWideTile(track, hasDuplicates),
             ),
-            subtitle: Wrap(
-              crossAxisAlignment: .center,
-              children: [
-                HoverableLink(
-                  text: track.artistNames,
-                  onTap: () => _openArtist(track.artistId),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4),
-                  child: Text(
-                    '•',
-                    style: TextStyle(fontSize: 14, fontWeight: .w500),
-                  ),
-                ),
-                HoverableLink(
-                  text: track.albumName,
-                  onTap: () => _openAlbum(track.albumId),
-                ),
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: .min,
-              children: [
-                if (hasDuplicates)
-                  Padding(
-                    padding: .only(right: 8.0),
-                    child: ActionChip(
-                      avatar: const Icon(Icons.repeat, size: 16),
-                      label: Text('${widget.otherMixlists.length}'),
-                      onPressed: _toggleExpanded,
-                    ),
-                  ),
-                Text(
-                  widget.durationLabel,
-                  style: TextStyle(fontSize: 20, fontWeight: .bold),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: Column(
-                    mainAxisAlignment: .center,
-                    children: [
-                      Text(
-                        widget.track.dateAdded.split("T")[0],
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          color:
-                              widget.mixlistCreationDate ==
-                                  widget.track.dateAdded.split("T")[0]
-                              ? Colors.green.shade400
-                              : Colors.blue.shade700,
-                        ),
-                      ),
-                      Text(
-                        widget.track.dateAdded.split("T")[1].split("Z")[0],
-                        style: TextStyle(fontSize: 12.0),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            leading: AlbumArtThumbnail(
-              imageUrl: track.albumCoverImageURL,
-              size: 50,
-              borderRadius: 0,
-            ),
-          ),
-        ),
-        if (hasDuplicates)
-          Align(
-            alignment: .topRight,
-            child: SizeTransition(
-              sizeFactor: _revealAnimation,
-              alignment: .bottomLeft,
-              child: ScaleTransition(
-                scale: _popAnimation,
-                alignment: .topRight,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Align(
-                    alignment: .centerRight,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 330),
-                      child: OtherMixlistsList(
-                        mixlists: widget.otherMixlists,
-                        onTap: (mixlistId) =>
-                            widget.onOtherMixlistTap(mixlistId, track.songId),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-      ],
+            if (hasDuplicates)
+              _buildOtherMixlistsPanel(track, isCompact: isCompact),
+          ],
+        );
+      },
     );
   }
 }

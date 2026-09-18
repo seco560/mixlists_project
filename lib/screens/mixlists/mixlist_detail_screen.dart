@@ -72,7 +72,9 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
       if (releaseDate.length < 4) continue;
       final year = int.tryParse(releaseDate.substring(0, 4));
       if (year == null) continue;
-      if (!(seenAlbumIdsByYear.putIfAbsent(year, () => {}).add(track.albumId))) {
+      if (!(seenAlbumIdsByYear
+          .putIfAbsent(year, () => {})
+          .add(track.albumId))) {
         continue;
       }
       entries
@@ -307,6 +309,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
       appBar: AppBar(
         title: Text(
           "$_displayNumber) ${widget.mixlist.title} | ${widget.mixlist.dateCreated.split('T')[0]}",
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
       ),

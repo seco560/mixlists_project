@@ -11,12 +11,8 @@ import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
-/// Every distinct genre, derived from [MusicLibraryRepository.getArtistOverviews]
-/// rather than a dedicated query -- it's already filter-scoped and
-/// carries each artist's genres, so grouping happens in Dart. Artists
-/// with no genre are listed individually, collapsed at the bottom, the
-/// same pattern [AllArtistsScreen]/[AllSongsScreen] use for one-hit
-/// wonders.
+/// Every distinct genre, grouped in Dart from [MusicLibraryRepository.getArtistOverviews].
+/// Artists with no genre are collapsed at the bottom, one-hit-wonder style.
 class AllGenresScreen extends StatefulWidget {
   const AllGenresScreen({super.key});
 
@@ -104,10 +100,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     );
   }
 
-  /// [_genres] sorted per [_sortOrder] -- computed on demand rather than
-  /// stored, since re-sorting doesn't need a reload, just a rebuild.
-  /// [_genres] itself stays alphabetical, the natural order to sort
-  /// from either way.
+  /// [_genres] sorted per [_sortOrder] -- computed on demand, not stored.
   List<String> get _sortedGenres {
     if (_sortOrder == CategorySortOrder.alphabetical) return _genres;
     final genres = List.of(_genres);
