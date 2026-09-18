@@ -25,6 +25,7 @@ dependencies:
       url: https://github.com/seco560/mixlists_importer.git
       path: mixlists_core
       ref: main
+  sqflite_common_ffi_web: ^1.2.0
 
 dev_dependencies:
   flutter_test:
