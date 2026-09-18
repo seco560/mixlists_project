@@ -7,6 +7,7 @@ import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/screens/songs/song_table_cell.dart';
 import 'package:mixlists_project/screens/songs/song_table_row.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 /// Hardcoded bespoke grid mirroring [AllArtistsScreen]; see that class's
 /// doc comment for why this is duplicated rather than shared.
@@ -160,7 +161,7 @@ class _AllSongsScreenState extends State<AllSongsScreen> {
     if (!mounted || fullMixlistData == null) return;
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => MixlistDetailScreen(
           mixlist: fullMixlistData,
           highlightSongId: highlightSongId,

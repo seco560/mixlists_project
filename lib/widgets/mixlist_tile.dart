@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 class MixlistTile extends StatelessWidget {
   final Mixlist mixlist;
@@ -38,7 +39,7 @@ class MixlistTile extends StatelessWidget {
           : () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                QuickStylePageRoute(
                   builder: (context) => MixlistDetailScreen(mixlist: mixlist),
                 ),
               );

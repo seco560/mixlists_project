@@ -12,6 +12,7 @@ import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/screens/search/album_result_tile.dart';
 import 'package:mixlists_project/screens/search/artist_result_tile.dart';
 import 'package:mixlists_project/widgets/mixlist_tile.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
@@ -61,7 +62,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     if (!mounted || fullMixlistData == null) return;
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => MixlistDetailScreen(
           mixlist: fullMixlistData,
           highlightSongId: highlightSongId,
@@ -73,7 +74,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   void _openArtist(ArtistOverview artist) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => ArtistDetailScreen(artist: artist),
       ),
     );
@@ -82,21 +83,21 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   void _openAlbum(AlbumOverview album) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AlbumDetailScreen(album: album)),
+      QuickStylePageRoute(builder: (context) => AlbumDetailScreen(album: album)),
     );
   }
 
   void _openGenre(String genre) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => GenreArtistsScreen(genre: genre)),
+      QuickStylePageRoute(builder: (context) => GenreArtistsScreen(genre: genre)),
     );
   }
 
   void _openLabel(String label) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => AlbumsGridScreen(recordLabel: label),
       ),
     );

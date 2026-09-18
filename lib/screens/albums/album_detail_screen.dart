@@ -10,6 +10,7 @@ import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
@@ -67,7 +68,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
     if (!mounted || overview == null) return;
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => ArtistDetailScreen(artist: overview),
       ),
     );
@@ -76,7 +77,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
   void _openLabel(String recordLabel) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
       ),
     );
@@ -88,7 +89,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
     if (!mounted || fullMixlistData == null) return;
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => MixlistDetailScreen(
           mixlist: fullMixlistData,
           highlightSongId: highlightSongId,

@@ -6,6 +6,7 @@ import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 /// Hardcoded bespoke grid; not extensible enough to reuse for another
 /// grid, reimplement the general shape as a new widget instead.
@@ -317,7 +318,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
     return InkWell(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(
+        QuickStylePageRoute(
           builder: (context) => ArtistDetailScreen(artist: artist),
         ),
       ),

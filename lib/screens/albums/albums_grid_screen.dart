@@ -5,6 +5,7 @@ import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/screens/albums/album_grid_tile.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 /// Grid of albums, either every album or (via [recordLabel]) just one
 /// label's -- repurposed from the original "All Albums" screen once it
@@ -83,11 +84,12 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
     return columns < 1 ? 1 : columns;
   }
 
-  void _goToLabel(String recordLabel) {
+  void _goToLabel(String recordLabel, {bool asBack = false}) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
+        isReverse: asBack,
       ),
     );
   }
@@ -97,6 +99,7 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
     required String label,
     required String? recordLabel,
     required bool alignEnd,
+    required bool isPrevious,
   }) {
     final children = [
       Icon(icon),
@@ -120,7 +123,9 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
     ];
     return Expanded(
       child: InkWell(
-        onTap: recordLabel == null ? null : () => _goToLabel(recordLabel),
+        onTap: recordLabel == null
+            ? null
+            : () => _goToLabel(recordLabel, asBack: isPrevious),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Opacity(
@@ -145,12 +150,14 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
           label: 'Previous label',
           recordLabel: _previousLabel,
           alignEnd: false,
+          isPrevious: true,
         ),
         _buildLabelNavButton(
           icon: Icons.arrow_forward,
           label: 'Next label',
           recordLabel: _nextLabel,
           alignEnd: true,
+          isPrevious: false,
         ),
       ],
     );

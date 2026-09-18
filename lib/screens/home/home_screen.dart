@@ -6,6 +6,7 @@ import 'package:mixlists_project/screens/home/search_field.dart';
 import 'package:mixlists_project/screens/mixlists/all_mixlists_screen.dart';
 import 'package:mixlists_project/screens/songs/all_songs_screen.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -50,7 +51,7 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        QuickStylePageRoute(
                           builder: (context) => AllMixlistsScreen(),
                         ),
                       );
@@ -63,7 +64,7 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        QuickStylePageRoute(
                           builder: (context) => AllArtistsScreen(),
                         ),
                       );
@@ -76,7 +77,7 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        QuickStylePageRoute(
                           builder: (context) => AlbumsGridScreen(),
                         ),
                       );
@@ -89,7 +90,7 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        QuickStylePageRoute(
                           builder: (context) => AllSongsScreen(),
                         ),
                       );

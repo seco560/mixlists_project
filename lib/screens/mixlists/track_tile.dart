@@ -8,6 +8,7 @@ import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 class TrackTile extends StatefulWidget {
   const TrackTile({
@@ -111,7 +112,7 @@ class _TrackTileState extends State<TrackTile> with TickerProviderStateMixin {
     if (!mounted || overview == null) return;
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => ArtistDetailScreen(artist: overview),
       ),
     );
@@ -124,7 +125,7 @@ class _TrackTileState extends State<TrackTile> with TickerProviderStateMixin {
     if (!mounted || overview == null) return;
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => AlbumDetailScreen(album: overview),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/screens/search/search_results_screen.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 class SearchField extends StatefulWidget {
   const SearchField({super.key});
@@ -23,7 +24,7 @@ class _SearchFieldState extends State<SearchField> {
     _controller.clear();
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => SearchResultsScreen(query: query),
       ),
     );

@@ -5,6 +5,7 @@ import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 /// Every artist tagged with [genre] -- reached from a genre chip on
@@ -73,14 +74,17 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
   void _openArtist(ArtistOverview artist) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ArtistDetailScreen(artist: artist)),
+      QuickStylePageRoute(builder: (context) => ArtistDetailScreen(artist: artist)),
     );
   }
 
-  void _goToGenre(String genre) {
+  void _goToGenre(String genre, {bool asBack = false}) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => GenreArtistsScreen(genre: genre)),
+      QuickStylePageRoute(
+        builder: (context) => GenreArtistsScreen(genre: genre),
+        isReverse: asBack,
+      ),
     );
   }
 
@@ -89,6 +93,7 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
     required String label,
     required String? genre,
     required bool alignEnd,
+    required bool isPrevious,
   }) {
     final children = [
       Icon(icon),
@@ -112,7 +117,9 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
     ];
     return Expanded(
       child: InkWell(
-        onTap: genre == null ? null : () => _goToGenre(genre),
+        onTap: genre == null
+            ? null
+            : () => _goToGenre(genre, asBack: isPrevious),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Opacity(
@@ -137,12 +144,14 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
           label: 'Previous genre',
           genre: _previousGenre,
           alignEnd: false,
+          isPrevious: true,
         ),
         _buildGenreNavButton(
           icon: Icons.arrow_forward,
           label: 'Next genre',
           genre: _nextGenre,
           alignEnd: true,
+          isPrevious: false,
         ),
       ],
     );

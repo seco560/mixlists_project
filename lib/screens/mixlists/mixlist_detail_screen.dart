@@ -10,6 +10,7 @@ import 'package:mixlists_project/data/models/mixlist_track.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/track_tile.dart';
 import 'package:mixlists_project/widgets/mixlist_audio_feature_chart.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/year_album_art_histogram.dart';
 
@@ -171,11 +172,12 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     );
   }
 
-  void _goToMixlist(Mixlist mixlist) {
+  void _goToMixlist(Mixlist mixlist, {bool asBack = false}) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => MixlistDetailScreen(mixlist: mixlist),
+        isReverse: asBack,
       ),
     );
   }
@@ -186,7 +188,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     if (!mounted || fullMixlistData == null) return;
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => MixlistDetailScreen(
           mixlist: fullMixlistData,
           highlightSongId: highlightSongId,
@@ -202,7 +204,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     if (!mounted || overview == null) return;
     Navigator.push(
       context,
-      MaterialPageRoute(
+      QuickStylePageRoute(
         builder: (context) => AlbumDetailScreen(album: overview),
       ),
     );
@@ -230,6 +232,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     required String label,
     required Mixlist? mixlist,
     required bool alignEnd,
+    required bool isPrevious,
   }) {
     final children = [
       Icon(icon),
@@ -258,7 +261,9 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     ];
     return Expanded(
       child: InkWell(
-        onTap: mixlist == null ? null : () => _goToMixlist(mixlist),
+        onTap: mixlist == null
+            ? null
+            : () => _goToMixlist(mixlist, asBack: isPrevious),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Opacity(
@@ -283,12 +288,14 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
           label: 'Previous mixlist',
           mixlist: _previousMixlist,
           alignEnd: false,
+          isPrevious: true,
         ),
         _buildMixlistNavButton(
           icon: Icons.arrow_forward,
           label: 'Next mixlist',
           mixlist: _nextMixlist,
           alignEnd: true,
+          isPrevious: false,
         ),
       ],
     );
