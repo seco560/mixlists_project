@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# sqflite_common_ffi_web generated assets (run: dart run sqflite_common_ffi_web:setup)
+/web/sqlite3.wasm
+/web/sqflite_sw.js

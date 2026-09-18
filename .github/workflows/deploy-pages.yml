@@ -28,6 +28,8 @@ jobs:
 
       - run: flutter pub get
 
+      - run: dart run sqflite_common_ffi_web:setup
+
       - run: flutter build web --release --base-href /${{ github.event.repository.name }}/
 
       - uses: actions/upload-pages-artifact@v3
