@@ -5,7 +5,9 @@ import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/data/models/search_results.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
+import 'package:mixlists_project/screens/albums/albums_grid_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
+import 'package:mixlists_project/screens/artists/genre_artists_screen.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/screens/search/album_result_tile.dart';
 import 'package:mixlists_project/screens/search/artist_result_tile.dart';
@@ -84,6 +86,22 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     );
   }
 
+  void _openGenre(String genre) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => GenreArtistsScreen(genre: genre)),
+    );
+  }
+
+  void _openLabel(String label) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AlbumsGridScreen(recordLabel: label),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final results = _results;
@@ -116,11 +134,31 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           for (final artist in results.artists)
             ArtistResultTile(artist: artist, onTap: () => _openArtist(artist)),
         ],
+      if (results.genres.isNotEmpty)
+        [
+          SectionHeader('Genres (${results.genres.length})'),
+          for (final genre in results.genres)
+            ListTile(
+              leading: const Icon(Icons.sell_outlined),
+              title: Text(genre),
+              onTap: () => _openGenre(genre),
+            ),
+        ],
       if (results.albums.isNotEmpty)
         [
           SectionHeader('Albums (${results.albums.length})'),
           for (final album in results.albums)
             AlbumResultTile(album: album, onTap: () => _openAlbum(album)),
+        ],
+      if (results.labels.isNotEmpty)
+        [
+          SectionHeader('Labels (${results.labels.length})'),
+          for (final label in results.labels)
+            ListTile(
+              leading: const Icon(Icons.business_outlined),
+              title: Text(label),
+              onTap: () => _openLabel(label),
+            ),
         ],
       if (results.songs.isNotEmpty)
         [

@@ -1,5 +1,17 @@
 part of 'music_library_repository.dart';
 
+/// Splits `Artists.genres` (a comma-joined string, e.g.
+/// `"funk rock,alternative rock,rock"`) into trimmed, non-empty tokens.
+/// `null`/empty input yields an empty list.
+List<String> _parseGenres(String? raw) {
+  if (raw == null) return const [];
+  return raw
+      .split(',')
+      .map((g) => g.trim())
+      .where((g) => g.isNotEmpty)
+      .toList();
+}
+
 extension ArtistQueries on MusicLibraryRepository {
   /// Every artist, with their albums, every mixlist their songs appear
   /// in, and their distinct song count across all mixlists -- all scoped
@@ -20,7 +32,8 @@ extension ArtistQueries on MusicLibraryRepository {
         id             AS albumId,
         name           AS albumName,
         releaseDate,
-        coverImageURL
+        coverImageURL,
+        recordLabel
       FROM Albums
       ORDER BY releaseDate ASC
     ''');
@@ -53,6 +66,7 @@ extension ArtistQueries on MusicLibraryRepository {
               name: row['albumName'] as String,
               releaseDate: row['releaseDate'] as String,
               coverImageURL: row['coverImageURL'] as String?,
+              recordLabel: row['recordLabel'] as String?,
             ),
           );
     }
@@ -118,6 +132,7 @@ extension ArtistQueries on MusicLibraryRepository {
             mixlists: mixlistsByArtist[artist.id] ?? const [],
             uniqueSongCount: songCountByArtist[artist.id] ?? 0,
             appearanceCount: appearanceCountByArtist[artist.id] ?? 0,
+            genres: _parseGenres(artist.genres),
           ),
         )
         .toList();
@@ -203,7 +218,7 @@ extension ArtistQueries on MusicLibraryRepository {
 
     final albumRows = await _db.rawQuery(
       '''
-      SELECT id AS albumId, name AS albumName, releaseDate, coverImageURL
+      SELECT id AS albumId, name AS albumName, releaseDate, coverImageURL, recordLabel
       FROM Albums
       WHERE artist = ?
       ORDER BY releaseDate ASC
@@ -236,6 +251,7 @@ extension ArtistQueries on MusicLibraryRepository {
             name: row['albumName'] as String,
             releaseDate: row['releaseDate'] as String,
             coverImageURL: row['coverImageURL'] as String?,
+            recordLabel: row['recordLabel'] as String?,
           ),
     ];
 
@@ -282,6 +298,7 @@ extension ArtistQueries on MusicLibraryRepository {
       mixlists: mixlists,
       uniqueSongCount: songCountRows.first['songCount'] as int,
       appearanceCount: songCountRows.first['appearanceCount'] as int,
+      genres: _parseGenres(artist.genres),
     );
   }
 
@@ -302,7 +319,8 @@ extension ArtistQueries on MusicLibraryRepository {
         id             AS albumId,
         name           AS albumName,
         releaseDate,
-        coverImageURL
+        coverImageURL,
+        recordLabel
       FROM Albums
       WHERE artist IN ($placeholders)
       ORDER BY releaseDate ASC
@@ -318,6 +336,7 @@ extension ArtistQueries on MusicLibraryRepository {
               name: row['albumName'] as String,
               releaseDate: row['releaseDate'] as String,
               coverImageURL: row['coverImageURL'] as String?,
+              recordLabel: row['recordLabel'] as String?,
             ),
           );
     }
@@ -378,8 +397,41 @@ extension ArtistQueries on MusicLibraryRepository {
             mixlists: mixlistsByArtist[artist.id] ?? const [],
             uniqueSongCount: songCountByArtist[artist.id] ?? 0,
             appearanceCount: appearanceCountByArtist[artist.id] ?? 0,
+            genres: _parseGenres(artist.genres),
           ),
         )
         .toList();
+  }
+
+  /// Every distinct genre token across all artists, sorted -- cached
+  /// indefinitely since this is a read-only app with no genre write path.
+  Future<List<String>> get _allGenres {
+    return _allGenresFuture ??= _loadAllGenres();
+  }
+
+  Future<List<String>> _loadAllGenres() async {
+    final rows = await _db.rawQuery(
+      "SELECT genres FROM Artists WHERE genres IS NOT NULL AND genres != ''",
+    );
+    final genres = <String>{};
+    for (final row in rows) {
+      genres.addAll(_parseGenres(row['genres'] as String?));
+    }
+    return genres.toList()..sort();
+  }
+
+  /// The genre alphabetically before/after [genre] in the full distinct
+  /// genre index -- null at either end, same shape as
+  /// [MixlistQueries.getAdjacentMixlists].
+  Future<(String? previous, String? next)> getAdjacentGenres(
+    String genre,
+  ) async {
+    final genres = await _allGenres;
+    final index = genres.indexOf(genre);
+    if (index == -1) return (null, null);
+    return (
+      index == 0 ? null : genres[index - 1],
+      index == genres.length - 1 ? null : genres[index + 1],
+    );
   }
 }

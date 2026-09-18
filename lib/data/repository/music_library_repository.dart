@@ -31,5 +31,9 @@ class MusicLibraryRepository {
   final Map<MixlistFilter, Future<Map<int, List<MixlistSummary>>>>
   _duplicateSongIndexFutures = {};
 
+  Future<List<String>>? _allGenresFuture;
+
+  Future<List<String>>? _allLabelsFuture;
+
   Future<void> close() => _db.close();
 }

@@ -4,6 +4,7 @@ import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/data/models/album_song_appearance.dart';
+import 'package:mixlists_project/screens/albums/albums_grid_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
@@ -72,6 +73,15 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
     );
   }
 
+  void _openLabel(String recordLabel) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
+      ),
+    );
+  }
+
   Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
     final fullMixlistData = await getIt<MusicLibraryRepository>()
         .getMixlistById(mixlistId);
@@ -126,6 +136,14 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                               album.releaseDate.split('T')[0],
                               style: metaTextStyle,
                             ),
+                            if (album.recordLabel != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: ActionChip(
+                                  label: Text(album.recordLabel!),
+                                  onPressed: () => _openLabel(album.recordLabel!),
+                                ),
+                              ),
                           ],
                         ),
                       ),

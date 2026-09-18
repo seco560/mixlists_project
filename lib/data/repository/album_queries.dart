@@ -23,6 +23,7 @@ extension AlbumQueries on MusicLibraryRepository {
         al.name          AS name,
         al.releaseDate   AS releaseDate,
         al.coverImageURL AS coverImageURL,
+        al.recordLabel   AS recordLabel,
         ar.id            AS artistId,
         ar.name          AS artistName
       FROM Albums al
@@ -44,6 +45,7 @@ extension AlbumQueries on MusicLibraryRepository {
         al.name          AS name,
         al.releaseDate   AS releaseDate,
         al.coverImageURL AS coverImageURL,
+        al.recordLabel   AS recordLabel,
         ar.id            AS artistId,
         ar.name          AS artistName
       FROM Albums al
@@ -109,5 +111,33 @@ extension AlbumQueries on MusicLibraryRepository {
       appearance.datesAdded.add(row['dateAddedToMixlist'] as String);
     }
     return [for (final songId in songOrder) appearancesBySong[songId]!];
+  }
+
+  /// Every distinct record label, sorted -- cached indefinitely since
+  /// this is a read-only app with no label write path.
+  Future<List<String>> get _allLabels {
+    return _allLabelsFuture ??= _loadAllLabels();
+  }
+
+  Future<List<String>> _loadAllLabels() async {
+    final rows = await _db.rawQuery(
+      "SELECT DISTINCT recordLabel FROM Albums WHERE recordLabel IS NOT NULL AND recordLabel != '' ORDER BY recordLabel ASC",
+    );
+    return rows.map((row) => row['recordLabel'] as String).toList();
+  }
+
+  /// The record label alphabetically before/after [label] in the full
+  /// distinct label index -- null at either end, same shape as
+  /// [MixlistQueries.getAdjacentMixlists].
+  Future<(String? previous, String? next)> getAdjacentLabels(
+    String label,
+  ) async {
+    final labels = await _allLabels;
+    final index = labels.indexOf(label);
+    if (index == -1) return (null, null);
+    return (
+      index == 0 ? null : labels[index - 1],
+      index == labels.length - 1 ? null : labels[index + 1],
+    );
   }
 }

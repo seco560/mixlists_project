@@ -8,6 +8,7 @@ import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/data/models/artist_song_appearance.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
+import 'package:mixlists_project/screens/artists/genre_artists_screen.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
@@ -126,6 +127,13 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
     );
   }
 
+  void _openGenre(String genre) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => GenreArtistsScreen(genre: genre)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final artist = _artist;
@@ -142,6 +150,28 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
           ? Center(child: Text(_error!))
           : ListView(
               children: [
+                SectionHeader('Genres'),
+                if (artist.genres.isEmpty)
+                  const EmptySectionTile()
+                else
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        for (final genre in artist.genres)
+                          ActionChip(
+                            label: Text(genre),
+                            onPressed: () => _openGenre(genre),
+                          ),
+                      ],
+                    ),
+                  ),
+                const Divider(height: 32),
                 SectionHeader('Added to Mixlists Over Time'),
                 YearAlbumArtHistogram(entriesByYear: _addedOverTimeEntries()),
                 const Divider(height: 32),
@@ -198,6 +228,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                                 coverImageURL: album.coverImageURL,
                                 artistId: artist.id,
                                 artistName: artist.name,
+                                recordLabel: album.recordLabel,
                               ),
                             ),
                           ),

@@ -9,6 +9,7 @@ class ArtistOverview {
     required this.mixlists,
     required this.uniqueSongCount,
     required this.appearanceCount,
+    required this.genres,
   });
 
   final int id;
@@ -19,4 +20,8 @@ class ArtistOverview {
   final int uniqueSongCount;
 
   final int appearanceCount;
+
+  /// Parsed from `Artists.genres` (a comma-joined string) -- empty when
+  /// Spotify returned none for this artist.
+  final List<String> genres;
 }

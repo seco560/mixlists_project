@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/screens/albums/all_albums_screen.dart';
+import 'package:mixlists_project/screens/albums/albums_grid_screen.dart';
 import 'package:mixlists_project/screens/artists/all_artists_screen.dart';
 import 'package:mixlists_project/screens/home/home_nav_card.dart';
 import 'package:mixlists_project/screens/home/search_field.dart';
@@ -77,7 +77,7 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AllAlbumsScreen(),
+                          builder: (context) => AlbumsGridScreen(),
                         ),
                       );
                     },

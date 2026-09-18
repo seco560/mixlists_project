@@ -6,6 +6,7 @@ class AlbumOverview {
     required this.coverImageURL,
     required this.artistId,
     required this.artistName,
+    required this.recordLabel,
   });
 
   final int id;
@@ -14,6 +15,7 @@ class AlbumOverview {
   final String? coverImageURL;
   final int artistId;
   final String artistName;
+  final String? recordLabel;
 
   factory AlbumOverview.fromMap(Map<String, Object?> map) {
     return AlbumOverview(
@@ -23,6 +25,7 @@ class AlbumOverview {
       coverImageURL: map['coverImageURL'] as String?,
       artistId: map['artistId'] as int,
       artistName: map['artistName'] as String,
+      recordLabel: map['recordLabel'] as String?,
     );
   }
 }

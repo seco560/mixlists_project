@@ -10,7 +10,9 @@ extension SearchQueries on MusicLibraryRepository {
       return const SearchResults(
         mixlists: [],
         artists: [],
+        genres: [],
         albums: [],
+        labels: [],
         songs: [],
       );
     }
@@ -20,19 +22,39 @@ extension SearchQueries on MusicLibraryRepository {
 
     final mixlistsFuture = _searchMixlists(likePattern);
     final artistsFuture = _searchArtists(likePattern);
+    final genresFuture = _searchGenres(query);
     final albumsFuture = _searchAlbums(
       query,
       likePattern,
       isYearQuery: isYearQuery,
     );
+    final labelsFuture = _searchLabels(query);
     final songsFuture = _searchSongs(likePattern);
 
     return SearchResults(
       mixlists: await mixlistsFuture,
       artists: await artistsFuture,
+      genres: await genresFuture,
       albums: await albumsFuture,
+      labels: await labelsFuture,
       songs: await songsFuture,
     );
+  }
+
+  /// Every distinct genre containing [query] (case-insensitive), from the
+  /// cached distinct-genre index -- see [ArtistQueries._allGenres].
+  Future<List<String>> _searchGenres(String query) async {
+    final lowerQuery = query.toLowerCase();
+    final allGenres = await _allGenres;
+    return allGenres.where((g) => g.toLowerCase().contains(lowerQuery)).toList();
+  }
+
+  /// Every distinct record label containing [query] (case-insensitive),
+  /// from the cached distinct-label index -- see [AlbumQueries._allLabels].
+  Future<List<String>> _searchLabels(String query) async {
+    final lowerQuery = query.toLowerCase();
+    final allLabels = await _allLabels;
+    return allLabels.where((l) => l.toLowerCase().contains(lowerQuery)).toList();
   }
 
   Future<List<Mixlist>> _searchMixlists(String likePattern) async {
