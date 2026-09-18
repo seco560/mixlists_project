@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/screens/albums/albums_grid_screen.dart';
+import 'package:mixlists_project/screens/albums/all_labels_screen.dart';
 import 'package:mixlists_project/screens/artists/all_artists_screen.dart';
+import 'package:mixlists_project/screens/artists/all_genres_screen.dart';
 import 'package:mixlists_project/screens/home/home_nav_card.dart';
 import 'package:mixlists_project/screens/home/search_field.dart';
 import 'package:mixlists_project/screens/mixlists/all_mixlists_screen.dart';
@@ -37,8 +39,8 @@ class HomeScreen extends StatelessWidget {
                   const MixlistFilterToggle(),
                   const SizedBox(height: 8),
                   const Text(
-                    'Show all playlists, only ones marked as mixlists, or '
-                    'only the ones that aren\'t.',
+                    'Show only mixlists, all playlists in the app,'
+                    'or only the ones that aren\'t marked.',
                     textAlign: .center,
                     style: metaTextStyle,
                   ),
@@ -92,6 +94,32 @@ class HomeScreen extends StatelessWidget {
                         context,
                         QuickStylePageRoute(
                           builder: (context) => AllSongsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  HomeNavCard(
+                    icon: Icons.sell_outlined,
+                    label: 'Genres',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        QuickStylePageRoute(
+                          builder: (context) => AllGenresScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  HomeNavCard(
+                    icon: Icons.business_outlined,
+                    label: 'Labels',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        QuickStylePageRoute(
+                          builder: (context) => AllLabelsScreen(),
                         ),
                       );
                     },

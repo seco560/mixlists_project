@@ -9,9 +9,9 @@ import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 /// Every artist tagged with [genre] -- reached from a genre chip on
-/// [ArtistDetailScreen] or from a "Genres" search result. A plain flat
-/// list, not the sortable All Artists grid -- genres are typically
-/// small, browsable groupings that don't need column sorting.
+/// [ArtistDetailScreen], a "Genres" search result, or [AllGenresScreen].
+/// A plain flat list, not the sortable All Artists grid -- genres are
+/// typically small, browsable groupings that don't need column sorting.
 class GenreArtistsScreen extends StatefulWidget {
   const GenreArtistsScreen({super.key, required this.genre});
 
@@ -74,7 +74,9 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
   void _openArtist(ArtistOverview artist) {
     Navigator.push(
       context,
-      QuickStylePageRoute(builder: (context) => ArtistDetailScreen(artist: artist)),
+      QuickStylePageRoute(
+        builder: (context) => ArtistDetailScreen(artist: artist),
+      ),
     );
   }
 
@@ -187,7 +189,8 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
                       ),
                       onTap: () => _openArtist(_artists[i]),
                     ),
-                    if (i != _artists.length - 1) Divider(color: Colors.blueGrey),
+                    if (i != _artists.length - 1)
+                      Divider(color: Colors.blueGrey),
                   ],
                 Divider(color: Colors.blueGrey),
                 _buildGenreNavigationPane(),

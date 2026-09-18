@@ -8,6 +8,7 @@ class ArtistSongAppearance {
     required this.albumCoverImageURL,
     required this.mixlists,
     required this.datesAdded,
+    required this.isExplicit,
   });
 
   final int songId;
@@ -15,6 +16,10 @@ class ArtistSongAppearance {
   final String albumName;
   final String? albumCoverImageURL;
   final List<MixlistSummary> mixlists;
+
+  /// From `SongsExtraData.explicit` -- null when Spotify never supplied
+  /// the flag for this song.
+  final bool? isExplicit;
 
   final List<String> datesAdded;
 }

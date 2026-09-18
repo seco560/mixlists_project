@@ -36,7 +36,6 @@ extension AlbumQueries on MusicLibraryRepository {
     return rows.map(AlbumOverview.fromMap).toList();
   }
 
-
   Future<AlbumOverview?> getAlbumOverviewById(int albumId) async {
     final rows = await _db.rawQuery(
       '''
@@ -71,6 +70,7 @@ extension AlbumQueries on MusicLibraryRepository {
         s.id                AS songId,
         s.name              AS songName,
         se.albumTrackNumber AS albumTrackNumber,
+        se.explicit         AS explicit,
         m.id                AS mixlistId,
         m.title             AS mixlistTitle,
         m.dateCreated       AS dateCreated,
@@ -97,6 +97,7 @@ extension AlbumQueries on MusicLibraryRepository {
           albumTrackNumber: row['albumTrackNumber'] as int?,
           mixlists: [],
           datesAdded: [],
+          isExplicit: _parseExplicit(row['explicit'] as String?),
         );
         appearancesBySong[songId] = appearance;
         songOrder.add(songId);

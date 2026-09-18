@@ -46,7 +46,9 @@ extension SearchQueries on MusicLibraryRepository {
   Future<List<String>> _searchGenres(String query) async {
     final lowerQuery = query.toLowerCase();
     final allGenres = await _allGenres;
-    return allGenres.where((g) => g.toLowerCase().contains(lowerQuery)).toList();
+    return allGenres
+        .where((g) => g.toLowerCase().contains(lowerQuery))
+        .toList();
   }
 
   /// Every distinct record label containing [query] (case-insensitive),
@@ -54,7 +56,9 @@ extension SearchQueries on MusicLibraryRepository {
   Future<List<String>> _searchLabels(String query) async {
     final lowerQuery = query.toLowerCase();
     final allLabels = await _allLabels;
-    return allLabels.where((l) => l.toLowerCase().contains(lowerQuery)).toList();
+    return allLabels
+        .where((l) => l.toLowerCase().contains(lowerQuery))
+        .toList();
   }
 
   Future<List<Mixlist>> _searchMixlists(String likePattern) async {
@@ -114,6 +118,7 @@ extension SearchQueries on MusicLibraryRepository {
         s.artists        AS artistNames,
         al.name          AS albumName,
         al.coverImageURL AS albumCoverImageURL,
+        ed.explicit      AS explicit,
         m.id             AS mixlistId,
         m.title          AS mixlistTitle,
         m.dateCreated    AS dateCreated
@@ -121,6 +126,7 @@ extension SearchQueries on MusicLibraryRepository {
       JOIN Albums al ON al.id = s.album
       JOIN SongsMixlists sm ON sm.song = s.id
       JOIN Mixlists m ON m.id = sm.mixlist
+      LEFT JOIN SongsExtraData ed ON ed.song = s.id
       WHERE s.name LIKE ?
       ORDER BY s.name ASC, m.dateCreated ASC
     ''',
@@ -140,6 +146,7 @@ extension SearchQueries on MusicLibraryRepository {
           albumCoverImageURL: row['albumCoverImageURL'] as String?,
           artistNames: row['artistNames'] as String,
           mixlists: [],
+          isExplicit: _parseExplicit(row['explicit'] as String?),
         );
         resultsBySong[songId] = result;
         songOrder.add(songId);

@@ -12,10 +12,15 @@ class SongOverview {
     required this.albumName,
     required this.albumCoverImageURL,
     required this.mixlists,
+    required this.isExplicit,
   });
 
   final int id;
   final String name;
+
+  /// From `SongsExtraData.explicit` -- null when Spotify never supplied
+  /// the flag for this song.
+  final bool? isExplicit;
 
   /// Comma-joined, straight off `Songs.artists` -- same convention as
   /// `SongSearchResult.artistNames`/`MixlistTrack.artists`. Plain display

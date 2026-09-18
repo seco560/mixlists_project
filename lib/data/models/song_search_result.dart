@@ -8,6 +8,7 @@ class SongSearchResult {
     required this.albumCoverImageURL,
     required this.artistNames,
     required this.mixlists,
+    required this.isExplicit,
   });
 
   final int songId;
@@ -18,4 +19,8 @@ class SongSearchResult {
   final String artistNames;
 
   final List<MixlistSummary> mixlists;
+
+  /// From `SongsExtraData.explicit` -- null when Spotify never supplied
+  /// the flag for this song.
+  final bool? isExplicit;
 }

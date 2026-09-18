@@ -44,10 +44,11 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
 
   Future<void> _loadData() async {
     try {
-      final songs = await getIt<MusicLibraryRepository>().getAlbumSongAppearances(
-        widget.album.id,
-        filter: getIt<MixlistFilterController>().value,
-      );
+      final songs = await getIt<MusicLibraryRepository>()
+          .getAlbumSongAppearances(
+            widget.album.id,
+            filter: getIt<MixlistFilterController>().value,
+          );
       if (!mounted) return;
       setState(() {
         _songs = songs;
@@ -142,7 +143,8 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                                 padding: const EdgeInsets.only(top: 8),
                                 child: ActionChip(
                                   label: Text(album.recordLabel!),
-                                  onPressed: () => _openLabel(album.recordLabel!),
+                                  onPressed: () =>
+                                      _openLabel(album.recordLabel!),
                                 ),
                               ),
                           ],
@@ -161,6 +163,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                       songId: song.songId,
                       title:
                           '${song.albumTrackNumber ?? '?'}) ${song.songName}',
+                      isExplicit: song.isExplicit == true,
                       leadingImageUrl: album.coverImageURL,
                       subtitle: Text(
                         'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',

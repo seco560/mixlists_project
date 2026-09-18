@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/models/song_overview.dart';
 import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
 import 'package:mixlists_project/screens/songs/song_table_cell.dart';
+import 'package:mixlists_project/widgets/explicit_badge.dart';
 
 /// A single row in [AllSongsScreen]'s grid. Owns its own expand/collapse
 /// state and animation (unlike Artists' stateless `_buildRow` helper)
@@ -102,10 +103,21 @@ class _SongTableRowState extends State<SongTableRow>
               SongTableCell(
                 width: widths[1],
                 numeric: false,
-                child: Text(
-                  song.name,
-                  style: _nameTextStyle,
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        song.name,
+                        style: _nameTextStyle,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (song.isExplicit == true) ...[
+                      const SizedBox(width: 6),
+                      const ExplicitBadge(),
+                    ],
+                  ],
                 ),
               ),
               SongTableCell(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/models/mixlist_summary.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/explicit_badge.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 class SongMixlistTile extends StatefulWidget {
@@ -12,6 +13,7 @@ class SongMixlistTile extends StatefulWidget {
     required this.leadingImageUrl,
     required this.mixlists,
     required this.onOpenMixlist,
+    this.isExplicit = false,
   });
 
   final int songId;
@@ -20,6 +22,7 @@ class SongMixlistTile extends StatefulWidget {
   final String? leadingImageUrl;
   final List<MixlistSummary> mixlists;
   final void Function(int mixlistId, int songId) onOpenMixlist;
+  final bool isExplicit;
 
   @override
   State<SongMixlistTile> createState() => _SongMixlistTileState();
@@ -83,7 +86,22 @@ class _SongMixlistTileState extends State<SongMixlistTile>
             size: 48,
             borderRadius: 0,
           ),
-          title: Text(widget.title, style: titleTextStyle),
+          title: Row(
+            mainAxisSize: .min,
+            children: [
+              Flexible(
+                child: Text(
+                  widget.title,
+                  style: titleTextStyle,
+                  overflow: .ellipsis,
+                ),
+              ),
+              if (widget.isExplicit) ...[
+                const SizedBox(width: 6),
+                const ExplicitBadge(),
+              ],
+            ],
+          ),
           subtitle: widget.subtitle,
           trailing: hasSingleMixlist
               ? ConstrainedBox(

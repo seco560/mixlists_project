@@ -131,7 +131,9 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
   void _openGenre(String genre) {
     Navigator.push(
       context,
-      QuickStylePageRoute(builder: (context) => GenreArtistsScreen(genre: genre)),
+      QuickStylePageRoute(
+        builder: (context) => GenreArtistsScreen(genre: genre),
+      ),
     );
   }
 
@@ -184,6 +186,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                     SongMixlistTile(
                       songId: song.songId,
                       title: song.songName,
+                      isExplicit: song.isExplicit == true,
                       leadingImageUrl: song.albumCoverImageURL,
                       subtitle: Column(
                         crossAxisAlignment: .start,

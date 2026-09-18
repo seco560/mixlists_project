@@ -14,8 +14,8 @@ class AlbumsGridScreen extends StatefulWidget {
   const AlbumsGridScreen({super.key, this.recordLabel});
 
   /// Scopes the grid to one record label, reached from a label chip on
-  /// [AlbumDetailScreen] or a "Labels" search result. Null shows every
-  /// album, as on the home screen.
+  /// [AlbumDetailScreen], a "Labels" search result, or [AllLabelsScreen].
+  /// Null shows every album, as on the home screen.
   final String? recordLabel;
 
   @override
@@ -169,7 +169,9 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.recordLabel == null ? "All Albums" : "${widget.recordLabel} Albums",
+          widget.recordLabel == null
+              ? "All Albums"
+              : "${widget.recordLabel} Albums",
         ),
         centerTitle: true,
         backgroundColor: Colors.lightBlueAccent,
@@ -183,7 +185,8 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
                   constraints.maxWidth - _gridPadding * 2,
                 );
                 final gridWidth =
-                    columns * AlbumGridTile.width + (columns - 1) * _tileSpacing;
+                    columns * AlbumGridTile.width +
+                    (columns - 1) * _tileSpacing;
                 return ListView(
                   padding: const EdgeInsets.all(_gridPadding),
                   children: [

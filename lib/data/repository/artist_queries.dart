@@ -155,6 +155,7 @@ extension ArtistQueries on MusicLibraryRepository {
         s.name            AS songName,
         al.name           AS albumName,
         al.coverImageURL  AS albumCoverImageURL,
+        ed.explicit       AS explicit,
         m.id              AS mixlistId,
         m.title           AS mixlistTitle,
         m.dateCreated     AS dateCreated,
@@ -163,6 +164,7 @@ extension ArtistQueries on MusicLibraryRepository {
       JOIN Albums al ON al.id = s.album
       JOIN SongsMixlists sm ON sm.song = s.id
       JOIN Mixlists m ON m.id = sm.mixlist
+      LEFT JOIN SongsExtraData ed ON ed.song = s.id
       WHERE al.artist = ? $filterSql
       ORDER BY sm.dateAdded ASC
     ''',
@@ -187,6 +189,7 @@ extension ArtistQueries on MusicLibraryRepository {
           albumCoverImageURL: row['albumCoverImageURL'] as String?,
           mixlists: [mixlist],
           datesAdded: [dateAdded],
+          isExplicit: _parseExplicit(row['explicit'] as String?),
         );
       } else {
         existing.mixlists.add(mixlist);
@@ -306,9 +309,7 @@ extension ArtistQueries on MusicLibraryRepository {
   /// of artists via `WHERE artist IN (...)`. Used by `SearchQueries`.
   /// Not mixlist-filter-aware -- search results aren't one of the
   /// filtered screens.
-  Future<List<ArtistOverview>> _artistOverviewsFor(
-    List<Artist> matched,
-  ) async {
+  Future<List<ArtistOverview>> _artistOverviewsFor(List<Artist> matched) async {
     if (matched.isEmpty) return [];
     final ids = matched.map((a) => a.id).toList();
     final placeholders = List.filled(ids.length, '?').join(',');

@@ -83,14 +83,18 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   void _openAlbum(AlbumOverview album) {
     Navigator.push(
       context,
-      QuickStylePageRoute(builder: (context) => AlbumDetailScreen(album: album)),
+      QuickStylePageRoute(
+        builder: (context) => AlbumDetailScreen(album: album),
+      ),
     );
   }
 
   void _openGenre(String genre) {
     Navigator.push(
       context,
-      QuickStylePageRoute(builder: (context) => GenreArtistsScreen(genre: genre)),
+      QuickStylePageRoute(
+        builder: (context) => GenreArtistsScreen(genre: genre),
+      ),
     );
   }
 
@@ -168,6 +172,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
             SongMixlistTile(
               songId: song.songId,
               title: song.songName,
+              isExplicit: song.isExplicit == true,
               leadingImageUrl: song.albumCoverImageURL,
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

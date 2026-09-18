@@ -8,6 +8,7 @@ import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/explicit_badge.dart';
 import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 class TrackTile extends StatefulWidget {
@@ -154,9 +155,21 @@ class _TrackTileState extends State<TrackTile> with TickerProviderStateMixin {
       children: [
         _wrapWithHighlight(
           ListTile(
-            title: Text(
-              "${track.position}) ${track.songName}",
-              style: TextStyle(fontSize: 18, fontWeight: .bold),
+            title: Row(
+              mainAxisSize: .min,
+              children: [
+                Flexible(
+                  child: Text(
+                    "${track.position}) ${track.songName}",
+                    style: TextStyle(fontSize: 18, fontWeight: .bold),
+                    overflow: .ellipsis,
+                  ),
+                ),
+                if (track.isExplicit == true) ...[
+                  const SizedBox(width: 6),
+                  const ExplicitBadge(),
+                ],
+              ],
             ),
             subtitle: Wrap(
               crossAxisAlignment: .center,

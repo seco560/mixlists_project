@@ -18,6 +18,13 @@ part 'album_queries.dart';
 part 'song_queries.dart';
 part 'search_queries.dart';
 
+/// `SongsExtraData.explicit` is stored as the text `"true"`/`"false"`
+/// (or absent) rather than an integer flag -- same parsing
+/// [MixlistTrack.fromMap] does inline, shared here since every other
+/// query surfacing a song title also joins this column in.
+bool? _parseExplicit(String? raw) =>
+    raw == null ? null : raw.toLowerCase() == 'true';
+
 /// Read-only access for now; strengthen when we implement editing DB entries
 class MusicLibraryRepository {
   MusicLibraryRepository(this._db) : ingestion = MixlistIngestion(_db);

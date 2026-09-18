@@ -17,6 +17,7 @@ extension SongQueries on MusicLibraryRepository {
         s.artists         AS artistNames,
         al.name           AS albumName,
         al.coverImageURL  AS albumCoverImageURL,
+        ed.explicit       AS explicit,
         m.id              AS mixlistId,
         m.title           AS mixlistTitle,
         m.dateCreated     AS dateCreated
@@ -24,6 +25,7 @@ extension SongQueries on MusicLibraryRepository {
       JOIN Albums al ON al.id = s.album
       JOIN SongsMixlists sm ON sm.song = s.id
       JOIN Mixlists m ON m.id = sm.mixlist
+      LEFT JOIN SongsExtraData ed ON ed.song = s.id
       WHERE 1=1 $filterSql
       ORDER BY s.name ASC, m.dateCreated ASC
     ''');
@@ -45,6 +47,7 @@ extension SongQueries on MusicLibraryRepository {
           albumName: row['albumName'] as String,
           albumCoverImageURL: row['albumCoverImageURL'] as String?,
           mixlists: [mixlist],
+          isExplicit: _parseExplicit(row['explicit'] as String?),
         );
       } else {
         existing.mixlists.add(mixlist);
