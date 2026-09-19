@@ -1,10 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/library/active_library_controller.dart';
+import 'package:mixlists_project/data/library/library_record.dart';
+import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/screens/albums/albums_grid_screen.dart';
 import 'package:mixlists_project/screens/albums/all_labels_screen.dart';
 import 'package:mixlists_project/screens/artists/all_artists_screen.dart';
 import 'package:mixlists_project/screens/artists/all_genres_screen.dart';
 import 'package:mixlists_project/screens/home/home_nav_card.dart';
 import 'package:mixlists_project/screens/home/search_field.dart';
+import 'package:mixlists_project/screens/library/library_picker_screen.dart';
 import 'package:mixlists_project/screens/mixlists/all_mixlists_screen.dart';
 import 'package:mixlists_project/screens/songs/all_songs_screen.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
@@ -21,7 +26,7 @@ class HomeScreen extends StatelessWidget {
         child: Center(
           child: SingleChildScrollView(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
+              constraints: const BoxConstraints(maxWidth: 500),
               child: Column(
                 crossAxisAlignment: .center,
                 mainAxisAlignment: .center,
@@ -35,7 +40,33 @@ class HomeScreen extends StatelessWidget {
                       color: Colors.blueGrey,
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  const SearchField(),
                   const SizedBox(height: 24),
+                  if (!kIsWeb) ...[
+                    HomeNavCard(
+                      icon: Icons.library_music,
+                      label: 'Libraries',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          QuickStylePageRoute(
+                            builder: (context) => const LibraryPickerScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    ValueListenableBuilder<LibraryRecord>(
+                      valueListenable: getIt<ActiveLibraryController>(),
+                      builder: (context, library, _) => Text(
+                        "Active library: ${library.displayName}",
+                        textAlign: .center,
+                        style: metaTextStyle,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                   const MixlistFilterToggle(),
                   const SizedBox(height: 8),
                   const Text(
@@ -45,8 +76,6 @@ class HomeScreen extends StatelessWidget {
                     style: metaTextStyle,
                   ),
                   const SizedBox(height: 24),
-                  const SearchField(),
-                  const SizedBox(height: 32),
                   HomeNavCard(
                     icon: Icons.queue_music,
                     label: 'Mixlists',

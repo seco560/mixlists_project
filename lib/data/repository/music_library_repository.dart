@@ -26,11 +26,11 @@ bool? _parseExplicit(String? raw) =>
 class MusicLibraryRepository {
   MusicLibraryRepository(this._db) : ingestion = MixlistIngestion(_db);
 
-  final Database _db;
+  Database _db;
 
   /// Get-or-create/dedup logic lives in `package:mixlists_core` now, shared
   /// with the Mixlists Importer CLI -- see [MixlistIngestion].
-  final MixlistIngestion ingestion;
+  MixlistIngestion ingestion;
 
   final Map<MixlistFilter, Future<Map<int, List<MixlistSummary>>>>
   _duplicateSongIndexFutures = {};
@@ -40,4 +40,19 @@ class MusicLibraryRepository {
   Future<List<String>>? _allLabelsFuture;
 
   Future<void> close() => _db.close();
+
+  /// Swaps the live database out from under this repository -- used when
+  /// switching the active library. Closes the old db, rebuilds
+  /// [ingestion] against the new one (it closes over the old `_db`
+  /// otherwise), and invalidates every indefinitely-cached query so the
+  /// next read reflects the new library rather than stale data from the
+  /// old one.
+  Future<void> switchTo(Database newDb) async {
+    await _db.close();
+    _db = newDb;
+    ingestion = MixlistIngestion(newDb);
+    _allGenresFuture = null;
+    _allLabelsFuture = null;
+    _duplicateSongIndexFutures.clear();
+  }
 }

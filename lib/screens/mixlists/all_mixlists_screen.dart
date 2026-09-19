@@ -4,8 +4,10 @@ import 'package:mixlists_project/data/filter/mixlist_filter.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
+import 'package:mixlists_project/screens/mixlists/add_mixlist_screen.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/mixlist_tile.dart';
+import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 class AllMixlistsScreen extends StatefulWidget {
   const AllMixlistsScreen({super.key});
@@ -109,6 +111,18 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
         backgroundColor: Colors.lightBlueAccent,
         actions: [
           if (!_isMarkingMode) const MixlistFilterToggle(),
+          if (!_isMarkingMode)
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: 'Add Mixlist',
+              onPressed: () async {
+                final added = await Navigator.push<bool>(
+                  context,
+                  QuickStylePageRoute(builder: (context) => const AddMixlistScreen()),
+                );
+                if (added == true) _loadData();
+              },
+            ),
           IconButton(
             icon: Icon(_isMarkingMode ? Icons.close : Icons.playlist_add_check),
             tooltip: _isMarkingMode ? 'Cancel marking' : 'Mark Mixlists',

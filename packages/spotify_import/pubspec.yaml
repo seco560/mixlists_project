@@ -1,0 +1,22 @@
+name: spotify_import
+description: >
+  Spotify OAuth (PKCE) + Web API client and import orchestration for
+  Mixlists, shared between the app and (formerly) the Mixlists Importer
+  CLI. Pure Dart, no Flutter dependency -- platform-specific redirect
+  capture and mobile secure token storage live in app code instead.
+publish_to: 'none'
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  http: ^1.2.0
+  crypto: ^3.0.3
+  mixlists_core:
+    path: ../mixlists_core
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.0
