@@ -59,7 +59,7 @@ DatabaseFactory _resolveDatabaseFactory() {
     // Handles performance issues on mobile web
     return databaseFactoryFfiWebNoWebWorker;
   }
-  if (Platform.isLinux) {
+  if (Platform.isLinux || Platform.isWindows) {
     sqfliteFfiInit();
     return databaseFactoryFfi;
   }
