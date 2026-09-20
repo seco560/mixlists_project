@@ -17,6 +17,7 @@ class LibraryTile extends StatelessWidget {
     required this.onTap,
     this.onRename,
     this.onDelete,
+    this.onExport,
   });
 
   final LibraryRecord library;
@@ -24,6 +25,7 @@ class LibraryTile extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onRename;
   final VoidCallback? onDelete;
+  final VoidCallback? onExport;
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +40,13 @@ class LibraryTile extends StatelessWidget {
         subtitle: Text(
           '${library.origin.label} · ${library.createdAt.toString().split(' ').first}',
         ),
-        trailing: (onRename == null && onDelete == null)
+        trailing: (onRename == null && onDelete == null && onExport == null)
             ? null
             : PopupMenuButton<VoidCallback>(
                 onSelected: (action) => action(),
                 itemBuilder: (context) => [
+                  if (onExport != null)
+                    PopupMenuItem(value: onExport, child: const Text('Export')),
                   if (onRename != null)
                     PopupMenuItem(value: onRename, child: const Text('Rename')),
                   if (onDelete != null)

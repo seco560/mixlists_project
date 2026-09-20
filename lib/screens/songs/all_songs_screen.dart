@@ -264,6 +264,7 @@ class _AllSongsScreenState extends State<AllSongsScreen> {
     return Material(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: () =>
             setState(() => _oneHitWondersExpanded = !_oneHitWondersExpanded),
         child: Column(

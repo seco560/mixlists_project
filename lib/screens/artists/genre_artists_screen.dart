@@ -4,14 +4,16 @@ import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
+import 'package:mixlists_project/widgets/category_sort_toggle.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 /// Every artist tagged with [genre] -- reached from a genre chip on
 /// [ArtistDetailScreen], a "Genres" search result, or [AllGenresScreen].
-/// A plain flat list, not the sortable All Artists grid -- genres are
-/// typically small, browsable groupings that don't need column sorting.
+/// Sortable by song count or alphabetically via [CategorySortToggle], like
+/// [AllGenresScreen] -- not the multi-column All Artists grid, which is a
+/// separate bespoke widget (see that class's doc comment).
 class GenreArtistsScreen extends StatefulWidget {
   const GenreArtistsScreen({super.key, required this.genre});
 
@@ -26,6 +28,7 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
   bool _isLoading = false;
   String? _previousGenre;
   String? _nextGenre;
+  CategorySortOrder _sortOrder = CategorySortOrder.byCount;
 
   @override
   void initState() {
@@ -69,6 +72,24 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
         ).showSnackBar(SnackBar(content: Text('Error loading artists: $e')));
       }
     }
+  }
+
+  /// [_artists] sorted per [_sortOrder] -- computed on demand, not stored.
+  List<ArtistOverview> get _sortedArtists {
+    final artists = List.of(_artists);
+    if (_sortOrder == CategorySortOrder.alphabetical) {
+      artists.sort(
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+      );
+      return artists;
+    }
+    artists.sort((a, b) {
+      final byCount = b.uniqueSongCount.compareTo(a.uniqueSongCount);
+      return byCount != 0
+          ? byCount
+          : a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    });
+    return artists;
   }
 
   void _openArtist(ArtistOverview artist) {
@@ -119,6 +140,9 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
     ];
     return Expanded(
       child: InkWell(
+        mouseCursor: genre == null
+            ? MouseCursor.defer
+            : SystemMouseCursors.click,
         onTap: genre == null
             ? null
             : () => _goToGenre(genre, asBack: isPrevious),
@@ -165,7 +189,13 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
       appBar: AppBar(
         title: Text("${widget.genre} Artists"),
         centerTitle: true,
-        actions: const [MixlistFilterToggle()],
+        actions: [
+          CategorySortToggle(
+            value: _sortOrder,
+            onChanged: (order) => setState(() => _sortOrder = order),
+          ),
+          const MixlistFilterToggle(),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -178,15 +208,15 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
                     child: Center(child: Text("No data found")),
                   )
                 else
-                  for (var i = 0; i < _artists.length; i++) ...[
+                  for (final (i, artist) in _sortedArtists.indexed) ...[
                     ListTile(
-                      title: Text(_artists[i].name, style: titleTextStyle),
+                      title: Text(artist.name, style: titleTextStyle),
                       subtitle: Text(
-                        '${_artists[i].uniqueSongCount} song${_artists[i].uniqueSongCount == 1 ? '' : 's'} • '
-                        '${_artists[i].mixlists.length} mixlist${_artists[i].mixlists.length == 1 ? '' : 's'}',
+                        '${artist.uniqueSongCount} song${artist.uniqueSongCount == 1 ? '' : 's'} • '
+                        '${artist.mixlists.length} mixlist${artist.mixlists.length == 1 ? '' : 's'}',
                         style: metaTextStyle,
                       ),
-                      onTap: () => _openArtist(_artists[i]),
+                      onTap: () => _openArtist(artist),
                     ),
                     if (i != _artists.length - 1)
                       Divider(),

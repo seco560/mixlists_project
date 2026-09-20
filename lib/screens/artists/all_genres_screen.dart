@@ -167,6 +167,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     return Material(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: () =>
             setState(() => _withoutGenreExpanded = !_withoutGenreExpanded),
         child: ListTile(

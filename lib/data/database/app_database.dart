@@ -74,6 +74,16 @@ Future<Database> openOrCreateLibraryDatabase(String dbFileName) async {
   );
 }
 
+/// Reads a library's raw sqlite file bytes -- for exporting a copy to a
+/// user-chosen location. Safe to call while the library is open elsewhere:
+/// nothing here uses WAL mode, so the on-disk file is always a complete,
+/// self-contained snapshot rather than split across a separate WAL file.
+Future<Uint8List> readLibraryDatabaseBytes(String dbFileName) async {
+  final factory = _resolveDatabaseFactory();
+  final path = await _resolveLibraryPath(dbFileName);
+  return factory.readDatabaseBytes(path);
+}
+
 Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
   if (oldVersion < 2) {
     await createSchemaV2Indexes(db);

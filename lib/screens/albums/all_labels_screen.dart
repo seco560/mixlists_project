@@ -164,6 +164,7 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
     return Material(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: () =>
             setState(() => _withoutLabelExpanded = !_withoutLabelExpanded),
         child: ListTile(

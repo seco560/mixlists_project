@@ -1,4 +1,6 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/database/app_database.dart';
 import 'package:mixlists_project/data/library/active_library_controller.dart';
 import 'package:mixlists_project/data/library/library_manager.dart';
 import 'package:mixlists_project/data/library/library_record.dart';
@@ -138,6 +140,36 @@ class _LibraryPickerScreenState extends State<LibraryPickerScreen> {
     }
   }
 
+  Future<void> _export(LibraryRecord library) async {
+    setState(() => _isBusy = true);
+    try {
+      final bytes = await readLibraryDatabaseBytes(library.dbFileName);
+      final fileName =
+          '${library.displayName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')}.db';
+      final savedUri = await FilePicker.saveFile(
+        fileName: fileName,
+        bytes: bytes,
+        mimeType: 'application/x-sqlite3',
+        dialogTitle: 'Export "${library.displayName}"',
+        type: FileType.custom,
+        allowedExtensions: ['db'],
+      );
+      if (!mounted) return;
+      if (savedUri != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Exported "${library.displayName}"')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not export library: $e')));
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
   Future<void> _showImportOptions() async {
     await showModalBottomSheet<void>(
       context: context,
@@ -204,6 +236,7 @@ class _LibraryPickerScreenState extends State<LibraryPickerScreen> {
                 onTap: _isBusy ? () {} : () => _switchTo(library),
                 onRename: _isBusy ? null : () => _rename(library),
                 onDelete: (_isBusy || isBundled) ? null : () => _delete(library),
+                onExport: _isBusy ? null : () => _export(library),
               );
             },
           );

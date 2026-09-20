@@ -256,6 +256,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
     return Material(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
         onTap: () =>
             setState(() => _oneHitWondersExpanded = !_oneHitWondersExpanded),
         child: Column(
@@ -315,6 +316,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
 
   Widget _buildRow(ArtistOverview artist, List<double> widths, int rowNumber) {
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: () => Navigator.push(
         context,
         QuickStylePageRoute(

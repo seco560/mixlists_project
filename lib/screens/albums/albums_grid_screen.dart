@@ -123,6 +123,9 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
     ];
     return Expanded(
       child: InkWell(
+        mouseCursor: recordLabel == null
+            ? MouseCursor.defer
+            : SystemMouseCursors.click,
         onTap: recordLabel == null
             ? null
             : () => _goToLabel(recordLabel, asBack: isPrevious),

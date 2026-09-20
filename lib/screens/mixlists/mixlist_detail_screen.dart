@@ -263,6 +263,9 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     ];
     return Expanded(
       child: InkWell(
+        mouseCursor: mixlist == null
+            ? MouseCursor.defer
+            : SystemMouseCursors.click,
         onTap: mixlist == null
             ? null
             : () => _goToMixlist(mixlist, asBack: isPrevious),

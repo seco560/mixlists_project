@@ -48,7 +48,13 @@ class SongTableHeaderCell extends StatelessWidget {
     );
     return SizedBox(
       width: width,
-      child: onTap == null ? content : InkWell(onTap: onTap, child: content),
+      child: onTap == null
+          ? content
+          : InkWell(
+              onTap: onTap,
+              mouseCursor: SystemMouseCursors.click,
+              child: content,
+            ),
     );
   }
 }

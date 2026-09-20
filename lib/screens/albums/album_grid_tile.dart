@@ -24,6 +24,7 @@ class AlbumGridTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: () {
         Navigator.push(
           context,

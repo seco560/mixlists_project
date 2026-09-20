@@ -246,11 +246,14 @@ class _TrackTileState extends State<TrackTile> with TickerProviderStateMixin {
     );
     return ListTile(
       leading: hasDuplicates
-          ? GestureDetector(
-              onTap: _toggleExpanded,
-              child: Badge(
-                label: Text('${widget.otherMixlists.length}'),
-                child: art,
+          ? MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: _toggleExpanded,
+                child: Badge(
+                  label: Text('${widget.otherMixlists.length}'),
+                  child: art,
+                ),
               ),
             )
           : art,

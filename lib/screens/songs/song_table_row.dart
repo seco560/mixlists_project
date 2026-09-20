@@ -87,6 +87,7 @@ class _SongTableRowState extends State<SongTableRow>
     final totalRowWidth = widths.reduce((a, b) => a + b);
 
     return InkWell(
+      mouseCursor: SystemMouseCursors.click,
       onTap: isOneHitWonder
           ? () => widget.onOpenMixlist(song.mixlists.first.id, song.id)
           : _toggleExpanded,
