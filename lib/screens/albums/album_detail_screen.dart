@@ -106,7 +106,6 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
       appBar: AppBar(
         title: Text(album.name),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
         actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading

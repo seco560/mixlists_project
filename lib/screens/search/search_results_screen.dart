@@ -114,7 +114,6 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       appBar: AppBar(
         title: Text('Search: "${widget.query}"'),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

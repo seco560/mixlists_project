@@ -179,7 +179,6 @@ class _AllSongsScreenState extends State<AllSongsScreen> {
       appBar: AppBar(
         title: Text("All Songs"),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
         actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading

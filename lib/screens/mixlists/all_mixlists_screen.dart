@@ -108,7 +108,6 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
       appBar: AppBar(
         title: Text("All Mixlists"),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
         actions: [
           if (!_isMarkingMode) const MixlistFilterToggle(),
           if (!_isMarkingMode)
@@ -135,7 +134,7 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
           : _mixlists.isEmpty
           ? const Center(child: Text("No data found"))
           : ListView.separated(
-              separatorBuilder: (_, _) => Divider(color: Colors.blueGrey),
+              separatorBuilder: (_, _) => Divider(),
               itemCount: _mixlists.length,
               itemBuilder: (context, index) {
                 final mixlist = _mixlists[index];

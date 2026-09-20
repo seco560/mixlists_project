@@ -117,7 +117,6 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
       appBar: AppBar(
         title: const Text("Labels"),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
         actions: [
           CategorySortToggle(
             value: _sortOrder,
@@ -132,7 +131,7 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
           ? const Center(child: Text("No data found"))
           : ListView(
               children: [
-                Divider(color: Colors.blueGrey),
+                Divider(),
                 for (final label in _sortedLabels) ...[
                   ListTile(
                     leading: const Icon(Icons.business_outlined),
@@ -143,7 +142,7 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
                     ),
                     onTap: () => _openLabel(label),
                   ),
-                  Divider(color: Colors.blueGrey),
+                  Divider(),
                 ],
                 if (_albumsWithoutLabel.isNotEmpty) ...[
                   _buildWithoutLabelRow(),
@@ -153,7 +152,7 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
                         album: album,
                         onTap: () => _openAlbum(album),
                       ),
-                  Divider(color: Colors.blueGrey),
+                  Divider(),
                 ],
               ],
             ),

@@ -371,7 +371,7 @@ class _YAxis extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mid = (domainMin + domainMax) / 2;
-    final axisColor = Colors.blueGrey.shade200;
+    final axisColor = Theme.of(context).dividerColor;
 
     Widget tickRow(double value) {
       return Row(

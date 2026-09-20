@@ -125,7 +125,6 @@ class _AddMixlistScreenState extends State<AddMixlistScreen> {
       appBar: AppBar(
         title: const Text('Add New Mixlist'),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
       ),
       body: picked == null
           ? Center(

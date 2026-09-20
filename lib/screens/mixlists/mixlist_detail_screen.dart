@@ -322,21 +322,21 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
               children:
                   [
                     _buildMixlistNavigationPane(),
-                    Divider(color: Colors.blueGrey),
+                    Divider(),
                     for (var i = 0; i < _tracks.length; i++) ...[
                       _buildTrackTile(_tracks[i]),
                       if (i != _tracks.length - 1)
-                        Divider(color: Colors.blueGrey),
+                        Divider(),
                     ],
                   ] +
                   [
-                    Divider(color: Colors.blueGrey),
+                    Divider(),
                     SectionHeader('Album Release Year Spread'),
                     YearAlbumArtHistogram(entriesByYear: _releaseYearEntries()),
-                    Divider(color: Colors.blueGrey),
+                    Divider(),
                     SectionHeader('Audio Features'),
                     MixlistAudioFeatureChart(tracks: _tracks),
-                    Divider(color: Colors.blueGrey),
+                    Divider(),
                     _buildMixlistNavigationPane(),
                     const SizedBox(height: 16),
                   ],

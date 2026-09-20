@@ -9,6 +9,8 @@ import 'package:mixlists_project/data/spotify/spotify_client_id_store.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/screens/home/home_screen.dart';
+import 'package:mixlists_project/theme/app_theme.dart';
+import 'package:mixlists_project/theme/theme_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -23,6 +25,7 @@ void main() async {
   getIt.registerSingleton<ActiveLibraryController>(ActiveLibraryController(record));
   getIt.registerSingleton<SpotifyClientIdStore>(SpotifyClientIdStore(prefs));
   getIt.registerSingleton<MixlistFilterController>(MixlistFilterController());
+  getIt.registerSingleton<ThemeController>(ThemeController.load(prefs));
   unawaited(
     getIt<MusicLibraryRepository>().duplicateSongIndex(
       filter: getIt<MixlistFilterController>().value,
@@ -46,12 +49,17 @@ class MixlistsMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'The Mixlists Project',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepOrange)),
-      debugShowCheckedModeBanner: false,
-      scrollBehavior: _AppScrollBehavior(),
-      home: HomeScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: getIt<ThemeController>(),
+      builder: (context, themeMode, _) => MaterialApp(
+        title: 'The Mixlists Project',
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: themeMode,
+        debugShowCheckedModeBanner: false,
+        scrollBehavior: _AppScrollBehavior(),
+        home: const HomeScreen(),
+      ),
     );
   }
 }

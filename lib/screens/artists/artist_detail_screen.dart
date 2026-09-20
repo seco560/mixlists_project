@@ -144,7 +144,6 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
       appBar: AppBar(
         title: Text(artist.name),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
         actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading

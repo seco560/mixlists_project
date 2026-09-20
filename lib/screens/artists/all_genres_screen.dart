@@ -120,7 +120,6 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
       appBar: AppBar(
         title: const Text("Genres"),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
         actions: [
           CategorySortToggle(
             value: _sortOrder,
@@ -135,7 +134,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
           ? const Center(child: Text("No data found"))
           : ListView(
               children: [
-                Divider(color: Colors.blueGrey),
+                Divider(),
                 for (final genre in _sortedGenres) ...[
                   ListTile(
                     leading: const Icon(Icons.sell_outlined),
@@ -146,7 +145,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
                     ),
                     onTap: () => _openGenre(genre),
                   ),
-                  Divider(color: Colors.blueGrey),
+                  Divider(),
                 ],
                 if (_artistsWithoutGenre.isNotEmpty) ...[
                   _buildWithoutGenreRow(),
@@ -156,7 +155,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
                         artist: artist,
                         onTap: () => _openArtist(artist),
                       ),
-                  Divider(color: Colors.blueGrey),
+                  Divider(),
                 ],
               ],
             ),

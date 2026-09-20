@@ -174,7 +174,6 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
               : "${widget.recordLabel} Albums",
         ),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
         actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading
@@ -217,7 +216,7 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
                         ),
                       ),
                     if (isLabelScoped) ...[
-                      Divider(color: Colors.blueGrey),
+                      Divider(),
                       _buildLabelNavigationPane(),
                     ],
                   ],

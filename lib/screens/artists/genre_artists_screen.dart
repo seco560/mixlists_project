@@ -165,14 +165,13 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
       appBar: AppBar(
         title: Text("${widget.genre} Artists"),
         centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
         actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               children: [
-                Divider(color: Colors.blueGrey),
+                Divider(),
                 if (_artists.isEmpty)
                   const Padding(
                     padding: EdgeInsets.all(24),
@@ -190,9 +189,9 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
                       onTap: () => _openArtist(_artists[i]),
                     ),
                     if (i != _artists.length - 1)
-                      Divider(color: Colors.blueGrey),
+                      Divider(),
                   ],
-                Divider(color: Colors.blueGrey),
+                Divider(),
                 _buildGenreNavigationPane(),
               ],
             ),

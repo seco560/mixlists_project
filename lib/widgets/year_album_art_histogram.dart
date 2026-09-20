@@ -60,7 +60,6 @@ class _YearAlbumArtHistogramState extends State<YearAlbumArtHistogram> {
     const divider = VerticalDivider(
       width: YearAlbumArtHistogram._yearDividerWidth,
       thickness: 1,
-      color: Colors.blueGrey,
     );
 
     return Scrollbar(
@@ -108,7 +107,7 @@ class _YearAlbumArtHistogramState extends State<YearAlbumArtHistogram> {
               bottom:
                   YearAlbumArtHistogram._yearLabelHeight +
                   YearAlbumArtHistogram._labelGap / 2,
-              child: Divider(height: 1, thickness: 1, color: Colors.blueGrey),
+              child: Divider(height: 1, thickness: 1),
             ),
           ],
         ),

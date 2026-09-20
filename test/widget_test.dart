@@ -13,12 +13,14 @@ import 'package:mixlists_project/data/library/active_library_controller.dart';
 import 'package:mixlists_project/data/library/library_record.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/main.dart';
+import 'package:mixlists_project/theme/theme_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  setUp(() {
-    // Normally done by main() -- HomeScreen's MixlistFilterToggle and
-    // active-library subtitle need these registered, and this test pumps
-    // MixlistsMain directly rather than going through main().
+  setUp(() async {
+    // Normally done by main() -- HomeScreen's MixlistFilterToggle,
+    // active-library subtitle, and theme toggle need these registered, and
+    // this test pumps MixlistsMain directly rather than going through main().
     getIt.registerSingleton<MixlistFilterController>(MixlistFilterController());
     getIt.registerSingleton<ActiveLibraryController>(
       ActiveLibraryController(
@@ -31,6 +33,9 @@ void main() {
         ),
       ),
     );
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    getIt.registerSingleton<ThemeController>(ThemeController.load(prefs));
   });
 
   tearDown(() {

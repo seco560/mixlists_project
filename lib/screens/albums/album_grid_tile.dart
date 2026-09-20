@@ -10,11 +10,7 @@ const _subtitleTextStyle = TextStyle(
   fontWeight: .w500,
   height: 1.2,
 );
-const _metaTextStyle = TextStyle(
-  fontSize: 12,
-  color: Colors.black54,
-  height: 1.2,
-);
+const _metaTextStyle = TextStyle(fontSize: 12, height: 1.2);
 
 class AlbumGridTile extends StatelessWidget {
   const AlbumGridTile({super.key, required this.album});
@@ -59,7 +55,9 @@ class AlbumGridTile extends StatelessWidget {
           ),
           Text(
             album.releaseDate.split('T')[0],
-            style: _metaTextStyle,
+            style: _metaTextStyle.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             maxLines: 1,
             overflow: .ellipsis,
           ),
