@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/screens/mixlists/add_mixlist_screen.dart';
+import 'package:mixlists_project/widgets/chronological_sort_toggle.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/mixlist_tile.dart';
 import 'package:mixlists_project/widgets/quick_style_page_route.dart';
@@ -21,6 +23,7 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
   bool _isLoading = false;
   bool _isMarkingMode = false;
   Set<int> _markedIds = {};
+  ChronologicalOrder _order = ChronologicalOrder.chronological;
 
   @override
   void initState() {
@@ -41,6 +44,28 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
   MixlistFilter get _effectiveFilter => _isMarkingMode
       ? MixlistFilter.all
       : getIt<MixlistFilterController>().value;
+
+  /// The real global filter, regardless of marking mode's [_effectiveFilter]
+  /// override -- used for wording (header, "Add ..." tooltip) so those
+  /// don't flip to "All Playlists"/generic wording just because marking
+  /// mode is temporarily showing everything.
+  MixlistFilter get _globalFilter => getIt<MixlistFilterController>().value;
+
+  /// [_mixlists] (always fetched oldest-first, see `getAllMixlists`) paired
+  /// with each entry's display number computed from that same chronological
+  /// order, then put in the order [_order] actually wants to display --
+  /// so reversing the display never renumbers anything, it just walks the
+  /// same numbers back to front.
+  List<(Mixlist mixlist, int displayNumber)> get _displayItems {
+    final showingAll = _effectiveFilter == MixlistFilter.all;
+    final items = [
+      for (var i = 0; i < _mixlists.length; i++)
+        (_mixlists[i], showingAll ? _mixlists[i].id : i + 1),
+    ];
+    return _order == ChronologicalOrder.chronological
+        ? items
+        : items.reversed.toList();
+  }
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
@@ -103,17 +128,22 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final showingAll = _effectiveFilter == MixlistFilter.all;
+    final displayItems = _displayItems;
     return Scaffold(
       appBar: AppBar(
-        title: Text("All Mixlists"),
+        title: Text(_globalFilter.allScreenHeader),
         centerTitle: true,
         actions: [
+          if (!_isMarkingMode)
+            ChronologicalSortToggle(
+              value: _order,
+              onChanged: (order) => setState(() => _order = order),
+            ),
           if (!_isMarkingMode) const MixlistFilterToggle(),
           if (!_isMarkingMode)
             IconButton(
               icon: const Icon(Icons.add),
-              tooltip: 'Add Mixlist',
+              tooltip: 'Add ${_globalFilter.playlistNounSingular}',
               onPressed: () async {
                 final added = await Navigator.push<bool>(
                   context,
@@ -135,12 +165,12 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
           ? const Center(child: Text("No data found"))
           : ListView.separated(
               separatorBuilder: (_, _) => Divider(),
-              itemCount: _mixlists.length,
+              itemCount: displayItems.length,
               itemBuilder: (context, index) {
-                final mixlist = _mixlists[index];
+                final (mixlist, displayNumber) = displayItems[index];
                 return MixlistTile(
                   mixlist: mixlist,
-                  displayNumber: showingAll ? mixlist.id : index + 1,
+                  displayNumber: displayNumber,
                   isMarking: _isMarkingMode,
                   isMarked: _markedIds.contains(mixlist.id),
                   onToggleMarked: _toggleMarked,

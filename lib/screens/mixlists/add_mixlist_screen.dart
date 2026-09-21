@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/import/mixlist_import_service.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/get_it_init.dart';
@@ -113,7 +115,14 @@ class _AddMixlistScreenState extends State<AddMixlistScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error importing mixlist: $e')));
+        ).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error importing '
+              '${getIt<MixlistFilterController>().value.playlistNounSingularLower}: $e',
+            ),
+          ),
+        );
       }
     }
   }
@@ -121,9 +130,10 @@ class _AddMixlistScreenState extends State<AddMixlistScreen> {
   @override
   Widget build(BuildContext context) {
     final picked = _picked;
+    final playlistNoun = getIt<MixlistFilterController>().value.playlistNounSingular;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Mixlist'),
+        title: Text('Add New $playlistNoun'),
         centerTitle: true,
       ),
       body: picked == null
@@ -154,9 +164,9 @@ class _AddMixlistScreenState extends State<AddMixlistScreen> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: _titleController,
-                    decoration: const InputDecoration(
-                      labelText: 'Mixlist Title',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: '$playlistNoun Title',
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -196,7 +206,7 @@ class _AddMixlistScreenState extends State<AddMixlistScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text('Import Mixlist'),
+                            : Text('Import $playlistNoun'),
                       ),
                     ],
                   ),

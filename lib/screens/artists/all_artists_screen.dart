@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
@@ -18,21 +19,28 @@ class AllArtistsScreen extends StatefulWidget {
 }
 
 class _AllArtistsScreenState extends State<AllArtistsScreen> {
-  static const _columnLabels = [
-    '#',
-    'Name',
-    'Appearances',
-    'Songs',
-    'Albums',
-    'Mixlists',
-  ];
   static const _fixedColumnWidths = [60.0, 90.0, 100.0, 90.0, 80.0];
   static const _minNameWidth = 220.0;
   static const _columnIsNumeric = [true, false, true, true, true, true];
   static const _columnIsSortable = [false, true, true, true, true, true];
   static const _nameColumnIndex = 1;
   static const _appearancesColumnIndex = 2;
-  static const _smallHeaderFontLabels = {'Appearances', 'Mixlists'};
+  static const _mixlistsColumnIndex = 5;
+
+  /// Column headers -- "Mixlists"/"Playlists" follows the current global
+  /// filter like every other generic playlist-count label in the app.
+  List<String> get _columnLabels => [
+    '#',
+    'Name',
+    'Appearances',
+    'Songs',
+    'Albums',
+    getIt<MixlistFilterController>().value.playlistNounPlural,
+  ];
+  static const _smallHeaderFontColumnIndices = {
+    _appearancesColumnIndex,
+    _mixlistsColumnIndex,
+  };
 
   static const _headerTextStyle = TextStyle(
     fontSize: 14,
@@ -240,7 +248,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
           ArtistTableHeaderCell(
             width: widths[i],
             label: _columnLabels[i],
-            textStyle: _smallHeaderFontLabels.contains(_columnLabels[i])
+            textStyle: _smallHeaderFontColumnIndices.contains(i)
                 ? _headerTextStyle.copyWith(fontSize: 12)
                 : _headerTextStyle,
             numeric: _columnIsNumeric[i],

@@ -34,9 +34,20 @@ const _keyNames = [
 /// orderable by track order or by value. Tracks with no data render as a
 /// muted "no data" marker instead of a misleading zero-height bar.
 class MixlistAudioFeatureChart extends StatefulWidget {
-  const MixlistAudioFeatureChart({super.key, required this.tracks});
+  const MixlistAudioFeatureChart({
+    super.key,
+    required this.tracks,
+    this.playlistNounSingular = 'Mixlist',
+  });
 
   final List<MixlistTrack> tracks;
+
+  /// "Mixlist" or "Playlist" -- the caller's current
+  /// `MixlistFilter.playlistNounSingular`, threaded in rather than read
+  /// from GetIt here so this widget stays a pure, DI-free unit (see its
+  /// test file, which constructs it directly with no service locator
+  /// setup).
+  final String playlistNounSingular;
 
   @override
   State<MixlistAudioFeatureChart> createState() =>
@@ -145,8 +156,9 @@ class _MixlistAudioFeatureChartState extends State<MixlistAudioFeatureChart> {
           children: [
             _controls(),
             const SizedBox(height: 12),
-            const Text(
-              'No audio feature data for this mixlist yet.',
+            Text(
+              'No audio feature data for this '
+              '${widget.playlistNounSingular.toLowerCase()} yet.',
               style: metaTextStyle,
             ),
           ],
@@ -244,16 +256,16 @@ class _MixlistAudioFeatureChartState extends State<MixlistAudioFeatureChart> {
           },
         ),
         SegmentedButton<_SortMode>(
-          segments: const [
+          segments: [
             ButtonSegment(
               value: _SortMode.trackOrder,
-              label: Text('Mixlist Order'),
+              label: Text('${widget.playlistNounSingular} Order'),
             ),
-            ButtonSegment(
+            const ButtonSegment(
               value: _SortMode.ascending,
               label: Text('Low → High'),
             ),
-            ButtonSegment(
+            const ButtonSegment(
               value: _SortMode.descending,
               label: Text('High → Low'),
             ),

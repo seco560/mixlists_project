@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
@@ -140,6 +141,8 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final artist = _artist;
+    final playlistNounPlural =
+        getIt<MixlistFilterController>().value.playlistNounPlural;
     return Scaffold(
       appBar: AppBar(
         title: Text(artist.name),
@@ -174,10 +177,10 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                     ),
                   ),
                 const Divider(height: 32),
-                SectionHeader('Added to Mixlists Over Time'),
+                SectionHeader('Added to $playlistNounPlural Over Time'),
                 YearAlbumArtHistogram(entriesByYear: _addedOverTimeEntries()),
                 const Divider(height: 32),
-                SectionHeader('Songs on Mixlists (${_songs.length})'),
+                SectionHeader('Songs on $playlistNounPlural (${_songs.length})'),
                 if (_songs.isEmpty)
                   const EmptySectionTile()
                 else

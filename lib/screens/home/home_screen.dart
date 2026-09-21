@@ -8,6 +8,7 @@ import 'package:mixlists_project/screens/albums/all_labels_screen.dart';
 import 'package:mixlists_project/screens/artists/all_artists_screen.dart';
 import 'package:mixlists_project/screens/artists/all_genres_screen.dart';
 import 'package:mixlists_project/screens/home/home_nav_card.dart';
+import 'package:mixlists_project/screens/home/playlists_filter_label.dart';
 import 'package:mixlists_project/screens/home/search_field.dart';
 import 'package:mixlists_project/screens/library/library_picker_screen.dart';
 import 'package:mixlists_project/screens/mixlists/all_mixlists_screen.dart';
@@ -81,7 +82,7 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(height: 24),
                       HomeNavCard(
                         icon: Icons.queue_music,
-                        label: 'Mixlists',
+                        title: const PlaylistsFilterLabel(),
                         onTap: () {
                           Navigator.push(
                             context,

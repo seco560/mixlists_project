@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
+import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/screens/search/search_results_screen.dart';
 import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
@@ -36,15 +40,19 @@ class _SearchFieldState extends State<SearchField> {
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
-        child: TextField(
-          controller: _controller,
-          decoration: const InputDecoration(
-            hintText: 'Search mixlists, artists, albums, songs',
-            prefixIcon: Icon(Icons.search),
-            border: OutlineInputBorder(),
+        child: ValueListenableBuilder<MixlistFilter>(
+          valueListenable: getIt<MixlistFilterController>(),
+          builder: (context, filter, _) => TextField(
+            controller: _controller,
+            decoration: InputDecoration(
+              hintText:
+                  'Search ${filter.playlistNounPluralLower}, artists, albums, songs',
+              prefixIcon: const Icon(Icons.search),
+              border: const OutlineInputBorder(),
+            ),
+            textInputAction: TextInputAction.search,
+            onSubmitted: _search,
           ),
-          textInputAction: TextInputAction.search,
-          onSubmitted: _search,
         ),
       ),
     );

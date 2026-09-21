@@ -179,6 +179,31 @@ extension MixlistQueries on MusicLibraryRepository {
     return rows.map(MixlistTrack.fromMap).toList();
   }
 
+  /// Up to [limit] distinct album cover URLs for [mixlistId], in track
+  /// order -- for the small cover-art mosaic [PlaylistCoverGrid] shows as
+  /// a playlist's leading thumbnail, Spotify-style. `null` entries (no
+  /// cover art on that album) are included so the caller can still tell
+  /// how many albums were found vs. left as an empty mosaic cell.
+  Future<List<String?>> getMixlistCoverArt(
+    int mixlistId, {
+    int limit = 4,
+  }) async {
+    final rows = await _db.rawQuery(
+      '''
+      SELECT al.coverImageURL AS coverImageURL, MIN(sm.positionIndex) AS minPosition
+      FROM SongsMixlists sm
+      JOIN Songs s ON s.id = sm.song
+      JOIN Albums al ON al.id = s.album
+      WHERE sm.mixlist = ?
+      GROUP BY al.id
+      ORDER BY minPosition ASC
+      LIMIT ?
+    ''',
+      [mixlistId, limit],
+    );
+    return rows.map((row) => row['coverImageURL'] as String?).toList();
+  }
+
   /// Maps a song's id to every mixlist it's on, for songs on more than
   /// one within [filter] -- absent from the map otherwise, so
   /// `containsKey` doubles as the "is this a duplicate?" check.

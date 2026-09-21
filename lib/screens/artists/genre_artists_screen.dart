@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
@@ -90,6 +91,13 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
           : a.name.toLowerCase().compareTo(b.name.toLowerCase());
     });
     return artists;
+  }
+
+  String _playlistCountLabel(int count) {
+    final filter = getIt<MixlistFilterController>().value;
+    return count == 1
+        ? filter.playlistNounSingularLower
+        : filter.playlistNounPluralLower;
   }
 
   void _openArtist(ArtistOverview artist) {
@@ -213,7 +221,7 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
                       title: Text(artist.name, style: titleTextStyle),
                       subtitle: Text(
                         '${artist.uniqueSongCount} song${artist.uniqueSongCount == 1 ? '' : 's'} • '
-                        '${artist.mixlists.length} mixlist${artist.mixlists.length == 1 ? '' : 's'}',
+                        '${artist.mixlists.length} ${_playlistCountLabel(artist.mixlists.length)}',
                         style: metaTextStyle,
                       ),
                       onTap: () => _openArtist(artist),

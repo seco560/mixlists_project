@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/models/mixlist_summary.dart';
+import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/explicit_badge.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
@@ -133,7 +136,10 @@ class _SongMixlistTileState extends State<SongMixlistTile>
                   ),
                 )
               : ActionChip(
-                  label: Text('${mixlists.length} mixlists'),
+                  label: Text(
+                    '${mixlists.length} '
+                    '${getIt<MixlistFilterController>().value.playlistNounPluralLower}',
+                  ),
                   onPressed: _toggleExpanded,
                 ),
           onTap: hasSingleMixlist

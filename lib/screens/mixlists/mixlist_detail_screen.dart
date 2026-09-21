@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/repository/duplicate_song_index_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
@@ -291,18 +292,20 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   }
 
   Widget _buildMixlistNavigationPane() {
+    final playlistNoun =
+        getIt<MixlistFilterController>().value.playlistNounSingularLower;
     return Row(
       children: [
         _buildMixlistNavButton(
           icon: Icons.arrow_back,
-          label: 'Previous mixlist',
+          label: 'Previous $playlistNoun',
           mixlist: _previousMixlist,
           alignEnd: false,
           isPrevious: true,
         ),
         _buildMixlistNavButton(
           icon: Icons.arrow_forward,
-          label: 'Next mixlist',
+          label: 'Next $playlistNoun',
           mixlist: _nextMixlist,
           alignEnd: true,
           isPrevious: false,
@@ -343,7 +346,12 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
                     YearAlbumArtHistogram(entriesByYear: _releaseYearEntries()),
                     Divider(),
                     SectionHeader('Audio Features'),
-                    MixlistAudioFeatureChart(tracks: _tracks),
+                    MixlistAudioFeatureChart(
+                      tracks: _tracks,
+                      playlistNounSingular: getIt<MixlistFilterController>()
+                          .value
+                          .playlistNounSingular,
+                    ),
                     Divider(),
                     _buildMixlistNavigationPane(),
                     const SizedBox(height: 16),

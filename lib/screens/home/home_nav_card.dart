@@ -4,12 +4,22 @@ class HomeNavCard extends StatelessWidget {
   const HomeNavCard({
     super.key,
     required this.icon,
-    required this.label,
+    this.label,
+    this.title,
     required this.onTap,
-  });
+  }) : assert(label != null || title != null);
 
   final IconData icon;
-  final String label;
+
+  /// Ignored when [title] is given -- an override for the common case of
+  /// a plain, static label.
+  final String? label;
+
+  /// Overrides [label] entirely when given, for a card whose title needs
+  /// to be more than static text (e.g. [PlaylistsFilterLabel]'s animated
+  /// swap).
+  final Widget? title;
+
   final VoidCallback onTap;
 
   @override
@@ -18,10 +28,12 @@ class HomeNavCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: ListTile(
         leading: Icon(icon),
-        title: Text(
-          label,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
+        title:
+            title ??
+            Text(
+              label!,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,
       ),

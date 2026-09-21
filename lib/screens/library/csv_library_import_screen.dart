@@ -4,6 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/data/database/app_database.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/library/active_library_controller.dart';
 import 'package:mixlists_project/data/library/library_manager.dart';
 import 'package:mixlists_project/data/library/library_record.dart';
@@ -116,7 +118,8 @@ class _CsvLibraryImportScreenState extends State<CsvLibraryImportScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Import complete'),
         content: Text(
-          '$imported mixlist(s) imported into "$libraryName". Switch to it now?',
+          '$imported ${getIt<MixlistFilterController>().value.playlistNounSingularLower}(s) '
+          'imported into "$libraryName". Switch to it now?',
         ),
         actions: [
           TextButton(
@@ -151,7 +154,9 @@ class _CsvLibraryImportScreenState extends State<CsvLibraryImportScreen> {
           autofocus: true,
           decoration: InputDecoration(
             labelText: 'Library name',
-            helperText: '$mixlistCount mixlist(s) will be imported',
+            helperText:
+                '$mixlistCount ${getIt<MixlistFilterController>().value.playlistNounSingularLower}(s) '
+                'will be imported',
           ),
         ),
         actions: [
@@ -187,9 +192,10 @@ class _CsvLibraryImportScreenState extends State<CsvLibraryImportScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
+                    Text(
                       'Choose one or more CSV files -- each one becomes a '
-                      'mixlist in a brand-new library.',
+                      '${getIt<MixlistFilterController>().value.playlistNounSingularLower} '
+                      'in a brand-new library.',
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),

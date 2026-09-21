@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
@@ -144,7 +145,10 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     final sections = <List<Widget>>[
       if (results.mixlists.isNotEmpty)
         [
-          SectionHeader('Mixlists (${results.mixlists.length})'),
+          SectionHeader(
+            '${getIt<MixlistFilterController>().value.playlistNounPlural} '
+            '(${results.mixlists.length})',
+          ),
           for (final mixlist in results.mixlists) MixlistTile(mixlist: mixlist),
         ],
       if (results.artists.isNotEmpty)
