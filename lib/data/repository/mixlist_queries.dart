@@ -111,7 +111,10 @@ extension MixlistQueries on MusicLibraryRepository {
   }
 
   /// Sets `is_mixlists` for every mixlist id in [flags] to the given
-  /// value -- the write path for the "Mark Mixlists" screen.
+  /// value -- the write path for the "Mark Mixlists" screen. Invalidates
+  /// [MixlistScopeIndex] (built from this same flag) and notifies
+  /// listeners so caches outside this repository -- currently
+  /// [DuplicateSongIndexController] -- know to reload too.
   Future<void> setMixlistFlags(Map<int, bool> flags) async {
     final batch = _db.batch();
     for (final entry in flags.entries) {
@@ -123,6 +126,8 @@ extension MixlistQueries on MusicLibraryRepository {
       );
     }
     await batch.commit(noResult: true);
+    _mixlistScopeIndexFuture = null;
+    _notifyMutated();
   }
 
   /// All tracks in [mixlistId], in playback order, with the album name
@@ -176,20 +181,14 @@ extension MixlistQueries on MusicLibraryRepository {
 
   /// Maps a song's id to every mixlist it's on, for songs on more than
   /// one within [filter] -- absent from the map otherwise, so
-  /// `containsKey` doubles as the "is this a duplicate?" check. Cached
-  /// per [filter], since which mixlists count toward "duplicate" (and
-  /// which appearances get listed) depends on it.
+  /// `containsKey` doubles as the "is this a duplicate?" check.
+  ///
+  /// Uncached -- callers that want this kept warm and reloaded on filter/
+  /// library changes should go through [DuplicateSongIndexController]
+  /// instead of calling this directly.
   Future<Map<int, List<MixlistSummary>>> duplicateSongIndex({
     MixlistFilter filter = MixlistFilter.all,
-  }) {
-    return _duplicateSongIndexFutures[filter] ??= _loadDuplicateSongIndex(
-      filter,
-    );
-  }
-
-  Future<Map<int, List<MixlistSummary>>> _loadDuplicateSongIndex(
-    MixlistFilter filter,
-  ) async {
+  }) async {
     final outerFilterSql = _mixlistFilterSql(filter, 'm');
     final innerFilterSql = _mixlistFilterSql(filter, 'm2');
     final rows = await _db.rawQuery('''

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
@@ -27,15 +28,29 @@ class SearchResultsScreen extends StatefulWidget {
 }
 
 class _SearchResultsScreenState extends State<SearchResultsScreen> {
-  SearchResults? _results;
+  /// Unscoped -- re-filtered in memory by [_scopedResults] on every build,
+  /// rather than re-searching, whenever [MixlistFilterController] changes.
+  SearchResults? _rawResults;
   bool _isLoading = true;
   String? _error;
+
+  SearchResults? get _scopedResults =>
+      _rawResults?.scopedTo(getIt<MixlistFilterController>().value);
 
   @override
   void initState() {
     super.initState();
+    getIt<MixlistFilterController>().addListener(_onFilterChanged);
     _loadData();
   }
+
+  @override
+  void dispose() {
+    getIt<MixlistFilterController>().removeListener(_onFilterChanged);
+    super.dispose();
+  }
+
+  void _onFilterChanged() => setState(() {});
 
   Future<void> _loadData() async {
     try {
@@ -44,7 +59,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       );
       if (!mounted) return;
       setState(() {
-        _results = results;
+        _rawResults = results;
         _isLoading = false;
       });
     } catch (e) {
@@ -109,7 +124,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final results = _results;
+    final results = _scopedResults;
     return Scaffold(
       appBar: AppBar(
         title: Text('Search: "${widget.query}"'),

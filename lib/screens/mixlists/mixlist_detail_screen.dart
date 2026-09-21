@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/repository/duplicate_song_index_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/mixlist_summary.dart';
@@ -48,11 +49,17 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   @override
   void initState() {
     super.initState();
+    // Duplicate badges, the adjacent-mixlist pane, and the display number
+    // all depend on the current filter -- reload if it changes while this
+    // screen is open (e.g. navigating back to it after switching filters
+    // elsewhere), the same way every other filter-scoped screen does.
+    getIt<MixlistFilterController>().addListener(_loadData);
     _loadData();
   }
 
   @override
   void dispose() {
+    getIt<MixlistFilterController>().removeListener(_loadData);
     _scrollController.dispose();
     super.dispose();
   }
@@ -95,9 +102,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     try {
       final tracksFuture = repository.getTracksForMixlist(widget.mixlist.id);
       final filter = getIt<MixlistFilterController>().value;
-      final duplicateIndexFuture = repository.duplicateSongIndex(
-        filter: filter,
-      );
+      final duplicateIndexFuture = getIt<DuplicateSongIndexController>().ready;
       final adjacentFuture = repository.getAdjacentMixlists(
         widget.mixlist,
         filter: filter,

@@ -307,8 +307,10 @@ extension ArtistQueries on MusicLibraryRepository {
 
   /// Scoped counterpart of [getArtistOverviews] restricted to a known set
   /// of artists via `WHERE artist IN (...)`. Used by `SearchQueries`.
-  /// Not mixlist-filter-aware -- search results aren't one of the
-  /// filtered screens.
+  /// Each returned overview's own `albums`/`mixlists`/counts are always
+  /// unfiltered (unlike [getArtistOverviews]) -- `SearchResults.scopedTo`
+  /// only uses `MixlistScopeIndex` to decide whether to keep or drop the
+  /// artist entirely when the filter changes, not to thin what's inside.
   Future<List<ArtistOverview>> _artistOverviewsFor(List<Artist> matched) async {
     if (matched.isEmpty) return [];
     final ids = matched.map((a) => a.id).toList();

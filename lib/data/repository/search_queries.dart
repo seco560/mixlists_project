@@ -3,7 +3,14 @@ part of 'music_library_repository.dart';
 extension SearchQueries on MusicLibraryRepository {
   /// Every match across the library for [rawQuery], grouped by entity
   /// type in the order the Search Results screen renders them. A bare
-  /// 4-digit query (e.g. "1975") additionally matches Albums by release year
+  /// 4-digit query (e.g. "1975") additionally matches Albums by release
+  /// year.
+  ///
+  /// Not scoped to the current [MixlistFilter] itself -- the result
+  /// carries its own [MixlistScopeIndex] snapshot so the Search Results
+  /// screen can re-scope the same fetched [SearchResults] in memory via
+  /// [SearchResults.scopedTo] whenever the filter changes, rather than
+  /// re-querying per filter.
   Future<SearchResults> searchLibrary(String rawQuery) async {
     final query = rawQuery.trim();
     if (query.isEmpty) {
@@ -14,6 +21,7 @@ extension SearchQueries on MusicLibraryRepository {
         albums: [],
         labels: [],
         songs: [],
+        scopeIndex: MixlistScopeIndex.empty(),
       );
     }
 
@@ -30,6 +38,7 @@ extension SearchQueries on MusicLibraryRepository {
     );
     final labelsFuture = _searchLabels(query);
     final songsFuture = _searchSongs(likePattern);
+    final scopeIndexFuture = _mixlistScopeIndex;
 
     return SearchResults(
       mixlists: await mixlistsFuture,
@@ -38,6 +47,65 @@ extension SearchQueries on MusicLibraryRepository {
       albums: await albumsFuture,
       labels: await labelsFuture,
       songs: await songsFuture,
+      scopeIndex: await scopeIndexFuture,
+    );
+  }
+
+  /// Every artist/album/genre/record label's mixlist-vs-playlist scope,
+  /// cached indefinitely (invalidated on library switch and on
+  /// [setMixlistFlags], the only write path it depends on) -- see
+  /// [MixlistScopeIndex].
+  Future<MixlistScopeIndex> get _mixlistScopeIndex {
+    return _mixlistScopeIndexFuture ??= _loadMixlistScopeIndex();
+  }
+
+  Future<MixlistScopeIndex> _loadMixlistScopeIndex() async {
+    final rows = await _db.rawQuery('''
+      SELECT DISTINCT
+        al.artist      AS artistId,
+        al.id          AS albumId,
+        al.recordLabel AS recordLabel,
+        ar.genres      AS genres,
+        m.is_mixlists  AS isMixlist
+      FROM SongsMixlists sm
+      JOIN Songs s ON s.id = sm.song
+      JOIN Albums al ON al.id = s.album
+      JOIN Artists ar ON ar.id = al.artist
+      JOIN Mixlists m ON m.id = sm.mixlist
+    ''');
+
+    final mixlistArtistIds = <int>{};
+    final playlistArtistIds = <int>{};
+    final mixlistAlbumIds = <int>{};
+    final playlistAlbumIds = <int>{};
+    final mixlistGenres = <String>{};
+    final playlistGenres = <String>{};
+    final mixlistLabels = <String>{};
+    final playlistLabels = <String>{};
+
+    for (final row in rows) {
+      final isMixlist = (row['isMixlist'] as int?) == 1;
+      final artistIds = isMixlist ? mixlistArtistIds : playlistArtistIds;
+      final albumIds = isMixlist ? mixlistAlbumIds : playlistAlbumIds;
+      final genreSet = isMixlist ? mixlistGenres : playlistGenres;
+      final labelSet = isMixlist ? mixlistLabels : playlistLabels;
+
+      artistIds.add(row['artistId'] as int);
+      albumIds.add(row['albumId'] as int);
+      genreSet.addAll(_parseGenres(row['genres'] as String?));
+      final label = row['recordLabel'] as String?;
+      if (label != null) labelSet.add(label);
+    }
+
+    return MixlistScopeIndex(
+      mixlistArtistIds: mixlistArtistIds,
+      playlistArtistIds: playlistArtistIds,
+      mixlistAlbumIds: mixlistAlbumIds,
+      playlistAlbumIds: playlistAlbumIds,
+      mixlistGenres: mixlistGenres,
+      playlistGenres: playlistGenres,
+      mixlistLabels: mixlistLabels,
+      playlistLabels: playlistLabels,
     );
   }
 
@@ -64,7 +132,7 @@ extension SearchQueries on MusicLibraryRepository {
   Future<List<Mixlist>> _searchMixlists(String likePattern) async {
     final rows = await _db.rawQuery(
       '''
-      SELECT id, title, description, dateCreated
+      SELECT id, title, description, dateCreated, is_mixlists
       FROM Mixlists
       WHERE title LIKE ?
       ORDER BY title ASC
@@ -121,7 +189,8 @@ extension SearchQueries on MusicLibraryRepository {
         ed.explicit      AS explicit,
         m.id             AS mixlistId,
         m.title          AS mixlistTitle,
-        m.dateCreated    AS dateCreated
+        m.dateCreated    AS dateCreated,
+        m.is_mixlists    AS mixlistIsMixlist
       FROM Songs s
       JOIN Albums al ON al.id = s.album
       JOIN SongsMixlists sm ON sm.song = s.id
@@ -156,6 +225,7 @@ extension SearchQueries on MusicLibraryRepository {
           id: row['mixlistId'] as int,
           title: row['mixlistTitle'] as String,
           dateCreated: row['dateCreated'] as String,
+          isMixlist: (row['mixlistIsMixlist'] as int?) == 1,
         ),
       );
     }

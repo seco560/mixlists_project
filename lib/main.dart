@@ -1,10 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/library/active_library_controller.dart';
 import 'package:mixlists_project/data/library/library_manager.dart';
+import 'package:mixlists_project/data/repository/duplicate_song_index_controller.dart';
 import 'package:mixlists_project/data/spotify/spotify_client_id_store.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
@@ -26,9 +25,11 @@ void main() async {
   getIt.registerSingleton<SpotifyClientIdStore>(SpotifyClientIdStore(prefs));
   getIt.registerSingleton<MixlistFilterController>(MixlistFilterController());
   getIt.registerSingleton<ThemeController>(ThemeController.load(prefs));
-  unawaited(
-    getIt<MusicLibraryRepository>().duplicateSongIndex(
-      filter: getIt<MixlistFilterController>().value,
+  getIt.registerSingleton<DuplicateSongIndexController>(
+    DuplicateSongIndexController(
+      getIt<MusicLibraryRepository>(),
+      getIt<MixlistFilterController>(),
+      getIt<ActiveLibraryController>(),
     ),
   );
 
