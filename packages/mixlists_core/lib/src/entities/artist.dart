@@ -21,11 +21,6 @@ class Artist {
   }
 
   Map<String, Object?> toMap() {
-    return {
-      'id': id,
-      'spotifyURI': spotifyURI,
-      'name': name,
-      'genres': genres,
-    };
+    return {'id': id, 'spotifyURI': spotifyURI, 'name': name, 'genres': genres};
   }
 }

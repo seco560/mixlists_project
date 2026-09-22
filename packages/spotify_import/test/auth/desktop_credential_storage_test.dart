@@ -59,16 +59,19 @@ void main() {
     expect(File(path).existsSync(), isTrue);
   });
 
-  test('reading a pre-clientId-field credentials file fails with a clear message', () async {
-    final path = '${tempDir.path}/legacy/credentials.json';
-    final store = DesktopCredentialStorage(overridePath: path);
-    await File(path).create(recursive: true);
-    await File(path).writeAsString(
-      '{"accessToken":"a","refreshToken":"r",'
-      '"expiresAt":"2026-01-01T00:00:00.000Z","scope":"s"}',
-    );
-    await expectLater(store.read(), throwsA(isA<SpotifyAuthException>()));
-  });
+  test(
+    'reading a pre-clientId-field credentials file fails with a clear message',
+    () async {
+      final path = '${tempDir.path}/legacy/credentials.json';
+      final store = DesktopCredentialStorage(overridePath: path);
+      await File(path).create(recursive: true);
+      await File(path).writeAsString(
+        '{"accessToken":"a","refreshToken":"r",'
+        '"expiresAt":"2026-01-01T00:00:00.000Z","scope":"s"}',
+      );
+      await expectLater(store.read(), throwsA(isA<SpotifyAuthException>()));
+    },
+  );
 
   test('isExpired is true 30s before expiresAt and false well before it', () {
     final almostExpired = SpotifyTokens(

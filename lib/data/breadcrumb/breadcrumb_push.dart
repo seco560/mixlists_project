@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
+import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
 
 /// [Navigator.push] a [QuickStylePageRoute], tagged with [entry] so
 /// [BreadcrumbNavigatorObserver] records it as a trail stop. Use this

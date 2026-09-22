@@ -6,10 +6,10 @@ import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/screens/mixlists/add_mixlist_screen.dart';
-import 'package:mixlists_project/widgets/chronological_sort_toggle.dart';
-import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/mixlist_tile.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
+import 'package:mixlists_project/widgets/mixlists/chronological_sort_toggle.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_tile.dart';
+import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
 
 class AllMixlistsScreen extends StatefulWidget {
   const AllMixlistsScreen({super.key});
@@ -97,7 +97,10 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
     _loadData().then((_) {
       if (!mounted) return;
       setState(() {
-        _markedIds = _mixlists.where((m) => m.isMixlist).map((m) => m.id).toSet();
+        _markedIds = _mixlists
+            .where((m) => m.isMixlist)
+            .map((m) => m.id)
+            .toSet();
       });
     });
   }
@@ -147,7 +150,9 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
               onPressed: () async {
                 final added = await Navigator.push<bool>(
                   context,
-                  QuickStylePageRoute(builder: (context) => const AddMixlistScreen()),
+                  QuickStylePageRoute(
+                    builder: (context) => const AddMixlistScreen(),
+                  ),
                 );
                 if (added == true) _loadData();
               },

@@ -14,9 +14,9 @@ import 'package:mixlists_project/data/models/mixlist_track.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/track_tile.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
-import 'package:mixlists_project/widgets/mixlist_audio_feature_chart.dart';
-import 'package:mixlists_project/widgets/section_header.dart';
-import 'package:mixlists_project/widgets/year_album_art_histogram.dart';
+import 'package:mixlists_project/widgets/mixlists/mixlist_audio_feature_chart.dart';
+import 'package:mixlists_project/widgets/shared/section_header.dart';
+import 'package:mixlists_project/widgets/shared/year_album_art_histogram.dart';
 
 class MixlistDetailScreen extends StatefulWidget {
   const MixlistDetailScreen({

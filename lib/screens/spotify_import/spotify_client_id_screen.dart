@@ -4,7 +4,7 @@ import 'package:mixlists_project/data/spotify/spotify_client_id_store.dart';
 import 'package:mixlists_project/data/spotify/spotify_platform_auth.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/screens/spotify_import/spotify_login_screen.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
+import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
 import 'package:spotify_import/spotify_import.dart';
 
 /// First-run (per install) screen for Spotify import: each user brings
@@ -24,7 +24,9 @@ class _SpotifyClientIdScreenState extends State<SpotifyClientIdScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: getIt<SpotifyClientIdStore>().read() ?? '');
+    _controller = TextEditingController(
+      text: getIt<SpotifyClientIdStore>().read() ?? '',
+    );
   }
 
   @override

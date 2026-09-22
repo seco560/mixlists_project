@@ -6,7 +6,7 @@ import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
 import 'package:mixlists_project/screens/songs/song_detail_screen.dart';
 import 'package:mixlists_project/screens/songs/song_table_cell.dart';
-import 'package:mixlists_project/widgets/explicit_badge.dart';
+import 'package:mixlists_project/widgets/shared/explicit_badge.dart';
 
 /// A single row in [AllSongsScreen]'s grid. Owns its own expand/collapse
 /// state and animation (unlike Artists' stateless `_buildRow` helper)

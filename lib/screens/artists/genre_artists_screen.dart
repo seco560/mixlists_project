@@ -8,9 +8,9 @@ import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
-import 'package:mixlists_project/widgets/category_sort_toggle.dart';
-import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/text_styles.dart';
+import 'package:mixlists_project/widgets/shared/category_sort_toggle.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
 /// Every artist tagged with [genre] -- reached from a genre chip on
 /// [ArtistDetailScreen], a "Genres" search result, or [AllGenresScreen].

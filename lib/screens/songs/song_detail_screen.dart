@@ -10,11 +10,11 @@ import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
-import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
-import 'package:mixlists_project/widgets/explicit_badge.dart';
-import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/text_styles.dart';
+import 'package:mixlists_project/widgets/shared/explicit_badge.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
 /// A song's own detail screen -- the "second click" destination a song
 /// name now leads to (see [HoverableLink] usages in [SongTableRow]/

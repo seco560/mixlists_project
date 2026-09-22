@@ -37,5 +37,4 @@ class Mixlist {
       'is_mixlists': isMixlist ? 1 : 0,
     };
   }
-
 }

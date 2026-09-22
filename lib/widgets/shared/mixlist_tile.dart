@@ -5,7 +5,7 @@ import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
-import 'package:mixlists_project/widgets/playlist_cover_grid.dart';
+import 'package:mixlists_project/widgets/shared/playlist_cover_grid.dart';
 
 class MixlistTile extends StatelessWidget {
   final Mixlist mixlist;

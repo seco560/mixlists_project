@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
-import 'package:mixlists_project/widgets/text_styles.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
 class ArtistResultTile extends StatelessWidget {
   const ArtistResultTile({

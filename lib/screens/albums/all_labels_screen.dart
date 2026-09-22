@@ -8,9 +8,9 @@ import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/albums/albums_grid_screen.dart';
 import 'package:mixlists_project/screens/search/album_result_tile.dart';
-import 'package:mixlists_project/widgets/category_sort_toggle.dart';
-import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/text_styles.dart';
+import 'package:mixlists_project/widgets/shared/category_sort_toggle.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
 /// Every distinct record label, grouped in Dart from [MusicLibraryRepository.getAlbumOverviews].
 /// Albums with no label are collapsed at the bottom, one-hit-wonder style.

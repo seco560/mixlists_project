@@ -4,7 +4,7 @@ import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/screens/search/search_results_screen.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
+import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
 
 class SearchField extends StatefulWidget {
   const SearchField({super.key});

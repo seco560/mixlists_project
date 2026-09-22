@@ -47,10 +47,17 @@ class BreadcrumbController extends ChangeNotifier {
   /// kind/id) so a genuine loop through the same entity twice -- e.g.
   /// Artist A -> Album -> Artist A -- still resolves to the exact physical
   /// stack frame that was tapped, not whichever occurrence matches first.
-  void jumpTo(BuildContext context, int index) {
+  ///
+  /// Pops via the target route's own navigator rather than a
+  /// `BuildContext` lookup: the trail panel lives in [BreadcrumbOverlay],
+  /// above the app's Navigator, so no context it has can find one. A
+  /// no-op once the panel is already closing, so a double tap during the
+  /// close animation can't pop twice.
+  void jumpTo(int index) {
+    if (!isOpen.value) return;
     final targetRoute = _frames[index].$2;
     close();
-    Navigator.of(context).popUntil((route) => route == targetRoute);
+    targetRoute.navigator?.popUntil((route) => route == targetRoute);
   }
 
   void clear() {

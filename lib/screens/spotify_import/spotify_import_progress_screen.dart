@@ -48,9 +48,14 @@ class _SpotifyImportProgressScreenState
             setState(() => _status = 'Listing playlists...');
           case PlaylistsListed():
             break;
-          case FetchingPlaylist(:final playlistName, :final playlistsDone, :final playlistsTotal):
+          case FetchingPlaylist(
+            :final playlistName,
+            :final playlistsDone,
+            :final playlistsTotal,
+          ):
             setState(
-              () => _status = 'Fetching "$playlistName" ($playlistsDone/$playlistsTotal)...',
+              () => _status =
+                  'Fetching "$playlistName" ($playlistsDone/$playlistsTotal)...',
             );
           case PlaylistFetched():
             break;
@@ -109,7 +114,8 @@ class _SpotifyImportProgressScreenState
     if (!mounted) return;
     setState(() {
       _done = true;
-      _status = '$imported/${batches.length} playlist(s) imported into "$libraryName".';
+      _status =
+          '$imported/${batches.length} playlist(s) imported into "$libraryName".';
     });
 
     final switchNow = await showDialog<bool>(
@@ -182,7 +188,9 @@ class _SpotifyImportProgressScreenState
                 if (_error != null) ...[
                   Text(
                     _error!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   FilledButton(
@@ -195,7 +203,10 @@ class _SpotifyImportProgressScreenState
                   Text(_status, textAlign: TextAlign.center),
                   if (!_done && !_cancelled) ...[
                     const SizedBox(height: 16),
-                    OutlinedButton(onPressed: _cancel, child: const Text('Cancel')),
+                    OutlinedButton(
+                      onPressed: _cancel,
+                      child: const Text('Cancel'),
+                    ),
                   ],
                 ],
               ],

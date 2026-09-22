@@ -25,9 +25,9 @@ class LibraryManifestStore {
   Future<void> write(List<LibraryRecord> libraries) async {
     await _file.parent.create(recursive: true);
     await _file.writeAsString(
-      const JsonEncoder.withIndent('  ').convert(
-        libraries.map((l) => l.toJson()).toList(),
-      ),
+      const JsonEncoder.withIndent(
+        '  ',
+      ).convert(libraries.map((l) => l.toJson()).toList()),
     );
   }
 }

@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/models/mixlist_track.dart';
-import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
-import 'package:mixlists_project/widgets/text_styles.dart';
+import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
 /// Spotify audio-feature fields available to chart, in picker order.
 enum AudioFeatureField {
@@ -27,7 +27,18 @@ enum AudioFeatureField {
 enum _SortMode { trackOrder, ascending, descending }
 
 const _keyNames = [
-  'C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B',
+  'C',
+  'C♯',
+  'D',
+  'D♯',
+  'E',
+  'F',
+  'F♯',
+  'G',
+  'G♯',
+  'A',
+  'A♯',
+  'B',
 ];
 
 /// One bar per track, showing a single selected audio-feature value,

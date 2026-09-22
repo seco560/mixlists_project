@@ -7,10 +7,10 @@ import 'package:mixlists_project/data/models/mixlist_summary.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/screens/songs/song_detail_screen.dart';
-import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
-import 'package:mixlists_project/widgets/explicit_badge.dart';
+import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/shared/explicit_badge.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
-import 'package:mixlists_project/widgets/text_styles.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
 class SongMixlistTile extends StatefulWidget {
   const SongMixlistTile({

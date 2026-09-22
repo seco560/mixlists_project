@@ -8,9 +8,9 @@ import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/genre_artists_screen.dart';
 import 'package:mixlists_project/screens/search/artist_result_tile.dart';
-import 'package:mixlists_project/widgets/category_sort_toggle.dart';
-import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/text_styles.dart';
+import 'package:mixlists_project/widgets/shared/category_sort_toggle.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
 /// Every distinct genre, grouped in Dart from [MusicLibraryRepository.getArtistOverviews].
 /// Artists with no genre are collapsed at the bottom, one-hit-wonder style.

@@ -122,7 +122,10 @@ Future<String> _resolveLibraryPath(String dbFileName) async {
   return join(appDirectory.path, 'libraries', dbFileName);
 }
 
-Future<void> _seedDatabaseFromAssets(DatabaseFactory factory, String path) async {
+Future<void> _seedDatabaseFromAssets(
+  DatabaseFactory factory,
+  String path,
+) async {
   final data = await rootBundle.load(_dbAssetPath);
   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   await factory.writeDatabaseBytes(path, bytes);

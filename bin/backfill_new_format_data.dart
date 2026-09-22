@@ -111,9 +111,11 @@ Future<void> main(List<String> args) async {
   final titleReview = <_TitleReviewEntry>[];
 
   final csvFiles =
-      Directory(
-        csvDir,
-      ).listSync().whereType<File>().where((f) => f.path.endsWith('.csv')).toList()
+      Directory(csvDir)
+          .listSync()
+          .whereType<File>()
+          .where((f) => f.path.endsWith('.csv'))
+          .toList()
         ..sort((a, b) => a.path.compareTo(b.path));
   print('Found ${csvFiles.length} CSV files under $csvDir.');
 
@@ -179,9 +181,13 @@ Future<void> main(List<String> args) async {
         );
         summary.mixlistsInserted++;
         summary.songsInserted += rows.length;
-        print("Inserted new mixlist '$title' (${rows.length} tracks) from ${file.path}");
+        print(
+          "Inserted new mixlist '$title' (${rows.length} tracks) from ${file.path}",
+        );
       } on MixlistTitleExistsException catch (e) {
-        summary.warnings.add('${file.path}: $e (no content match found, but title collides)');
+        summary.warnings.add(
+          '${file.path}: $e (no content match found, but title collides)',
+        );
       }
     }
   }
@@ -193,7 +199,9 @@ Future<void> main(List<String> args) async {
   if (titleReview.isNotEmpty) {
     print('\n--- Title review (${titleReview.length} mixlists) ---');
     for (final entry in titleReview) {
-      print("  [${entry.mixlistId}] '${entry.currentTitle}' -> '${entry.proposedTitle}'");
+      print(
+        "  [${entry.mixlistId}] '${entry.currentTitle}' -> '${entry.proposedTitle}'",
+      );
     }
     if (applyTitles) {
       for (final entry in titleReview) {
@@ -204,7 +212,9 @@ Future<void> main(List<String> args) async {
           whereArgs: [entry.mixlistId],
         );
       }
-      print('Applied all ${titleReview.length} title updates (--apply-titles).');
+      print(
+        'Applied all ${titleReview.length} title updates (--apply-titles).',
+      );
     } else {
       print('Not applying title changes (pass --apply-titles to write them).');
     }
@@ -301,8 +311,7 @@ Future<void> _backfillIntoExistingMixlist(
           recordLabel: row.recordLabel,
         );
         final songCountBefore =
-            (await txn.rawQuery('SELECT COUNT(*) AS c FROM Songs'))
-                .first['c']
+            (await txn.rawQuery('SELECT COUNT(*) AS c FROM Songs')).first['c']
                 as int;
         songId = await repo.ingestion.getOrCreateSongId(
           txn,
@@ -325,8 +334,7 @@ Future<void> _backfillIntoExistingMixlist(
           ),
         );
         final songCountAfter =
-            (await txn.rawQuery('SELECT COUNT(*) AS c FROM Songs'))
-                .first['c']
+            (await txn.rawQuery('SELECT COUNT(*) AS c FROM Songs')).first['c']
                 as int;
         // getOrCreateSongId may have matched an existing song via its
         // (name, album, duration) URI-reassignment fallback instead of
@@ -341,7 +349,11 @@ Future<void> _backfillIntoExistingMixlist(
         }
       }
 
-      await repo.ingestion.upsertSongAudioFeatures(txn, songId: songId, row: row);
+      await repo.ingestion.upsertSongAudioFeatures(
+        txn,
+        songId: songId,
+        row: row,
+      );
 
       final smExists = await txn.query(
         'SongsMixlists',

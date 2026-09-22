@@ -46,10 +46,8 @@ void main() {
       expect(rows, hasLength(1));
     });
 
-    test(
-        'falls back to (name, artist) and adopts the row when a different '
-        'spotifyURI is served for what is really the same album',
-        () async {
+    test('falls back to (name, artist) and adopts the row when a different '
+        'spotifyURI is served for what is really the same album', () async {
       final artistId = await db.insert('Artists', {'name': 'Some Artist'});
       final originalId = await ingestion.getOrCreateAlbumId(
         db,
@@ -69,78 +67,108 @@ void main() {
         artistId: artistId,
       );
 
-      expect(resultId, originalId, reason: 'adopts the existing row, does not insert a new one');
+      expect(
+        resultId,
+        originalId,
+        reason: 'adopts the existing row, does not insert a new one',
+      );
       final rows = await db.query('Albums');
       expect(rows, hasLength(1));
-      expect(rows.first['spotifyURI'], 'spotify:album:new-uri',
-          reason: 'the row\'s spotifyURI is refreshed to the newly-seen value');
+      expect(
+        rows.first['spotifyURI'],
+        'spotify:album:new-uri',
+        reason: 'the row\'s spotifyURI is refreshed to the newly-seen value',
+      );
     });
 
-    test('does not merge across different artists even with the same album name', () async {
-      final artistA = await db.insert('Artists', {'name': 'Artist A'});
-      final artistB = await db.insert('Artists', {'name': 'Artist B'});
-      await ingestion.getOrCreateAlbumId(
-        db,
-        spotifyURI: 'spotify:album:a1',
-        name: 'Greatest Hits',
-        releaseDate: '2001',
-        coverImageURL: null,
-        artistId: artistA,
-      );
-      await ingestion.getOrCreateAlbumId(
-        db,
-        spotifyURI: 'spotify:album:b1',
-        name: 'Greatest Hits',
-        releaseDate: '2002',
-        coverImageURL: null,
-        artistId: artistB,
-      );
+    test(
+      'does not merge across different artists even with the same album name',
+      () async {
+        final artistA = await db.insert('Artists', {'name': 'Artist A'});
+        final artistB = await db.insert('Artists', {'name': 'Artist B'});
+        await ingestion.getOrCreateAlbumId(
+          db,
+          spotifyURI: 'spotify:album:a1',
+          name: 'Greatest Hits',
+          releaseDate: '2001',
+          coverImageURL: null,
+          artistId: artistA,
+        );
+        await ingestion.getOrCreateAlbumId(
+          db,
+          spotifyURI: 'spotify:album:b1',
+          name: 'Greatest Hits',
+          releaseDate: '2002',
+          coverImageURL: null,
+          artistId: artistB,
+        );
 
-      final rows = await db.query('Albums');
-      expect(rows, hasLength(2));
-    });
+        final rows = await db.query('Albums');
+        expect(rows, hasLength(2));
+      },
+    );
 
-    test('inserts fresh (does not guess) when the name matches 2+ existing rows', () async {
-      final artistId = await db.insert('Artists', {'name': 'Some Artist'});
-      // Two pre-existing URI-less rows with the same name -- ambiguous.
-      await db.insert('Albums', {'name': 'Untitled', 'artist': artistId});
-      await db.insert('Albums', {'name': 'Untitled', 'artist': artistId});
+    test(
+      'inserts fresh (does not guess) when the name matches 2+ existing rows',
+      () async {
+        final artistId = await db.insert('Artists', {'name': 'Some Artist'});
+        // Two pre-existing URI-less rows with the same name -- ambiguous.
+        await db.insert('Albums', {'name': 'Untitled', 'artist': artistId});
+        await db.insert('Albums', {'name': 'Untitled', 'artist': artistId});
 
-      final resultId = await ingestion.getOrCreateAlbumId(
-        db,
-        spotifyURI: 'spotify:album:new',
-        name: 'Untitled',
-        releaseDate: '2020',
-        coverImageURL: null,
-        artistId: artistId,
-      );
+        final resultId = await ingestion.getOrCreateAlbumId(
+          db,
+          spotifyURI: 'spotify:album:new',
+          name: 'Untitled',
+          releaseDate: '2020',
+          coverImageURL: null,
+          artistId: artistId,
+        );
 
-      final rows = await db.query('Albums');
-      expect(rows, hasLength(3), reason: 'ambiguous match inserts a new row rather than guessing');
-      expect(rows.any((r) => r['id'] == resultId && r['spotifyURI'] == 'spotify:album:new'), isTrue);
-    });
+        final rows = await db.query('Albums');
+        expect(
+          rows,
+          hasLength(3),
+          reason: 'ambiguous match inserts a new row rather than guessing',
+        );
+        expect(
+          rows.any(
+            (r) =>
+                r['id'] == resultId && r['spotifyURI'] == 'spotify:album:new',
+          ),
+          isTrue,
+        );
+      },
+    );
 
-    test('backfills recordLabel only if the existing row does not already have one', () async {
-      final artistId = await db.insert('Artists', {'name': 'Some Artist'});
-      final albumId = await db.insert('Albums', {
-        'name': 'Some Album',
-        'artist': artistId,
-        'recordLabel': 'Original Label',
-      });
+    test(
+      'backfills recordLabel only if the existing row does not already have one',
+      () async {
+        final artistId = await db.insert('Artists', {'name': 'Some Artist'});
+        final albumId = await db.insert('Albums', {
+          'name': 'Some Album',
+          'artist': artistId,
+          'recordLabel': 'Original Label',
+        });
 
-      await ingestion.getOrCreateAlbumId(
-        db,
-        spotifyURI: 'spotify:album:x',
-        name: 'Some Album',
-        releaseDate: '2020',
-        coverImageURL: null,
-        artistId: artistId,
-        recordLabel: 'New Label',
-      );
+        await ingestion.getOrCreateAlbumId(
+          db,
+          spotifyURI: 'spotify:album:x',
+          name: 'Some Album',
+          releaseDate: '2020',
+          coverImageURL: null,
+          artistId: artistId,
+          recordLabel: 'New Label',
+        );
 
-      final row = (await db.query('Albums', where: 'id = ?', whereArgs: [albumId])).first;
-      expect(row['recordLabel'], 'Original Label');
-    });
+        final row = (await db.query(
+          'Albums',
+          where: 'id = ?',
+          whereArgs: [albumId],
+        )).first;
+        expect(row['recordLabel'], 'Original Label');
+      },
+    );
   });
 
   group('getOrCreateSongId', () {
@@ -153,7 +181,9 @@ void main() {
     test(
       'does not merge same-titled songs by different artists via the library-wide fallback',
       () async {
-        final artistA = await db.insert('Artists', {'name': 'Thanks, But Anyway'});
+        final artistA = await db.insert('Artists', {
+          'name': 'Thanks, But Anyway',
+        });
         final albumA = await ingestion.getOrCreateAlbumId(
           db,
           spotifyURI: 'spotify:album:a',
@@ -215,78 +245,88 @@ void main() {
           ),
         );
 
-        expect(secondSongId, isNot(firstSongId), reason: 'two different songs, not a merge');
+        expect(
+          secondSongId,
+          isNot(firstSongId),
+          reason: 'two different songs, not a merge',
+        );
         final rows = await db.query('Songs');
         expect(rows, hasLength(2));
         final firstRow = rows.firstWhere((r) => r['id'] == firstSongId);
-        expect(firstRow['spotifyURI'], 'spotify:track:thanks-but-anyway-note-to-self',
-            reason: 'unrelated to the second import, must not be reassigned');
+        expect(
+          firstRow['spotifyURI'],
+          'spotify:track:thanks-but-anyway-note-to-self',
+          reason: 'unrelated to the second import, must not be reassigned',
+        );
       },
     );
 
-    test('still merges the same track re-served under a different album (library-wide, same artist)', () async {
-      final artist = await db.insert('Artists', {'name': 'Some Artist'});
-      final albumOriginal = await ingestion.getOrCreateAlbumId(
-        db,
-        spotifyURI: 'spotify:album:original',
-        name: 'Original Album',
-        releaseDate: '2015',
-        coverImageURL: null,
-        artistId: artist,
-      );
-      final originalSongId = await ingestion.getOrCreateSongId(
-        db,
-        spotifyURI: 'spotify:track:old-uri',
-        name: 'Some Song',
-        artists: 'Some Artist',
-        artistsURIs: null,
-        albumId: albumOriginal,
-        durationMs: 180000,
-        buildExtraData: (songId) => SongExtraData(
-          id: 0,
-          discNumber: null,
-          albumTrackNumber: null,
+    test(
+      'still merges the same track re-served under a different album (library-wide, same artist)',
+      () async {
+        final artist = await db.insert('Artists', {'name': 'Some Artist'});
+        final albumOriginal = await ingestion.getOrCreateAlbumId(
+          db,
+          spotifyURI: 'spotify:album:original',
+          name: 'Original Album',
+          releaseDate: '2015',
+          coverImageURL: null,
+          artistId: artist,
+        );
+        final originalSongId = await ingestion.getOrCreateSongId(
+          db,
+          spotifyURI: 'spotify:track:old-uri',
+          name: 'Some Song',
+          artists: 'Some Artist',
+          artistsURIs: null,
+          albumId: albumOriginal,
           durationMs: 180000,
-          audioPreviewURL: null,
-          isExplicit: false,
-          popularity: null,
-          isrc: null,
-          songID: songId,
-        ),
-      );
+          buildExtraData: (songId) => SongExtraData(
+            id: 0,
+            discNumber: null,
+            albumTrackNumber: null,
+            durationMs: 180000,
+            audioPreviewURL: null,
+            isExplicit: false,
+            popularity: null,
+            isrc: null,
+            songID: songId,
+          ),
+        );
 
-      final albumCompilation = await ingestion.getOrCreateAlbumId(
-        db,
-        spotifyURI: 'spotify:album:compilation',
-        name: 'Greatest Hits Compilation',
-        releaseDate: '2020',
-        coverImageURL: null,
-        artistId: artist,
-      );
-      final resultId = await ingestion.getOrCreateSongId(
-        db,
-        spotifyURI: 'spotify:track:new-uri',
-        name: 'Some Song',
-        artists: 'Some Artist',
-        artistsURIs: null,
-        albumId: albumCompilation,
-        durationMs: 180200,
-        buildExtraData: (songId) => SongExtraData(
-          id: 0,
-          discNumber: null,
-          albumTrackNumber: null,
+        final albumCompilation = await ingestion.getOrCreateAlbumId(
+          db,
+          spotifyURI: 'spotify:album:compilation',
+          name: 'Greatest Hits Compilation',
+          releaseDate: '2020',
+          coverImageURL: null,
+          artistId: artist,
+        );
+        final resultId = await ingestion.getOrCreateSongId(
+          db,
+          spotifyURI: 'spotify:track:new-uri',
+          name: 'Some Song',
+          artists: 'Some Artist',
+          artistsURIs: null,
+          albumId: albumCompilation,
           durationMs: 180200,
-          audioPreviewURL: null,
-          isExplicit: false,
-          popularity: null,
-          isrc: null,
-          songID: songId,
-        ),
-      );
+          buildExtraData: (songId) => SongExtraData(
+            id: 0,
+            discNumber: null,
+            albumTrackNumber: null,
+            durationMs: 180200,
+            audioPreviewURL: null,
+            isExplicit: false,
+            popularity: null,
+            isrc: null,
+            songID: songId,
+          ),
+        );
 
-      expect(resultId, originalSongId);
-      final rows = await db.query('Songs');
-      expect(rows, hasLength(1));
-    });
+        expect(resultId, originalSongId);
+        final rows = await db.query('Songs');
+        expect(rows, hasLength(1));
+      },
+    );
   });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
-import 'package:mixlists_project/widgets/text_styles.dart' show metaTextStyle;
+import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart'
+    show metaTextStyle;
 
 class AlbumArtHistogramEntry {
   const AlbumArtHistogramEntry({

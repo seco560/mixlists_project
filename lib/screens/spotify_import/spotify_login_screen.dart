@@ -4,7 +4,7 @@ import 'package:mixlists_project/data/spotify/spotify_client_id_store.dart';
 import 'package:mixlists_project/data/spotify/spotify_platform_auth.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/screens/spotify_import/spotify_playlist_picker_screen.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
+import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
 import 'package:spotify_import/spotify_import.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,7 +39,9 @@ class _SpotifyLoginScreenState extends State<SpotifyLoginScreen> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        QuickStylePageRoute(builder: (context) => const SpotifyPlaylistPickerScreen()),
+        QuickStylePageRoute(
+          builder: (context) => const SpotifyPlaylistPickerScreen(),
+        ),
       );
     } catch (e) {
       setState(() {
@@ -53,7 +55,8 @@ class _SpotifyLoginScreenState extends State<SpotifyLoginScreen> {
   /// same mechanism the Mixlists Importer CLI already uses.
   Future<SpotifyTokens> _loginDesktop(SpotifyAuth auth) {
     return auth.loginViaLoopback(
-      onReadyToAuthorize: (url) => launchUrl(url, mode: LaunchMode.externalApplication),
+      onReadyToAuthorize: (url) =>
+          launchUrl(url, mode: LaunchMode.externalApplication),
     );
   }
 

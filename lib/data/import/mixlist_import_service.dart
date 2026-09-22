@@ -49,7 +49,9 @@ class MixlistImportService {
   /// app-native export rich in URIs/art/ISRC with a newer Exportify-style
   /// export rich in genres/label/audio features) into one fuller row set.
   /// Returns null if the user cancels the second pick.
-  Future<PickedMixlistCsv?> pickAndMergeSecondCsv(PickedMixlistCsv current) async {
+  Future<PickedMixlistCsv?> pickAndMergeSecondCsv(
+    PickedMixlistCsv current,
+  ) async {
     final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ['csv'],

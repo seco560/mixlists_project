@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
 
 /// A small 2x2 mosaic of up to 4 album covers, Spotify-style, for a
 /// playlist's leading thumbnail. Any of the 4 quadrants without an album

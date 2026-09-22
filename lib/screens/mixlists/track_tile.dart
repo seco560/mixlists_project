@@ -9,9 +9,9 @@ import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
-import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
-import 'package:mixlists_project/widgets/explicit_badge.dart';
-import 'package:mixlists_project/widgets/text_styles.dart';
+import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/shared/explicit_badge.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
 class TrackTile extends StatefulWidget {
   const TrackTile({

@@ -70,7 +70,9 @@ Future<void> main(List<String> args) async {
     }
   }
   if (dbPath == null) {
-    stderr.writeln('Usage: dart run bin/squash_duplicate_albums.dart --db <path>');
+    stderr.writeln(
+      'Usage: dart run bin/squash_duplicate_albums.dart --db <path>',
+    );
     exit(1);
   }
 
@@ -126,7 +128,11 @@ Future<void> main(List<String> args) async {
     'Songs:  $songsBefore -> $songsAfter '
     '(merged ${songSummary.groupsMerged} groups, removed ${songSummary.rowsRemoved} rows)',
   );
-  final warnings = [...albumSummary.warnings, ...songSummary.warnings, ...orphanSummary.warnings];
+  final warnings = [
+    ...albumSummary.warnings,
+    ...songSummary.warnings,
+    ...orphanSummary.warnings,
+  ];
   if (warnings.isNotEmpty) {
     print('\nWarnings:');
     for (final w in warnings) {
@@ -147,12 +153,13 @@ Future<int> _count(Database db, String table) async {
 /// recently-inserted (highest id) among those, on the theory that a more
 /// recent import reflects Spotify's current catalog data more closely.
 Map<String, Object?> _pickCanonical(List<Map<String, Object?>> rows) {
-  final sorted = [...rows]..sort((a, b) {
-    final aHasUri = a['spotifyURI'] != null;
-    final bHasUri = b['spotifyURI'] != null;
-    if (aHasUri != bHasUri) return aHasUri ? -1 : 1;
-    return (b['id'] as int).compareTo(a['id'] as int);
-  });
+  final sorted = [...rows]
+    ..sort((a, b) {
+      final aHasUri = a['spotifyURI'] != null;
+      final bHasUri = b['spotifyURI'] != null;
+      if (aHasUri != bHasUri) return aHasUri ? -1 : 1;
+      return (b['id'] as int).compareTo(a['id'] as int);
+    });
   return sorted.first;
 }
 
@@ -166,7 +173,8 @@ Future<_MergeSummary> _squashDuplicateAlbums(Database db) async {
   final allAlbums = await db.query('Albums');
   final groups = <String, List<Map<String, Object?>>>{};
   for (final row in allAlbums) {
-    final key = '${(row['name'] as String).trim().toLowerCase()}|${row['artist']}';
+    final key =
+        '${(row['name'] as String).trim().toLowerCase()}|${row['artist']}';
     groups.putIfAbsent(key, () => []).add(row);
   }
 
@@ -248,7 +256,8 @@ Future<_MergeSummary> _squashDuplicateSongs(Database db) async {
   final allSongs = await db.query('Songs');
   final groups = <String, List<Map<String, Object?>>>{};
   for (final row in allSongs) {
-    final key = '${row['album']}|${(row['name'] as String).trim().toLowerCase()}';
+    final key =
+        '${row['album']}|${(row['name'] as String).trim().toLowerCase()}';
     groups.putIfAbsent(key, () => []).add(row);
   }
 
@@ -301,7 +310,11 @@ Future<_MergeSummary> _squashDuplicateSongs(Database db) async {
           }
         }
         if (loserExtraRows.isNotEmpty) {
-          await txn.delete('SongsExtraData', where: 'song = ?', whereArgs: [loserId]);
+          await txn.delete(
+            'SongsExtraData',
+            where: 'song = ?',
+            whereArgs: [loserId],
+          );
         }
 
         // Adopt an orphaned SongsAudioFeatures row if canonical has none
@@ -312,7 +325,11 @@ Future<_MergeSummary> _squashDuplicateSongs(Database db) async {
           whereArgs: [canonicalId],
         )).isNotEmpty;
         if (canonicalHasFeatures) {
-          await txn.delete('SongsAudioFeatures', where: 'song = ?', whereArgs: [loserId]);
+          await txn.delete(
+            'SongsAudioFeatures',
+            where: 'song = ?',
+            whereArgs: [loserId],
+          );
         } else {
           await txn.update(
             'SongsAudioFeatures',
@@ -341,7 +358,11 @@ Future<_MergeSummary> _squashDuplicateSongs(Database db) async {
               "Song $loserId ('$name') was already in mixlist $mixlistId under "
               'canonical song $canonicalId -- dropped the duplicate SongsMixlists row.',
             );
-            await txn.delete('SongsMixlists', where: 'id = ?', whereArgs: [smRow['id']]);
+            await txn.delete(
+              'SongsMixlists',
+              where: 'id = ?',
+              whereArgs: [smRow['id']],
+            );
           } else {
             await txn.update(
               'SongsMixlists',

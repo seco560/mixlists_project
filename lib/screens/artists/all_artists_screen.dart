@@ -8,7 +8,7 @@ import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
-import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 
 /// Hardcoded bespoke grid; not extensible enough to reuse for another
 /// grid, reimplement the general shape as a new widget instead.

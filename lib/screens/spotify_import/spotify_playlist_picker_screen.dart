@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/spotify/spotify_platform_auth.dart';
 import 'package:mixlists_project/screens/spotify_import/spotify_import_progress_screen.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
+import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
 import 'package:spotify_import/spotify_import.dart';
 
 typedef _ImportablePlaylists = ({
@@ -75,7 +75,9 @@ class _SpotifyPlaylistPickerScreenState
                 ),
               Expanded(
                 child: result.importable.isEmpty
-                    ? const Center(child: Text('No importable playlists found.'))
+                    ? const Center(
+                        child: Text('No importable playlists found.'),
+                      )
                     : ListView(
                         children: [
                           for (final playlist in result.importable)

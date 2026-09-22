@@ -28,7 +28,9 @@ class SongExtraData {
       albumTrackNumber: map['albumTrackNumber'] as int?,
       durationMs: map['durationMs'] as int,
       audioPreviewURL: map['audioPreviewURL'] as String?,
-      isExplicit: (map['explicit'] as String).toLowerCase() == 'true', // stored as text rather than SQLite 1/0 bool
+      isExplicit:
+          (map['explicit'] as String).toLowerCase() ==
+          'true', // stored as text rather than SQLite 1/0 bool
       popularity: map['popularity'] as int?,
       isrc: map['ISRC'] as String?,
       songID: map['song'] as int,
@@ -48,5 +50,4 @@ class SongExtraData {
       'song': songID,
     };
   }
-
 }

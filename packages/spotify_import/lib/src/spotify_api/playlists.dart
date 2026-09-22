@@ -36,7 +36,10 @@ class SpotifyPlaylistSummary {
 /// real account, not just documented), so this filters proactively
 /// rather than letting the caller hit that.
 Future<({List<SpotifyPlaylistSummary> importable, int skippedFollowedOnly})>
-fetchImportablePlaylists(SpotifyClient client, {required String currentUserId}) async {
+fetchImportablePlaylists(
+  SpotifyClient client, {
+  required String currentUserId,
+}) async {
   final raw = await fetchAllPages(
     client,
     Uri.parse('https://api.spotify.com/v1/me/playlists?limit=50'),
@@ -45,5 +48,8 @@ fetchImportablePlaylists(SpotifyClient client, {required String currentUserId}) 
   final importable = all
       .where((p) => p.ownerId == currentUserId || p.collaborative)
       .toList();
-  return (importable: importable, skippedFollowedOnly: all.length - importable.length);
+  return (
+    importable: importable,
+    skippedFollowedOnly: all.length - importable.length,
+  );
 }

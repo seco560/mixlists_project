@@ -32,7 +32,9 @@ class LibraryTile extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       child: ListTile(
-        leading: Icon(isActive ? Icons.check_circle : Icons.library_music_outlined),
+        leading: Icon(
+          isActive ? Icons.check_circle : Icons.library_music_outlined,
+        ),
         title: Text(
           library.displayName,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),

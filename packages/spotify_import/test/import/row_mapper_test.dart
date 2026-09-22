@@ -78,10 +78,7 @@ void main() {
     });
 
     test('true when item is null (delisted track)', () {
-      expect(
-        shouldSkipPlaylistItem(_realisticItemWrapper(item: null)),
-        isTrue,
-      );
+      expect(shouldSkipPlaylistItem(_realisticItemWrapper(item: null)), isTrue);
     });
 
     test('true for a podcast episode (track flag false)', () {
@@ -129,16 +126,8 @@ void main() {
       final multiArtistTrack = {
         ..._pennywiseTrack,
         'artists': [
-          {
-            'id': 'a1',
-            'name': 'Artist One',
-            'uri': 'spotify:artist:a1',
-          },
-          {
-            'id': 'a2',
-            'name': 'Artist Two',
-            'uri': 'spotify:artist:a2',
-          },
+          {'id': 'a1', 'name': 'Artist One', 'uri': 'spotify:artist:a1'},
+          {'id': 'a2', 'name': 'Artist Two', 'uri': 'spotify:artist:a2'},
         ],
       };
       final row = rowFromPlaylistItem(

@@ -7,7 +7,7 @@ import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/screens/albums/album_grid_tile.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
-import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 
 /// Grid of albums, either every album or (via [recordLabel]) just one
 /// label's -- repurposed from the original "All Albums" screen once it

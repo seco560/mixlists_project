@@ -5,19 +5,25 @@ import 'package:test/test.dart';
 
 void main() {
   group('PkcePair.generate', () {
-    test('verifier length is within the 43-128 char range Spotify requires', () {
-      final pair = PkcePair.generate();
-      expect(pair.verifier.length, greaterThanOrEqualTo(43));
-      expect(pair.verifier.length, lessThanOrEqualTo(128));
-    });
+    test(
+      'verifier length is within the 43-128 char range Spotify requires',
+      () {
+        final pair = PkcePair.generate();
+        expect(pair.verifier.length, greaterThanOrEqualTo(43));
+        expect(pair.verifier.length, lessThanOrEqualTo(128));
+      },
+    );
 
-    test('verifier and challenge contain no base64 padding or unsafe chars', () {
-      final pair = PkcePair.generate();
-      expect(pair.verifier, isNot(contains('=')));
-      expect(pair.verifier, isNot(contains('+')));
-      expect(pair.verifier, isNot(contains('/')));
-      expect(pair.challenge, isNot(contains('=')));
-    });
+    test(
+      'verifier and challenge contain no base64 padding or unsafe chars',
+      () {
+        final pair = PkcePair.generate();
+        expect(pair.verifier, isNot(contains('=')));
+        expect(pair.verifier, isNot(contains('+')));
+        expect(pair.verifier, isNot(contains('/')));
+        expect(pair.challenge, isNot(contains('=')));
+      },
+    );
 
     test('challenge is the S256 transform of the verifier (RFC 7636)', () {
       final pair = PkcePair.generate();

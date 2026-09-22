@@ -15,10 +15,10 @@ import 'package:mixlists_project/screens/artists/genre_artists_screen.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/screens/search/album_result_tile.dart';
 import 'package:mixlists_project/screens/search/artist_result_tile.dart';
-import 'package:mixlists_project/widgets/mixlist_tile.dart';
-import 'package:mixlists_project/widgets/section_header.dart';
-import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
-import 'package:mixlists_project/widgets/text_styles.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_tile.dart';
+import 'package:mixlists_project/widgets/shared/section_header.dart';
+import 'package:mixlists_project/widgets/shared/song_mixlist_tile.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
 class SearchResultsScreen extends StatefulWidget {
   const SearchResultsScreen({super.key, required this.query});

@@ -8,8 +8,8 @@ import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/screens/library/csv_library_import_screen.dart';
 import 'package:mixlists_project/screens/spotify_import/spotify_client_id_screen.dart';
-import 'package:mixlists_project/widgets/library_tile.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
+import 'package:mixlists_project/widgets/library/library_tile.dart';
+import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
 
 class LibraryPickerScreen extends StatefulWidget {
   const LibraryPickerScreen({super.key});
@@ -184,7 +184,9 @@ class _LibraryPickerScreenState extends State<LibraryPickerScreen> {
                 Navigator.pop(context);
                 Navigator.push(
                   this.context,
-                  QuickStylePageRoute(builder: (context) => const SpotifyClientIdScreen()),
+                  QuickStylePageRoute(
+                    builder: (context) => const SpotifyClientIdScreen(),
+                  ),
                 ).then((_) => _reload());
               },
             ),
@@ -235,7 +237,9 @@ class _LibraryPickerScreenState extends State<LibraryPickerScreen> {
                 isActive: library.id == activeId,
                 onTap: _isBusy ? () {} : () => _switchTo(library),
                 onRename: _isBusy ? null : () => _rename(library),
-                onDelete: (_isBusy || isBundled) ? null : () => _delete(library),
+                onDelete: (_isBusy || isBundled)
+                    ? null
+                    : () => _delete(library),
                 onExport: _isBusy ? null : () => _export(library),
               );
             },

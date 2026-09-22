@@ -33,6 +33,7 @@ extension MixlistQueries on MusicLibraryRepository {
     final rows = await _db.query('Mixlists', where: where, orderBy: 'id ASC');
     return rows.map(Mixlist.fromMap).toList();
   }
+
   Future<Mixlist?> getMixlistById(int id) async {
     final rows = await _db.query(
       'Mixlists',
@@ -102,7 +103,9 @@ extension MixlistQueries on MusicLibraryRepository {
       MixlistFilter.mixlistsOnly => 'is_mixlists = 1',
       MixlistFilter.nonMixlistsOnly => 'is_mixlists = 0',
     };
-    final where = filterWhere == null ? 'id <= ?' : '(id <= ?) AND ($filterWhere)';
+    final where = filterWhere == null
+        ? 'id <= ?'
+        : '(id <= ?) AND ($filterWhere)';
     final rows = await _db.rawQuery(
       'SELECT COUNT(*) AS position FROM Mixlists WHERE $where',
       [mixlistId],

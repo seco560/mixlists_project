@@ -8,7 +8,7 @@ import 'package:mixlists_project/data/models/song_overview.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/screens/songs/song_table_cell.dart';
 import 'package:mixlists_project/screens/songs/song_table_row.dart';
-import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 
 /// Hardcoded bespoke grid mirroring [AllArtistsScreen]; see that class's
 /// doc comment for why this is duplicated rather than shared.

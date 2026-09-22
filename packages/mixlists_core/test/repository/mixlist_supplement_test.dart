@@ -159,12 +159,15 @@ void main() {
       ),
     ]);
 
-    final artistRow = (await db.rawQuery('''
+    final artistRow = (await db.rawQuery(
+      '''
       SELECT a.genres AS genres FROM Artists a
       JOIN Albums al ON al.artist = a.id
       JOIN Songs s ON s.album = al.id
       WHERE s.id = ?
-    ''', [songId])).first;
+    ''',
+      [songId],
+    )).first;
     expect(artistRow['genres'], 'existing genre');
 
     final extra = (await db.query(
@@ -195,34 +198,40 @@ void main() {
     ]);
 
     expect(summary.matched, 1);
-    final artistRow = (await db.rawQuery('''
+    final artistRow = (await db.rawQuery(
+      '''
       SELECT a.genres AS genres FROM Artists a
       JOIN Albums al ON al.artist = a.id
       JOIN Songs s ON s.album = al.id
       WHERE s.id = ?
-    ''', [songId])).first;
+    ''',
+      [songId],
+    )).first;
     expect(artistRow['genres'], 'matched via isrc');
   });
 
-  test('falls back to name+duration within tolerance when no URI/ISRC match', () async {
-    await seedSong(
-      spotifyURI: 'spotify:track:d',
-      name: 'Track D',
-      durationMs: 200000,
-    );
+  test(
+    'falls back to name+duration within tolerance when no URI/ISRC match',
+    () async {
+      await seedSong(
+        spotifyURI: 'spotify:track:d',
+        name: 'Track D',
+        durationMs: 200000,
+      );
 
-    final supplement = MixlistSupplement(db);
-    final summary = await supplement.applyCsvRows([
-      _row(
-        trackURI: 'spotify:track:unrelated',
-        trackName: 'track d', // case-insensitive match
-        durationMs: 200500, // within 1000ms tolerance
-        genres: 'matched via name+duration',
-      ),
-    ]);
+      final supplement = MixlistSupplement(db);
+      final summary = await supplement.applyCsvRows([
+        _row(
+          trackURI: 'spotify:track:unrelated',
+          trackName: 'track d', // case-insensitive match
+          durationMs: 200500, // within 1000ms tolerance
+          genres: 'matched via name+duration',
+        ),
+      ]);
 
-    expect(summary.matched, 1);
-  });
+      expect(summary.matched, 1);
+    },
+  );
 
   test('counts as unmatched when nothing lines up', () async {
     await seedSong(
@@ -244,31 +253,34 @@ void main() {
     expect(summary.unmatched, 1);
   });
 
-  test('ambiguous name+duration matches (2+ candidates) are skipped, not guessed', () async {
-    await seedSong(
-      spotifyURI: 'spotify:track:f1',
-      name: 'Duplicate Title',
-      durationMs: 200000,
-    );
-    await seedSong(
-      spotifyURI: 'spotify:track:f2',
-      name: 'Duplicate Title',
-      durationMs: 200200,
-    );
+  test(
+    'ambiguous name+duration matches (2+ candidates) are skipped, not guessed',
+    () async {
+      await seedSong(
+        spotifyURI: 'spotify:track:f1',
+        name: 'Duplicate Title',
+        durationMs: 200000,
+      );
+      await seedSong(
+        spotifyURI: 'spotify:track:f2',
+        name: 'Duplicate Title',
+        durationMs: 200200,
+      );
 
-    final supplement = MixlistSupplement(db);
-    final summary = await supplement.applyCsvRows([
-      _row(
-        trackURI: 'spotify:track:unrelated-f',
-        trackName: 'Duplicate Title',
-        durationMs: 200100,
-        genres: 'should not be applied to either',
-      ),
-    ]);
+      final supplement = MixlistSupplement(db);
+      final summary = await supplement.applyCsvRows([
+        _row(
+          trackURI: 'spotify:track:unrelated-f',
+          trackName: 'Duplicate Title',
+          durationMs: 200100,
+          genres: 'should not be applied to either',
+        ),
+      ]);
 
-    expect(summary.matched, 0);
-    expect(summary.unmatched, 1);
-  });
+      expect(summary.matched, 0);
+      expect(summary.unmatched, 1);
+    },
+  );
 
   test('never inserts SongsMixlists rows', () async {
     await seedSong(
@@ -279,7 +291,12 @@ void main() {
 
     final supplement = MixlistSupplement(db);
     await supplement.applyCsvRows([
-      _row(trackURI: 'spotify:track:g', trackName: 'Track G', durationMs: 200000, genres: 'x'),
+      _row(
+        trackURI: 'spotify:track:g',
+        trackName: 'Track G',
+        durationMs: 200000,
+        genres: 'x',
+      ),
     ]);
 
     final smRows = await db.query('SongsMixlists');

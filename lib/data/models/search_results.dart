@@ -69,7 +69,10 @@ class SearchResults {
     }
 
     return SearchResults(
-      mixlists: [for (final m in mixlists) if (filter.matches(m.isMixlist)) m],
+      mixlists: [
+        for (final m in mixlists)
+          if (filter.matches(m.isMixlist)) m,
+      ],
       artists: [
         for (final a in artists)
           if (scopeIndex.artistQualifies(filter, a.id)) a,

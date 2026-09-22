@@ -38,16 +38,17 @@ MixlistCsvRow _rowAddedAt(String addedAt) => MixlistCsvRow(
   timeSignature: null,
 );
 
-PlaylistImportBatch _batch(String name, List<String> addedAts) => PlaylistImportBatch(
-  playlist: SpotifyPlaylistSummary(
-    id: name,
-    name: name,
-    description: '',
-    ownerId: 'me',
-    collaborative: false,
-  ),
-  rows: addedAts.map(_rowAddedAt).toList(),
-);
+PlaylistImportBatch _batch(String name, List<String> addedAts) =>
+    PlaylistImportBatch(
+      playlist: SpotifyPlaylistSummary(
+        id: name,
+        name: name,
+        description: '',
+        ownerId: 'me',
+        collaborative: false,
+      ),
+      rows: addedAts.map(_rowAddedAt).toList(),
+    );
 
 void main() {
   group('PlaylistImportBatch.earliestAddedAt', () {

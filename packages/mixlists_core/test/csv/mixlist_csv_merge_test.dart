@@ -52,45 +52,58 @@ MixlistCsvRow _row({
 }
 
 void main() {
-  test('fills null fields on the primary row from the matching secondary row', () {
-    final primary = [
-      _row(
-        trackURI: 'spotify:track:1',
-        artistURIs: 'spotify:artist:1',
-        albumURI: 'spotify:album:1',
-        albumImageURL: 'https://img/1.jpg',
-        discNumber: 1,
-        albumTrackNumber: 2,
-        audioPreviewURL: 'https://preview/1.mp3',
-        isrc: 'ISRC1',
-      ),
-    ];
-    final secondary = [
-      _row(trackURI: 'spotify:track:1', genres: 'skate punk', recordLabel: 'Some Label', danceability: 0.6),
-    ];
+  test(
+    'fills null fields on the primary row from the matching secondary row',
+    () {
+      final primary = [
+        _row(
+          trackURI: 'spotify:track:1',
+          artistURIs: 'spotify:artist:1',
+          albumURI: 'spotify:album:1',
+          albumImageURL: 'https://img/1.jpg',
+          discNumber: 1,
+          albumTrackNumber: 2,
+          audioPreviewURL: 'https://preview/1.mp3',
+          isrc: 'ISRC1',
+        ),
+      ];
+      final secondary = [
+        _row(
+          trackURI: 'spotify:track:1',
+          genres: 'skate punk',
+          recordLabel: 'Some Label',
+          danceability: 0.6,
+        ),
+      ];
 
-    final merged = mergeMixlistCsvRows(primary, secondary);
+      final merged = mergeMixlistCsvRows(primary, secondary);
 
-    expect(merged, hasLength(1));
-    final row = merged.single;
-    // Primary-only fields survive.
-    expect(row.artistURIs, 'spotify:artist:1');
-    expect(row.albumURI, 'spotify:album:1');
-    expect(row.isrc, 'ISRC1');
-    // Secondary-only fields get filled in.
-    expect(row.genres, 'skate punk');
-    expect(row.recordLabel, 'Some Label');
-    expect(row.danceability, 0.6);
-  });
+      expect(merged, hasLength(1));
+      final row = merged.single;
+      // Primary-only fields survive.
+      expect(row.artistURIs, 'spotify:artist:1');
+      expect(row.albumURI, 'spotify:album:1');
+      expect(row.isrc, 'ISRC1');
+      // Secondary-only fields get filled in.
+      expect(row.genres, 'skate punk');
+      expect(row.recordLabel, 'Some Label');
+      expect(row.danceability, 0.6);
+    },
+  );
 
-  test('does not let a null secondary field clobber a non-null primary field', () {
-    final primary = [_row(trackURI: 'spotify:track:1', genres: 'from primary')];
-    final secondary = [_row(trackURI: 'spotify:track:1', genres: null)];
+  test(
+    'does not let a null secondary field clobber a non-null primary field',
+    () {
+      final primary = [
+        _row(trackURI: 'spotify:track:1', genres: 'from primary'),
+      ];
+      final secondary = [_row(trackURI: 'spotify:track:1', genres: null)];
 
-    final merged = mergeMixlistCsvRows(primary, secondary);
+      final merged = mergeMixlistCsvRows(primary, secondary);
 
-    expect(merged.single.genres, 'from primary');
-  });
+      expect(merged.single.genres, 'from primary');
+    },
+  );
 
   test('keeps a track present only in the primary file', () {
     final primary = [_row(trackURI: 'spotify:track:only-primary')];
@@ -102,17 +115,23 @@ void main() {
     expect(merged.single.trackURI, 'spotify:track:only-primary');
   });
 
-  test('appends a track present only in the secondary file, after the primary ones', () {
-    final primary = [_row(trackURI: 'spotify:track:a')];
-    final secondary = [
-      _row(trackURI: 'spotify:track:a'),
-      _row(trackURI: 'spotify:track:only-secondary'),
-    ];
+  test(
+    'appends a track present only in the secondary file, after the primary ones',
+    () {
+      final primary = [_row(trackURI: 'spotify:track:a')];
+      final secondary = [
+        _row(trackURI: 'spotify:track:a'),
+        _row(trackURI: 'spotify:track:only-secondary'),
+      ];
 
-    final merged = mergeMixlistCsvRows(primary, secondary);
+      final merged = mergeMixlistCsvRows(primary, secondary);
 
-    expect(merged.map((r) => r.trackURI), ['spotify:track:a', 'spotify:track:only-secondary']);
-  });
+      expect(merged.map((r) => r.trackURI), [
+        'spotify:track:a',
+        'spotify:track:only-secondary',
+      ]);
+    },
+  );
 
   test('preserves the primary order for tracks present in both', () {
     final primary = [
@@ -126,6 +145,9 @@ void main() {
 
     final merged = mergeMixlistCsvRows(primary, secondary);
 
-    expect(merged.map((r) => r.trackURI), ['spotify:track:2', 'spotify:track:1']);
+    expect(merged.map((r) => r.trackURI), [
+      'spotify:track:2',
+      'spotify:track:1',
+    ]);
   });
 }

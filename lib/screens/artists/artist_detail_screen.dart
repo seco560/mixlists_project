@@ -13,13 +13,13 @@ import 'package:mixlists_project/data/models/artist_song_appearance.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/genre_artists_screen.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
-import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
-import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/section_header.dart';
-import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
-import 'package:mixlists_project/widgets/text_styles.dart';
-import 'package:mixlists_project/widgets/year_album_art_histogram.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/section_header.dart';
+import 'package:mixlists_project/widgets/shared/song_mixlist_tile.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
+import 'package:mixlists_project/widgets/shared/year_album_art_histogram.dart';
 
 class ArtistDetailScreen extends StatefulWidget {
   const ArtistDetailScreen({super.key, required this.artist});

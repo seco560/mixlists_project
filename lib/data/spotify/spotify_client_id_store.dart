@@ -14,7 +14,8 @@ class SpotifyClientIdStore {
 
   String? read() => _prefs.getString(_clientIdPrefsKey);
 
-  Future<void> write(String clientId) => _prefs.setString(_clientIdPrefsKey, clientId);
+  Future<void> write(String clientId) =>
+      _prefs.setString(_clientIdPrefsKey, clientId);
 
   Future<void> clear() => _prefs.remove(_clientIdPrefsKey);
 }

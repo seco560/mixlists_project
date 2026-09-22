@@ -59,7 +59,8 @@ MixlistCsvRow rowFromPlaylistItem(
     isrc: externalIds?['isrc'] as String?,
     addedAt: wrapper['added_at'] as String,
     genres: albumArtistGenres,
-    recordLabel: null, // removed from the API for Dev Mode apps; supplement-step only
+    recordLabel:
+        null, // removed from the API for Dev Mode apps; supplement-step only
     danceability: null,
     energy: null,
     key: null,

@@ -64,7 +64,10 @@ class LibraryManager {
     if (kIsWeb) {
       // No manifest/switching on web yet -- just open the one bundled
       // database, as the app always has.
-      return (database: await openBundledLibraryDatabase(), record: _bundledRecord);
+      return (
+        database: await openBundledLibraryDatabase(),
+        record: _bundledRecord,
+      );
     }
 
     var libraries = await _manifestStore.read();
@@ -75,7 +78,8 @@ class LibraryManager {
       await _manifestStore.write(libraries);
     }
 
-    final activeId = _prefs.getString(_activeLibraryIdPrefsKey) ?? bundledLibraryId;
+    final activeId =
+        _prefs.getString(_activeLibraryIdPrefsKey) ?? bundledLibraryId;
     var active = _find(libraries, activeId) ?? bundled;
 
     Database db;
@@ -155,7 +159,9 @@ class LibraryManager {
     final appDirectory = Platform.isIOS
         ? await getApplicationDocumentsDirectory()
         : await getApplicationSupportDirectory();
-    final file = File(p.join(appDirectory.path, 'libraries', record.dbFileName));
+    final file = File(
+      p.join(appDirectory.path, 'libraries', record.dbFileName),
+    );
     if (await file.exists()) await file.delete();
   }
 

@@ -22,7 +22,7 @@ class SongMixlist {
       mixlistID: map['mixlist'] as int,
     );
   }
- 
+
   Map<String, Object?> toMap() {
     return {
       'id': id,
@@ -32,5 +32,4 @@ class SongMixlist {
       'mixlist': mixlistID,
     };
   }
-
 }

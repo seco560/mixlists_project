@@ -47,12 +47,15 @@ class _BreadcrumbOverlayState extends State<BreadcrumbOverlay>
         animation: _t,
         builder: (context, _) {
           final t = _t.value;
-          final panelHeight = MediaQuery.sizeOf(context).height * 0.85;
+          final panelHeight = MediaQuery.sizeOf(context).height * 2 / 3;
           return Stack(
             children: [
               Transform.translate(
                 offset: Offset(0, -40 * t),
-                child: Transform.scale(scale: 1 - 0.08 * t, child: widget.child),
+                child: Transform.scale(
+                  scale: 1 - 0.08 * t,
+                  child: widget.child,
+                ),
               ),
               if (t > 0)
                 Positioned.fill(

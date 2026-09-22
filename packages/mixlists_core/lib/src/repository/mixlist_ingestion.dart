@@ -207,7 +207,9 @@ class MixlistIngestion {
           continue;
         }
         if (requireArtistMatch) {
-          final candidateArtists = (row['artists'] as String? ?? '').trim().toLowerCase();
+          final candidateArtists = (row['artists'] as String? ?? '')
+              .trim()
+              .toLowerCase();
           if (candidateArtists != normalizedArtists) continue;
         }
         final candidateId = row['id'] as int;
@@ -249,7 +251,10 @@ class MixlistIngestion {
     // tracks by different artists were silently collapsed into one Songs
     // row, discarding one of them).
     if (matchingIds.isEmpty) {
-      final allSongs = await txn.query('Songs', columns: ['id', 'name', 'artists']);
+      final allSongs = await txn.query(
+        'Songs',
+        columns: ['id', 'name', 'artists'],
+      );
       matchingIds = await matchesAmong(allSongs, requireArtistMatch: true);
     }
 

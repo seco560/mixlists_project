@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mixlists_project/data/models/mixlist_track.dart';
-import 'package:mixlists_project/widgets/mixlist_audio_feature_chart.dart';
+import 'package:mixlists_project/widgets/mixlists/mixlist_audio_feature_chart.dart';
 
 MixlistTrack _track({
   required int position,

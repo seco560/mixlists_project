@@ -210,7 +210,8 @@ class SpotifyAuth {
     }
 
     final json = jsonDecode(response.body) as Map<String, Object?>;
-    final refreshToken = (json['refresh_token'] as String?) ?? previousRefreshToken;
+    final refreshToken =
+        (json['refresh_token'] as String?) ?? previousRefreshToken;
     if (refreshToken == null) {
       throw SpotifyAuthException(
         'No refresh token in the response and none to fall back to.',

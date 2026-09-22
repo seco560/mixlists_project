@@ -113,9 +113,7 @@ class _AddMixlistScreenState extends State<AddMixlistScreen> {
     } catch (e) {
       setState(() => _isBusy = false);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               'Error importing '
@@ -130,12 +128,10 @@ class _AddMixlistScreenState extends State<AddMixlistScreen> {
   @override
   Widget build(BuildContext context) {
     final picked = _picked;
-    final playlistNoun = getIt<MixlistFilterController>().value.playlistNounSingular;
+    final playlistNoun =
+        getIt<MixlistFilterController>().value.playlistNounSingular;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Add New $playlistNoun'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text('Add New $playlistNoun'), centerTitle: true),
       body: picked == null
           ? Center(
               child: ElevatedButton.icon(
