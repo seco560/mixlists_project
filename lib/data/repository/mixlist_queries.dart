@@ -160,6 +160,17 @@ extension MixlistQueries on MusicLibraryRepository {
     return rows.map(MixlistTrack.fromMap).toList();
   }
 
+  /// Mixlist id -> track count, for every mixlist with at least one track,
+  /// in one grouped query (absent key means empty).
+  Future<Map<int, int>> getMixlistSongCounts() async {
+    final rows = await _db.rawQuery(
+      'SELECT mixlist, COUNT(*) AS songCount FROM SongsMixlists GROUP BY mixlist',
+    );
+    return {
+      for (final row in rows) row['mixlist'] as int: row['songCount'] as int,
+    };
+  }
+
   /// Up to [limit] distinct album cover URLs for [mixlistId] in track order,
   /// for [PlaylistCoverGrid]. Null entries (album without art) are kept.
   Future<List<String?>> getMixlistCoverArt(

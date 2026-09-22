@@ -14,6 +14,9 @@ class MixlistTile extends StatelessWidget {
   /// browsing unfiltered, or a simple ascending position when a filter
   /// is narrowing the list (display-only; `mixlist.id` is never changed).
   final int displayNumber;
+
+  /// Shown after the date when given; callers without counts omit it.
+  final int? songCount;
   final bool isMarking;
   final bool isMarked;
   final ValueChanged<int>? onToggleMarked;
@@ -22,6 +25,7 @@ class MixlistTile extends StatelessWidget {
     super.key,
     required this.mixlist,
     int? displayNumber,
+    this.songCount,
     this.isMarking = false,
     this.isMarked = false,
     this.onToggleMarked,
@@ -47,7 +51,10 @@ class MixlistTile extends StatelessWidget {
         style: TextStyle(fontSize: 20, fontWeight: .bold),
       ),
       subtitle: Text(
-        mixlist.dateCreated.split('T')[0],
+        songCount == null
+            ? mixlist.dateCreated.split('T')[0]
+            : '${mixlist.dateCreated.split('T')[0]} · $songCount '
+                  '${songCount == 1 ? 'song' : 'songs'}',
         style: TextStyle(fontSize: 16, fontWeight: .w600),
       ),
       onTap: isMarking

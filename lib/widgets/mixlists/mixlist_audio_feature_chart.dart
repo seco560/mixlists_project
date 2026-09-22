@@ -1,28 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/models/audio_feature_field.dart';
 import 'package:mixlists_project/data/models/mixlist_track.dart';
 import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/shared/chart_y_axis.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
-
-/// Spotify audio-feature fields available to chart, in picker order.
-enum AudioFeatureField {
-  danceability('Danceability'),
-  energy('Energy'),
-  valence('Valence'),
-  acousticness('Acousticness'),
-  instrumentalness('Instrumentalness'),
-  liveness('Liveness'),
-  speechiness('Speechiness'),
-  loudness('Loudness'),
-  tempo('Tempo'),
-  key('Key'),
-  mode('Mode'),
-  timeSignature('Time Signature');
-
-  const AudioFeatureField(this.label);
-  final String label;
-}
 
 enum _SortMode { trackOrder, ascending, descending }
 
@@ -201,7 +184,7 @@ class _MixlistAudioFeatureChartState extends State<MixlistAudioFeatureChart> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 16),
-                child: _YAxis(
+                child: ChartYAxis(
                   domainMin: domainMin,
                   domainMax: domainMax,
                   height: _maxBarHeight,
@@ -361,68 +344,6 @@ class _TrackBar extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text('${track.position}', style: _positionTextStyle),
-        ],
-      ),
-    );
-  }
-}
-
-/// Illustrative y-axis (max/mid/min ticks) for the bar area; not meant for
-/// precise readoff since exact values are a hover away on every bar.
-class _YAxis extends StatelessWidget {
-  const _YAxis({
-    required this.domainMin,
-    required this.domainMax,
-    required this.height,
-    required this.formatValue,
-  });
-
-  final double domainMin;
-  final double domainMax;
-  final double height;
-  final String Function(double) formatValue;
-
-  static const _width = 68.0;
-  static const _tickLength = 5.0;
-
-  @override
-  Widget build(BuildContext context) {
-    final mid = (domainMin + domainMax) / 2;
-    final axisColor = Theme.of(context).dividerColor;
-
-    Widget tickRow(double value) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(formatValue(value), style: metaTextStyle),
-          const SizedBox(width: 4),
-          Container(width: _tickLength, height: 1, color: axisColor),
-        ],
-      );
-    }
-
-    return SizedBox(
-      width: _width,
-      height: height,
-      child: Stack(
-        children: [
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            child: Container(width: 1, color: axisColor),
-          ),
-          // Anchored to its own edge, not centered, so the label isn't clipped.
-          Positioned(right: 0, top: 0, child: tickRow(domainMax)),
-          Positioned(
-            right: 0,
-            top: height / 2,
-            child: FractionalTranslation(
-              translation: const Offset(0, -0.5),
-              child: tickRow(mid),
-            ),
-          ),
-          Positioned(right: 0, bottom: 0, child: tickRow(domainMin)),
         ],
       ),
     );

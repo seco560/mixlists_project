@@ -13,6 +13,7 @@ import 'package:mixlists_project/screens/home/search_field.dart';
 import 'package:mixlists_project/screens/library/library_picker_screen.dart';
 import 'package:mixlists_project/screens/mixlists/all_mixlists_screen.dart';
 import 'package:mixlists_project/screens/songs/all_songs_screen.dart';
+import 'package:mixlists_project/screens/timeline/taste_timeline_screen.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
@@ -89,6 +90,19 @@ class HomeScreen extends StatelessWidget {
                             context,
                             QuickStylePageRoute(
                               builder: (context) => AllMixlistsScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      HomeNavCard(
+                        icon: Icons.timeline,
+                        label: 'Timelines',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            QuickStylePageRoute(
+                              builder: (context) => const TasteTimelineScreen(),
                             ),
                           );
                         },

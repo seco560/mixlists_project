@@ -20,6 +20,7 @@ class AllMixlistsScreen extends StatefulWidget {
 
 class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
   List<Mixlist> _mixlists = [];
+  Map<int, int> _songCounts = {};
   bool _isLoading = false;
   bool _isMarkingMode = false;
   Set<int> _markedIds = {};
@@ -64,12 +65,14 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final result = await getIt<MusicLibraryRepository>().getAllMixlists(
-        filter: _effectiveFilter,
-      );
+      final repository = getIt<MusicLibraryRepository>();
+      final songCountsFuture = repository.getMixlistSongCounts();
+      final result = await repository.getAllMixlists(filter: _effectiveFilter);
+      final songCounts = await songCountsFuture;
 
       setState(() {
         _mixlists = result;
+        _songCounts = songCounts;
         _isLoading = false;
       });
     } catch (e) {
@@ -170,6 +173,7 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
                 return MixlistTile(
                   mixlist: mixlist,
                   displayNumber: displayNumber,
+                  songCount: _songCounts[mixlist.id] ?? 0,
                   isMarking: _isMarkingMode,
                   isMarked: _markedIds.contains(mixlist.id),
                   onToggleMarked: _toggleMarked,

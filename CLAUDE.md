@@ -94,6 +94,13 @@ Code comments are kept to ≤3 lines; the reasoning behind non-obvious decisions
 - `Albums.artist` is a single FK: the importer takes the first credited album artist as canonical (the old CSV comma-join workaround is gone).
 - `SpotifyClient` forces one refresh on an unexpected 401, retries 429 (honouring `Retry-After`) and 5xx with backoff, and paces every request by a small fixed delay: Dev Mode's rate limit is an undisclosed rolling 30s window.
 
+### Taste Timeline
+
+- `TasteTimelineScreen` charts library-wide trends from one uncached query (`getTasteTimeline`), aggregated by the pure-Dart `TasteTimeline.fromAppearances` (unit-tested without a db). The x-axis is always the 1-based id position under the filter (same as `getMixlistPosition`); `dateCreated` only supplies year labels.
+- "Music age" = `dateAdded − Albums.releaseDate` in years, clamped at 0 (pre-release adds, reissue metadata). Year-only release dates count as Jul 1, year-month ones as the 15th.
+- Genres come from the **album artist** (`Albums.artist`), since songs have no per-artist FK. An artist with k genres gives each 1/k, so every appearance weighs 1. Windows hold ≥3 mixlists (~14 windows). Bands: genres are named largest-first until they cover 80% of the weight (each ≥1%). Leftovers bunch into `other <family>` (family = last word, "hip hop" kept whole; e.g. "garage rock" → "other rock") if that family is ≥1%, else plain "other". Bands stack family by family and share a hue per family, because the real data has ~170 fine-grained genres and only ~8 of them cover half the weight.
+- Key/mode/time signature are never averaged (`AudioFeatureField.isContinuous`). All sections share `TimelineLayout`'s gutter and fit-to-width scale so the mixlists line up vertically.
+
 ### UI notes
 
 - Colours come from `Theme.of(context)` (see `AppTheme`), never hardcoded `Colors.*`; album art is never tinted. `ThemeController` is deliberately binary (no "system") so the toggle has one obvious next state.
