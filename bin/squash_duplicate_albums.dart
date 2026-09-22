@@ -1,48 +1,6 @@
-// One-time db-surgery script -- not part of the shipped app.
-//
-// Squashes duplicate Albums rows caused by a since-fixed bug in
-// getOrCreateAlbumId (see mixlists_core's mixlist_ingestion.dart):
-// Spotify doesn't always serve the same album URI for what's really the
-// same album (reissues, regional catalog variants, messy metadata on
-// smaller labels), so importing 166 playlists independently split many
-// albums' tracklists across 2-4 duplicate Albums rows sharing the same
-// (name, artist).
-//
-// For each (name, artist) duplicate group:
-//   - picks a canonical row (most attached Songs, tie-break lowest id)
-//   - backfills the canonical row's null recordLabel/coverImageURL from
-//     a duplicate that has one
-//   - repoints Songs.album from every other row in the group to the
-//     canonical id
-//   - deletes the now-empty duplicate Albums rows
-//
-// Then, strictly *within* each merged album (never library-wide -- a
-// library-wide same-name-song scan turns up legitimate cases like a
-// track appearing on both a studio album and a compilation, which must
-// never be merged), looks for an exact-name Song collision -- a
-// byproduct of the same bug at the song level -- and merges those too:
-// backfills SongsExtraData, adopts an orphaned SongsAudioFeatures row if
-// the canonical has none, repoints SongsMixlists (dropping a duplicate
-// (song, mixlist) pair rather than creating one), then deletes the loser
-// Song + its SongsExtraData.
-//
-// Finally, removes any Albums row left with zero attached Songs -- a
-// separate, unrelated residual bug (documented in project history):
-// getOrCreateArtistId/getOrCreateAlbumId run *before* getOrCreateSongId
-// in the ingestion transaction, so when a track's song turns out to
-// already exist elsewhere (matched by name+duration under a different
-// album -- e.g. a "Deluxe"/reissue edition containing the same
-// recording as the original release), the Artist/Album rows already
-// created for it go unused. These have unique names (not name/artist
-// duplicates of anything -- that's the pass above), so they're never
-// caught by the merge logic; safe to delete outright since nothing else
-// references an Albums row except Songs.album.
-//
-// Always operates on a backup + working copy of --db, only overwriting
-// the given path itself once the full run succeeds.
-//
-// Usage:
-//   dart run bin/squash_duplicate_albums.dart --db <path>
+// One-time db surgery (already run, not shipped; see CLAUDE.md). Works on
+// a backup + working copy, only replacing --db on success.
+// Usage: dart run bin/squash_duplicate_albums.dart --db <path>
 
 // Print statements are the only output this script has.
 // ignore_for_file: avoid_print
@@ -88,11 +46,8 @@ Future<void> main(List<String> args) async {
   dbFile.copySync(backupPath);
   print('Backed up $dbPath -> $backupPath');
 
-  // Step 2: work on a separate copy, never the original, until success.
-  // sqflite_common_ffi resolves a relative path against its own default
-  // databases directory, not the working directory -- an absolute path
-  // is required here or it silently opens/creates a different, empty
-  // file there instead.
+  // Step 2: work on a copy until success. The path must be absolute:
+  // sqflite_common_ffi resolves relative ones against its own databases dir.
   final workingPath = p.absolute('$dbPath.squashing');
   final workingFile = File(workingPath);
   if (workingFile.existsSync()) workingFile.deleteSync();
@@ -147,11 +102,8 @@ Future<int> _count(Database db, String table) async {
   return rows.first['c'] as int;
 }
 
-/// Picks the canonical row among a duplicate group: prefer one with a
-/// non-null spotifyURI (to keep a working Spotify link when some rows
-/// -- e.g. older CSV-era imports -- might lack one), then the most
-/// recently-inserted (highest id) among those, on the theory that a more
-/// recent import reflects Spotify's current catalog data more closely.
+/// Canonical row: prefer a non-null spotifyURI, then the highest id (the
+/// most recent import best reflects Spotify's current catalog).
 Map<String, Object?> _pickCanonical(List<Map<String, Object?>> rows) {
   final sorted = [...rows]
     ..sort((a, b) {
@@ -163,10 +115,8 @@ Map<String, Object?> _pickCanonical(List<Map<String, Object?>> rows) {
   return sorted.first;
 }
 
-/// Merges Albums rows sharing the same (name, artist) pair -- name
-/// compared case/whitespace-insensitively in Dart, not SQL, since
-/// sqlite's `lower()` is ASCII-only and would miss non-ASCII casing
-/// (same reasoning as the ingestion code's own title/name matching).
+/// Merges Albums sharing (name, artist), comparing names in Dart since
+/// sqlite's `lower()` is ASCII-only.
 Future<_MergeSummary> _squashDuplicateAlbums(Database db) async {
   final summary = _MergeSummary();
 
@@ -222,9 +172,8 @@ Future<_MergeSummary> _squashDuplicateAlbums(Database db) async {
   return summary;
 }
 
-/// Deletes Albums rows with zero attached Songs -- see the top-of-file
-/// comment for why these exist. `groupsMerged` is left at 0 on the
-/// returned summary; this pass doesn't merge anything, just deletes.
+/// Deletes Albums rows with zero attached Songs (see CLAUDE.md for why
+/// these exist). `groupsMerged` stays 0: this pass only deletes.
 Future<_MergeSummary> _removeOrphanedAlbums(Database db) async {
   final summary = _MergeSummary();
 
@@ -245,11 +194,8 @@ Future<_MergeSummary> _removeOrphanedAlbums(Database db) async {
   return summary;
 }
 
-/// Merges Songs rows sharing the same name (case/whitespace-insensitive,
-/// in Dart) *within the same album* -- only ever a byproduct of the
-/// album merge above, never a library-wide name match (which would
-/// wrongly conflate legitimate cases like a track appearing on both a
-/// studio album and a compilation).
+/// Merges same-name Songs within one album only; library-wide matching
+/// would conflate e.g. a studio album track and its compilation copy.
 Future<_MergeSummary> _squashDuplicateSongs(Database db) async {
   final summary = _MergeSummary();
 

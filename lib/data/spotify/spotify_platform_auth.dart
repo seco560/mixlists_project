@@ -5,12 +5,9 @@ import 'package:spotify_import/spotify_import.dart';
 
 import 'mobile_credential_storage.dart';
 
-/// The custom-scheme redirect URI mobile platforms use to capture the
-/// OAuth redirect via `flutter_web_auth_2` (registered in
-/// `AndroidManifest.xml`/`Info.plist`, and must also be registered as a
-/// redirect URI on the user's own Spotify Developer app -- see
-/// `SpotifyClientIdScreen`). Desktop uses `SpotifyAuth.loopbackRedirectUri`
-/// instead.
+/// Mobile OAuth redirect captured via `flutter_web_auth_2`. Must be
+/// registered in `AndroidManifest.xml`/`Info.plist` and on the user's
+/// Spotify app.
 final Uri mobileSpotifyRedirectUri = Uri.parse('mixlists://spotify-callback');
 
 const String mobileSpotifyCallbackScheme = 'mixlists';

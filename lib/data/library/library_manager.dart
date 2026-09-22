@@ -17,22 +17,17 @@ import 'library_record.dart';
 const _activeLibraryIdPrefsKey = 'active_library_id';
 const _bundledDisplayName = 'Mixlists (Bundled)';
 
-/// Owns the on-disk library manifest and drives switching the active
-/// library: opening its database, handing it to [MusicLibraryRepository]
-/// via `switchTo`, and updating both the persisted preference and
-/// [ActiveLibraryController]. Registered as a getIt singleton, like the
-/// app's other cross-cutting services.
+/// Owns the library manifest and switches the active library: opens its db,
+/// hands it to [MusicLibraryRepository.switchTo], and updates the persisted
+/// preference and [ActiveLibraryController].
 class LibraryManager {
   LibraryManager(this._manifestStore, this._prefs);
 
   final LibraryManifestStore _manifestStore;
   final SharedPreferences _prefs;
 
-  /// Resolves the on-disk manifest path and constructs a [LibraryManager]
-  /// -- call once during app bootstrap, before `runApp`. On web (no
-  /// manifest/switching support yet -- Phase 1 excludes Spotify import
-  /// from web) this still constructs successfully but [bootstrap] takes
-  /// a web-specific shortcut and the manifest file is never touched.
+  /// Resolves the manifest path; call once before `runApp`. On web (no
+  /// library switching yet) [bootstrap] shortcuts past the manifest.
   static Future<LibraryManager> create() async {
     final prefs = await SharedPreferences.getInstance();
     if (kIsWeb) {
@@ -55,11 +50,9 @@ class LibraryManager {
     origin: LibraryOrigin.bundled,
   );
 
-  /// First-run bootstrap or subsequent launch: ensures the bundled
-  /// library exists and is registered, resolves which library should be
-  /// active (falling back to bundled if the preference points at
-  /// something missing/corrupt), and opens its database. Call once,
-  /// before constructing [MusicLibraryRepository].
+  /// Registers the bundled library if needed, resolves the active one (falling
+  /// back to bundled if missing/corrupt) and opens its db. Call once, before
+  /// constructing [MusicLibraryRepository].
   Future<({Database database, LibraryRecord record})> bootstrap() async {
     if (kIsWeb) {
       // No manifest/switching on web yet -- just open the one bundled

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Holds the app's active [ThemeMode] and persists the user's choice.
-///
-/// Deliberately binary (light/dark, no "system" option) so the home screen
-/// toggle always has one obvious next state to switch to.
+/// Active [ThemeMode], persisted. Binary (no "system") so the toggle always
+/// has one obvious next state.
 class ThemeController extends ValueNotifier<ThemeMode> {
   ThemeController._(this._prefs, super.initial);
 

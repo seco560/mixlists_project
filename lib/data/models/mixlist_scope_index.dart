@@ -1,13 +1,8 @@
 import 'package:mixlists_project/data/filter/mixlist_filter.dart';
 
-/// Whether each artist/album/genre/record label has at least one song
-/// appearance on a "mixlist" and/or on a plain playlist
-/// (`Mixlists.is_mixlists`) -- built from a single pass over the whole
-/// library, independent of any particular search. Reused by every search
-/// (cached indefinitely by the repository, like the distinct genre/label
-/// indexes) and carried on [SearchResults] so it can re-scope an
-/// already-fetched search in memory when [MixlistFilterController]
-/// changes, without a fresh query.
+/// Whether each artist/album/genre/label appears on a mixlist and/or a plain
+/// playlist, built in one pass. Cached by the repository and carried on
+/// [SearchResults] to re-scope searches in memory on filter change.
 class MixlistScopeIndex {
   const MixlistScopeIndex({
     required this.mixlistArtistIds,

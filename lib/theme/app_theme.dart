@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Central definitions for the app's light and dark themes.
-///
-/// Widgets should pull colors from `Theme.of(context).colorScheme`,
-/// `Theme.of(context).dividerColor`, etc. rather than hardcoding `Colors.*`
-/// values, so they follow whichever of these two themes is active. Album
-/// art is a deliberate exception: it's never tinted by theme colors so
-/// covers stay legible against a dark background.
+/// The app's light and dark themes. Widgets read colors from [Theme]
+/// instead of hardcoding `Colors.*`; album art is never tinted.
 abstract final class AppTheme {
   // Navy ("bleumarin") seed -- keeps dark mode reading as a traditional
   // night-blue theme instead of the warm/brownish cast a hue like orange

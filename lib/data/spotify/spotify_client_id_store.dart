@@ -2,11 +2,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const _clientIdPrefsKey = 'spotify_client_id';
 
-/// The user's own Spotify Developer app Client ID (bring-your-own -- see
-/// the Mixlists extension plan on why: Spotify's Developer Dashboard caps
-/// a shared app at 25 users in Development Mode). Not secret -- a Client
-/// ID is meant to be public in a PKCE flow -- so plain `shared_preferences`
-/// is fine, no secure storage needed.
+/// The user's own Spotify Client ID (bring-your-own). Not secret in PKCE,
+/// so plain `shared_preferences` is fine.
 class SpotifyClientIdStore {
   SpotifyClientIdStore(this._prefs);
 

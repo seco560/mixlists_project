@@ -12,13 +12,8 @@ class MixlistTitleExistsException implements Exception {
   String toString() => "A mixlist named '$title' already exists";
 }
 
-/// Write path for importing a mixlist from [MixlistCsvRow]s (whether
-/// parsed from an actual CSV file or built directly from Spotify API
-/// objects -- the row shape doesn't care which). The get-or-create helpers
-/// are generic (keyed by spotifyURI) so any tool writing into this schema
-/// can reuse them: the Flutter app's "Add New Mixlist" screen, a one-time
-/// backfill script, and the Spotify API importer all go through this one
-/// class.
+/// Write path for importing a mixlist from [MixlistCsvRow]s (from a CSV or
+/// the Spotify API). Shared by "Add New Mixlist", the importer and scripts.
 class MixlistIngestion {
   MixlistIngestion(this._db);
 
@@ -83,17 +78,9 @@ class MixlistIngestion {
     });
   }
 
-  /// Matches by [spotifyURI] first, then falls back to a case-insensitive
-  /// `(name, artistId)` match -- Spotify doesn't always serve the same
-  /// album URI for what's really the same album across different lookups
-  /// (reissues, regional catalog variants, messy metadata on smaller
-  /// labels), so a URI-first-only match let a real bulk import split one
-  /// album's tracks across several duplicate `Albums` rows. On a
-  /// fallback match, the row's spotifyURI is refreshed to the new value
-  /// -- same "reassignment" handling [getOrCreateSongId] already has for
-  /// tracks. Backfills [recordLabel] only if the row doesn't already have
-  /// one. Zero or 2+ name matches falls through to inserting a new row,
-  /// same ambiguous-means-don't-guess posture as [getOrCreateArtistId].
+  /// Matches by [spotifyURI], then by case-insensitive `(name, artistId)`
+  /// (Spotify serves different URIs for the same album), refreshing the URI.
+  /// Backfills a missing [recordLabel]; zero or 2+ name matches inserts anew.
   Future<int> getOrCreateAlbumId(
     DatabaseExecutor txn, {
     required String? spotifyURI,
@@ -235,21 +222,11 @@ class MixlistIngestion {
       where: 'album = ?',
       whereArgs: [albumId],
     );
-    // Same-album matches don't require an artist re-check: the album's
-    // artist is already established by getOrCreateAlbumId, so a
-    // name/duration match within it is already scoped tightly enough
-    // (e.g. a deluxe reissue re-adding the same tracklist).
+    // Within the same album, name+duration is tight enough; no artist check.
     var matchingIds = await matchesAmong(sameAlbum, requireArtistMatch: false);
 
-    // Fall back to a library-wide match when nothing matched within the
-    // album -- doesn't reassign album/artist, just stops duplicate tracks
-    // for the same song appearing under a different album context (e.g. a
-    // compilation). Unlike the same-album tier, this MUST also require an
-    // artist match: a title alone ("Intro", "Note to Self", ...) is common
-    // enough across unrelated songs by different artists that name+duration
-    // alone produced real false merges here (two different "Note to Self"
-    // tracks by different artists were silently collapsed into one Songs
-    // row, discarding one of them).
+    // The library-wide fallback MUST also match the artist: common titles like
+    // "Note to Self" by different artists were once merged into one row.
     if (matchingIds.isEmpty) {
       final allSongs = await txn.query(
         'Songs',

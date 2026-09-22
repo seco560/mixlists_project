@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// A push transition that slides in with a fade -- from the right by
-/// default (a normal forward push), or from the left when [isReverse]
-/// is true, reading as "going back" -- e.g. for a "previous" nav button
-/// that pushes a new route but should still feel like stepping back.
+/// Slide + fade push transition, from the right, or from the left when
+/// [isReverse] (e.g. a "previous" button that should feel like going back).
 class QuickStylePageRoute<T> extends PageRouteBuilder<T> {
   QuickStylePageRoute({
     required WidgetBuilder builder,

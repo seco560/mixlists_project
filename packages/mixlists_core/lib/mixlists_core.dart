@@ -1,7 +1,5 @@
-/// Shared, Flutter-free core for the Mixlists project: the sqlite schema,
-/// entity classes, the CSV row parser, and the get-or-create ingestion
-/// logic. Used by both the Flutter app (via a `path:` dependency) and the
-/// `mixlists_importer` CLI, so schema/dedup logic has one source of truth.
+/// Flutter-free core shared by the app and the `mixlists_importer` CLI:
+/// sqlite schema, entities, CSV parsing, and get-or-create ingestion.
 library;
 
 export 'src/database/schema_v2.dart';

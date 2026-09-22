@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mixlists_project/data/breadcrumb/breadcrumb_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 
-/// Floating "open the trail" arrow -- embedded by each detail screen in
-/// its own `Stack` (there's no shared app scaffold to hook into instead),
-/// the same way [ThemeModeToggle] is embedded on [HomeScreen]. Renders
-/// nothing once the trail is empty, i.e. on every top-level category
-/// screen, and on a detail screen only until its own push is recorded.
+/// Floating "open the trail" button, embedded in each detail screen's
+/// `Stack`. Renders nothing while the trail is empty.
 class BreadcrumbTrailButton extends StatelessWidget {
   const BreadcrumbTrailButton({super.key});
 

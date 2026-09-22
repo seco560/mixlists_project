@@ -14,20 +14,9 @@ class SupplementSummary {
   }
 }
 
-/// Backfills genres/record-label/popularity/audio-features from CSV rows
-/// (e.g. an Exportify export) onto songs that already exist in the db --
-/// generalized from the Flutter app's `bin/backfill_new_format_data.dart`
-/// script. Exists because the Spotify Web API no longer provides these
-/// four fields to personal (non-Extended-Quota) apps at all, so an
-/// API-based importer still needs an occasional CSV-sourced top-up path
-/// for them.
-///
-/// Unlike the original backfill script, matching here is library-wide
-/// rather than scoped to one already-identified mixlist: every song the
-/// API importer writes already carries a real `spotifyURI`, so most rows
-/// resolve on the first match tier. This never touches `SongsMixlists`
-/// or inserts new songs/mixlists -- rows that don't match an existing
-/// song are just skipped and counted, not inserted.
+/// Backfills genres/label/popularity/audio features from CSV rows onto
+/// existing songs (the Spotify API no longer serves these to personal apps).
+/// Library-wide matching; never inserts songs or touches `SongsMixlists`.
 class MixlistSupplement {
   MixlistSupplement(this._db) : _ingestion = MixlistIngestion(_db);
 
@@ -53,13 +42,8 @@ class MixlistSupplement {
     return summary;
   }
 
-  /// Matches by `spotifyURI` first, then ISRC, then library-wide
-  /// `(name, durationMs ±1000ms)` -- the same fallback chain
-  /// [MixlistIngestion.getOrCreateSongId] uses for CSV ingestion, minus
-  /// the "insert if nothing matches" tail, since supplementing never
-  /// creates new songs. Zero or multiple candidates at any tier means
-  /// skip, not guess -- same accepted-limitation posture as the rest of
-  /// this matching logic.
+  /// Matches by `spotifyURI`, then ISRC, then `(name, durationMs ±1000ms)`.
+  /// Zero or multiple candidates at any tier means skip, not guess.
   Future<int?> _findMatchingSongId(
     DatabaseExecutor txn,
     MixlistCsvRow row,
@@ -107,10 +91,8 @@ class MixlistSupplement {
     return null;
   }
 
-  /// Backfills only currently-null fields on the matched song's Artist
-  /// and Album rows, plus `SongsExtraData.popularity`, and inserts
-  /// `SongsAudioFeatures` only if absent -- never overwrites data that's
-  /// already there.
+  /// Fills only null Artist/Album fields and popularity, and adds
+  /// `SongsAudioFeatures` only if absent; never overwrites.
   Future<void> _backfillSong(
     DatabaseExecutor txn,
     int songId,

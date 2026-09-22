@@ -1,11 +1,8 @@
 part of 'music_library_repository.dart';
 
 extension AlbumQueries on MusicLibraryRepository {
-  /// Every album, scoped to [filter] when it isn't [MixlistFilter.all]:
-  /// an album with zero songs appearing in a qualifying mixlist is
-  /// dropped entirely. `DISTINCT` because filtering joins through
-  /// Songs/SongsMixlists, which would otherwise multiply an album's row
-  /// once per qualifying song.
+  /// Every album, scoped to [filter]; albums with no qualifying song are
+  /// dropped. `DISTINCT` because the filter joins repeat an album per song.
   Future<List<AlbumOverview>> getAlbumOverviews({
     MixlistFilter filter = MixlistFilter.all,
   }) async {

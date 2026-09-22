@@ -10,11 +10,8 @@ class AuthorizationResult {
   final String state;
 }
 
-/// A short-lived local HTTP server that receives the OAuth redirect for
-/// the Authorization Code + PKCE flow. Spotify no longer accepts
-/// `http://localhost:...` as a redirect URI -- only loopback IP literals
-/// (`127.0.0.1`) -- so this binds explicitly to the loopback address, not
-/// `anyIPv4`/`localhost`.
+/// Short-lived local server receiving the OAuth redirect. Binds to
+/// `127.0.0.1`: Spotify no longer accepts `localhost` redirect URIs.
 class LoopbackServer {
   LoopbackServer({required this.port});
 

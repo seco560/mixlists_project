@@ -7,10 +7,8 @@ import 'package:mixlists_project/screens/spotify_import/spotify_login_screen.dar
 import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
 import 'package:spotify_import/spotify_import.dart';
 
-/// First-run (per install) screen for Spotify import: each user brings
-/// their own free Spotify Developer app / Client ID rather than sharing
-/// one baked into Mixlists -- see the extension plan on why (Spotify caps
-/// a shared Development Mode app at 25 users).
+/// First-run screen for Spotify import: users bring their own Client ID
+/// (Spotify caps a shared Development Mode app at 25 users).
 class SpotifyClientIdScreen extends StatefulWidget {
   const SpotifyClientIdScreen({super.key});
 

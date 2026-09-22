@@ -23,11 +23,8 @@ class SpotifyAuthException implements Exception {
   String toString() => 'Spotify auth error: $message';
 }
 
-/// An access/refresh token pair, plus the Client ID they were issued
-/// under -- storing it means later commands (`whoami`, `run`, ...) don't
-/// have to ask for `--client-id` again just to refresh an already-valid
-/// login. No client secret is ever involved -- PKCE is a public-client
-/// flow.
+/// Access/refresh tokens plus the Client ID they were issued under, so
+/// refreshing never needs the Client ID again.
 class SpotifyTokens {
   const SpotifyTokens({
     required this.clientId,
@@ -74,10 +71,8 @@ class SpotifyTokens {
   }
 }
 
-/// Drives the Authorization Code + PKCE flow against a loopback redirect,
-/// and refreshes tokens afterward. See the Mixlists Importer plan for why
-/// PKCE (no client secret) and a loopback IP literal (not `localhost`)
-/// are both hard requirements from Spotify's side, not just choices.
+/// Drives the Authorization Code + PKCE flow and token refresh. PKCE and a
+/// loopback IP literal are both Spotify requirements.
 class SpotifyAuth {
   SpotifyAuth({
     required this.clientId,
@@ -89,10 +84,8 @@ class SpotifyAuth {
   final int port;
   final List<String> scopes;
 
-  /// The loopback redirect URI desktop platforms use. Mobile platforms use
-  /// a separate custom-scheme redirect URI (see the app's
-  /// `mixlists://spotify-callback` handling) passed explicitly to
-  /// [buildAuthorizeUrl]/[completeLogin] instead of this one.
+  /// Desktop's loopback redirect URI; mobile passes its custom-scheme URI to
+  /// [buildAuthorizeUrl]/[completeLogin] instead.
   Uri get loopbackRedirectUri => Uri.parse('http://127.0.0.1:$port/callback');
 
   /// Builds the URL to send the user to. Platform-agnostic -- desktop and
@@ -133,13 +126,9 @@ class SpotifyAuth {
     }, previousRefreshToken: null);
   }
 
-  /// Runs the full interactive login on desktop: starts a loopback server,
-  /// hands the caller the URL to open (so the caller decides how/whether
-  /// to auto-open a browser, e.g. via `url_launcher`), waits for the
-  /// redirect, then exchanges the code for tokens. Mobile platforms should
-  /// use [buildAuthorizeUrl]/[completeLogin] directly alongside
-  /// `flutter_web_auth_2` instead, since a bound loopback port isn't a
-  /// reliable redirect target there.
+  /// Full desktop login: starts a loopback server, hands the caller the URL
+  /// to open, waits for the redirect and exchanges the code. Mobile uses
+  /// [buildAuthorizeUrl]/[completeLogin] with `flutter_web_auth_2` instead.
   Future<SpotifyTokens> loginViaLoopback({
     required void Function(Uri authorizeUrl) onReadyToAuthorize,
   }) async {
@@ -230,10 +219,8 @@ class SpotifyAuth {
   }
 }
 
-/// A minimal call to confirm a token actually works and report who's
-/// authenticated -- used by `auth`/`whoami`, not part of the main
-/// playlist-fetching path. Free function, not a `SpotifyAuth` method,
-/// since GET /me needs only a bearer token -- no Client ID involved.
+/// Confirms a token works by returning the user's display name (GET /me).
+/// A free function since it only needs a bearer token.
 Future<String> fetchCurrentUserDisplayName(String accessToken) async {
   final response = await http.get(
     Uri.parse(_mePath),

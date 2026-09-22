@@ -13,10 +13,8 @@ const String bundledLibraryDbFileName = 'bundled.db';
 
 const int _dbVersion = 5;
 
-/// Opens the maintainer's bundled dataset, seeding it once from the app
-/// asset if it doesn't exist on disk yet. This is always library id
-/// `"bundled"` -- see `library_manager.dart` -- and is always resolvable
-/// as the fallback library even if every user-imported one is missing.
+/// Opens the bundled library (id `"bundled"`, the fallback library), seeding
+/// it from the app asset on first run.
 Future<Database> openBundledLibraryDatabase() async {
   final factory = _resolveDatabaseFactory();
   final path = await _resolveLibraryPath(bundledLibraryDbFileName);
@@ -32,10 +30,8 @@ Future<Database> openBundledLibraryDatabase() async {
       version: _dbVersion,
       onConfigure: (db) async {},
       onCreate: (db, version) async {
-        // The seeded asset file may already contain tables/data even
-        // though sqflite still considers it "new" (its user_version
-        // pragma is unset) -- only actually create the schema if it
-        // turns out to genuinely be empty.
+        // The seeded asset may already hold data while sqflite treats it as new
+        // (user_version unset); only create the schema if it's truly empty.
         final checkForData = await db.rawQuery("SELECT * FROM Mixlists;");
         if (checkForData.isEmpty) {
           await createSchemaV2(db);
@@ -49,11 +45,8 @@ Future<Database> openBundledLibraryDatabase() async {
   );
 }
 
-/// Opens (creating fresh, with the current schema applied) a
-/// user-created library -- one written by a Spotify or CSV import.
-/// Unlike [openBundledLibraryDatabase], there's no seeding step and no
-/// defensive re-check: this is always either a brand-new, empty file or
-/// one this app already created and fully controls.
+/// Opens or creates a user-created (Spotify/CSV import) library. No seeding
+/// or re-check needed: the file is always new or created by this app.
 Future<Database> openOrCreateLibraryDatabase(String dbFileName) async {
   final factory = _resolveDatabaseFactory();
   final path = await _resolveLibraryPath(dbFileName);
@@ -74,10 +67,8 @@ Future<Database> openOrCreateLibraryDatabase(String dbFileName) async {
   );
 }
 
-/// Reads a library's raw sqlite file bytes -- for exporting a copy to a
-/// user-chosen location. Safe to call while the library is open elsewhere:
-/// nothing here uses WAL mode, so the on-disk file is always a complete,
-/// self-contained snapshot rather than split across a separate WAL file.
+/// Raw sqlite bytes for exporting a library. Safe while open: no WAL mode,
+/// so the file on disk is always a complete snapshot.
 Future<Uint8List> readLibraryDatabaseBytes(String dbFileName) async {
   final factory = _resolveDatabaseFactory();
   final path = await _resolveLibraryPath(dbFileName);

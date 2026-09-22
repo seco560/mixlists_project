@@ -156,11 +156,8 @@ void main() {
   testWidgets(
     'does not crash when there are enough tracks to need the horizontal scrollbar',
     (tester) async {
-      // Regression test: a Scrollbar with no explicit controller (and a
-      // SingleChildScrollView with none either) throws "The Scrollbar's
-      // ScrollController has no ScrollPosition attached" as soon as there's
-      // enough content to actually need scrolling -- the existing tests
-      // above never had enough tracks to hit that code path at all.
+      // Regression: a Scrollbar without a controller throws once there are
+      // enough tracks to scroll.
       final tracks = [
         for (var i = 1; i <= 50; i++)
           _track(position: i, name: 'Track $i', danceability: i / 50),

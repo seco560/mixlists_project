@@ -1,16 +1,9 @@
 part of 'music_library_repository.dart';
 
 extension SearchQueries on MusicLibraryRepository {
-  /// Every match across the library for [rawQuery], grouped by entity
-  /// type in the order the Search Results screen renders them. A bare
-  /// 4-digit query (e.g. "1975") additionally matches Albums by release
-  /// year.
-  ///
-  /// Not scoped to the current [MixlistFilter] itself -- the result
-  /// carries its own [MixlistScopeIndex] snapshot so the Search Results
-  /// screen can re-scope the same fetched [SearchResults] in memory via
-  /// [SearchResults.scopedTo] whenever the filter changes, rather than
-  /// re-querying per filter.
+  /// Every match for [rawQuery], grouped by type in render order; a bare
+  /// 4-digit query also matches album release years. Unfiltered: the result
+  /// carries a [MixlistScopeIndex] for in-memory [SearchResults.scopedTo].
   Future<SearchResults> searchLibrary(String rawQuery) async {
     final query = rawQuery.trim();
     if (query.isEmpty) {
@@ -51,10 +44,7 @@ extension SearchQueries on MusicLibraryRepository {
     );
   }
 
-  /// Every artist/album/genre/record label's mixlist-vs-playlist scope,
-  /// cached indefinitely (invalidated on library switch and on
-  /// [setMixlistFlags], the only write path it depends on) -- see
-  /// [MixlistScopeIndex].
+  /// Cached indefinitely; invalidated on library switch and [setMixlistFlags].
   Future<MixlistScopeIndex> get _mixlistScopeIndex {
     return _mixlistScopeIndexFuture ??= _loadMixlistScopeIndex();
   }

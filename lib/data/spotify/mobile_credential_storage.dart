@@ -5,11 +5,8 @@ import 'package:spotify_import/spotify_import.dart';
 
 const _tokensKey = 'spotify_tokens';
 
-/// Mobile implementation of [CredentialStorage], backed by the platform
-/// keychain/keystore via `flutter_secure_storage`. `spotify_import` stays
-/// plugin-free (see its package doc comment), so this lives in app code
-/// instead, alongside `DesktopCredentialStorage` which handles
-/// Windows/macOS/Linux.
+/// Mobile [CredentialStorage] via `flutter_secure_storage`; lives in the app
+/// because `spotify_import` stays plugin-free.
 class MobileCredentialStorage implements CredentialStorage {
   MobileCredentialStorage({FlutterSecureStorage? storage})
     : _storage = storage ?? const FlutterSecureStorage();

@@ -16,15 +16,9 @@ import 'package:mixlists_project/widgets/shared/explicit_badge.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
-/// A song's own detail screen -- the "second click" destination a song
-/// name now leads to (see [HoverableLink] usages in [SongTableRow]/
-/// [SongMixlistTile]), and a breadcrumb-able stop in its own right.
-///
-/// Deliberately minimal: [SongOverview.artistNames] is shown as plain
-/// text, not linked -- there's no structured per-artist credit data in
-/// this schema yet (only a denormalized display string), so "featured
-/// artists" is out of scope here. The one thing that *is* wired up is a
-/// link to the song's album, which the schema does support.
+/// A song's detail screen (reached by clicking a song name). Artist names
+/// are plain text: the schema only has a denormalized display string, so
+/// only the album is linked.
 class SongDetailScreen extends StatefulWidget {
   const SongDetailScreen({super.key, required this.song});
 

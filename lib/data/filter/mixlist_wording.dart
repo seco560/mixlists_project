@@ -1,13 +1,8 @@
 import 'mixlist_filter.dart';
 
-/// The user-facing word for a playlist entity under a given
-/// [MixlistFilter] scope -- "Mixlist" while browsing the marked-favorites
-/// default view, "Playlist" once the view includes anything that isn't a
-/// favorite (`all` or `nonMixlistsOnly`). This is the generic renaming the
-/// app applies everywhere it talks about playlist entities in general;
-/// it's deliberately *not* used for the mixlist-marking feature's own
-/// vocabulary (the filter toggle's own labels, "Mark Mixlists", etc.),
-/// which always says "mixlist" regardless of the current filter.
+/// User-facing noun for playlists under a filter: "Mixlist" for the default
+/// favorites view, "Playlist" otherwise. Not used for the marking feature's
+/// own words (toggle labels, "Mark Mixlists"), which always say mixlist.
 extension MixlistFilterWording on MixlistFilter {
   bool get _isMixlistsOnly => this == MixlistFilter.mixlistsOnly;
 
@@ -18,10 +13,8 @@ extension MixlistFilterWording on MixlistFilter {
   String get playlistNounPluralLower =>
       _isMixlistsOnly ? 'mixlists' : 'playlists';
 
-  /// The All Mixlists/Playlists screen's header -- a three-way split
-  /// distinct from the two-way getters above: "Non-Mixlists" keeps the
-  /// filtering feature's own word for the not-marked state rather than
-  /// becoming "Non-Playlists".
+  /// All Mixlists screen header: a three-way split that keeps "Non-Mixlists"
+  /// rather than "Non-Playlists".
   String get allScreenHeader => switch (this) {
     MixlistFilter.all => 'All Playlists',
     MixlistFilter.mixlistsOnly => 'Mixlists',

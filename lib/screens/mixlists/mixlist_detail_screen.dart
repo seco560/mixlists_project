@@ -52,10 +52,8 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // Duplicate badges, the adjacent-mixlist pane, and the display number
-    // all depend on the current filter -- reload if it changes while this
-    // screen is open (e.g. navigating back to it after switching filters
-    // elsewhere), the same way every other filter-scoped screen does.
+    // Duplicate badges, adjacent mixlists and display number depend on the
+    // filter, so reload when it changes.
     getIt<MixlistFilterController>().addListener(_loadData);
     _loadData();
   }

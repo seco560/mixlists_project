@@ -37,14 +37,9 @@ class SearchResults {
       labels.isEmpty &&
       songs.isEmpty;
 
-  /// Re-scopes an already-fetched [SearchResults] to [filter] in memory --
-  /// no query -- so the Search Results screen can react to
-  /// [MixlistFilterController] changing without re-searching. `mixlists`
-  /// and each song's `mixlists` scope by their own per-item `isMixlist`;
-  /// artists/genres/albums/labels scope via [scopeIndex]. A song left with
-  /// no in-scope mixlist appearance, or an artist/album/genre/label with
-  /// no in-scope appearance at all, is dropped entirely, mirroring how the
-  /// filtered screens drop it at the SQL level.
+  /// Re-scopes these results to [filter] in memory, no query. Mixlists scope
+  /// by their own `isMixlist`, other entities via [scopeIndex]; anything left
+  /// with no in-scope appearance is dropped, like the SQL-filtered screens.
   SearchResults scopedTo(MixlistFilter filter) {
     if (filter == MixlistFilter.all) return this;
 

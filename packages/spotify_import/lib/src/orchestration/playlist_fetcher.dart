@@ -8,10 +8,8 @@ import '../spotify_api/paging.dart';
 import '../spotify_api/playlists.dart';
 import '../spotify_api/spotify_client.dart';
 
-/// Mirrors the CLI's `run` command's fetch loop (see
-/// `mixlists_importer`'s `run_command.dart`), but reports progress via a
-/// stream instead of `print()` and is cancelable, since a GUI screen can't
-/// block on stdout the way a CLI can.
+/// Progress events for [SpotifyPlaylistFetcher]: the CLI's `run` fetch loop
+/// as a cancelable stream a GUI screen can render.
 sealed class FetchEvent {
   const FetchEvent();
 }
@@ -75,17 +73,9 @@ class SpotifyPlaylistFetcher {
     if (_cancelled) throw const FetchCancelledException();
   }
 
-  /// Fetches account info, lists importable playlists, then fetches and
-  /// maps each one's tracks in turn -- emitting [FetchEvent]s as it goes so
-  /// a progress screen can render live status. The final event is always
-  /// [FetchComplete] with every non-empty batch (playlists with zero
-  /// importable tracks are silently skipped, same as the CLI).
-  ///
-  /// [only], if given, restricts fetching to just these playlists (e.g.
-  /// the subset a user picked in a review screen) instead of every
-  /// importable one -- [PlaylistsListed] still reports the full
-  /// importable/skipped counts either way, since that's account-wide
-  /// information a picker screen needs before the user has chosen.
+  /// Fetches account info, lists importable playlists, then maps each one's
+  /// tracks, ending with [FetchComplete] (empty playlists skipped). [only]
+  /// limits fetching; [PlaylistsListed] still reports account-wide counts.
   Stream<FetchEvent> fetchImportableBatches({
     List<SpotifyPlaylistSummary>? only,
   }) async* {

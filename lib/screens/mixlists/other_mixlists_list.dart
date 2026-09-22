@@ -40,10 +40,7 @@ class OtherMixlistsList extends StatelessWidget {
           for (final mixlist in mixlists)
             Material(
               child: FutureBuilder<int>(
-                // Same number AllMixlistsScreen/MixlistDetailScreen would
-                // show for this mixlist under the current filter -- not
-                // its raw id, which only matches that number when the
-                // filter is "all" and the whole library is unfiltered.
+                // The filtered display number, not the raw id.
                 future: getIt<MusicLibraryRepository>().getMixlistPosition(
                   mixlist.id,
                   filter: filter,

@@ -1,10 +1,7 @@
 import 'spotify_client.dart';
 
-/// Follows the `next` field Spotify includes on every cursor-paginated
-/// response (`/me/playlists`, `/playlists/{id}/items`, ...) until it's
-/// null, collecting every page's `items`. Using `next` directly avoids
-/// hand-rolling `limit`/`offset` math -- Spotify already hands back the
-/// exact URL to fetch next, including any query params it wants applied.
+/// Follows Spotify's `next` URL on cursor-paginated responses until null,
+/// collecting every page's `items`.
 Future<List<Map<String, Object?>>> fetchAllPages(
   SpotifyClient client,
   Uri firstPage,

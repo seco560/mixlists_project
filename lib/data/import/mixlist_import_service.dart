@@ -43,12 +43,9 @@ class MixlistImportService {
     );
   }
 
-  /// Opens a second file picker and merges its rows into [current]'s,
-  /// matched by track URI (see [mergeMixlistCsvRows]) -- for combining two
-  /// complementary exports of the *same* mixlist (e.g. an older
-  /// app-native export rich in URIs/art/ISRC with a newer Exportify-style
-  /// export rich in genres/label/audio features) into one fuller row set.
-  /// Returns null if the user cancels the second pick.
+  /// Picks a second CSV and merges it into [current] by track URI (see
+  /// [mergeMixlistCsvRows]), for two exports of the same mixlist. Null if the
+  /// user cancels.
   Future<PickedMixlistCsv?> pickAndMergeSecondCsv(
     PickedMixlistCsv current,
   ) async {

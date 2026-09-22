@@ -6,20 +6,9 @@ import 'package:mixlists_project/data/library/active_library_controller.dart';
 import 'package:mixlists_project/data/models/mixlist_summary.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 
-/// Maps a song's id to every mixlist it's on, for songs on more than one
-/// within the current [MixlistFilterController] filter -- the index behind
-/// the "also on..." badge in [MixlistDetailScreen].
-///
-/// A getIt singleton like [MixlistFilterController]/[ActiveLibraryController]
-/// -- screens read [ready]/[value] instead of each owning a copy of this
-/// cache -- rather than a cache living inside [MusicLibraryRepository].
-/// Loads once eagerly on construction, so the underlying self-join query
-/// (expensive enough to be worth keeping warm) has already run by the time
-/// the first mixlist is opened, and reloads whenever the filter or the
-/// active library changes -- the same two signals every other screen here
-/// already reloads its own data on -- or whenever [MusicLibraryRepository]
-/// notifies that a write (currently only "Mark Mixlists") changed the
-/// `is_mixlists` flags this index depends on.
+/// Song id -> every mixlist it's on, for songs on 2+ mixlists under the
+/// current filter (the "also on..." badge). Loaded eagerly; reloads on
+/// filter change, library switch, or a repository write notification.
 class DuplicateSongIndexController
     extends ValueNotifier<Map<int, List<MixlistSummary>>> {
   DuplicateSongIndexController(
@@ -39,12 +28,8 @@ class DuplicateSongIndexController
 
   late Future<Map<int, List<MixlistSummary>>> _future;
 
-  /// Resolves with the index for whichever filter is current by the time
-  /// loading finishes. Callers that need accurate data right away (e.g. a
-  /// screen's own initial load) should await this rather than reading
-  /// [value] directly, since [value] doesn't update until loading
-  /// completes and may still hold a previous filter's data in the
-  /// meantime.
+  /// The index for whichever filter is current when loading finishes. Await
+  /// this for an initial load: [value] may still hold the previous filter's.
   Future<Map<int, List<MixlistSummary>>> get ready => _future;
 
   void _scheduleReload() {

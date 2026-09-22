@@ -1,10 +1,8 @@
 part of 'music_library_repository.dart';
 
-/// A SQL fragment (`AND $alias.is_mixlists = 0/1`, or empty for
-/// [MixlistFilter.all]) to append to a `WHERE`/`ON` clause that already
-/// joins in a `Mixlists` row aliased as [alias]. The three states are a
-/// fixed, closed set (not user input), so interpolating the literal
-/// 0/1 directly is fine -- no injection surface.
+/// `AND $alias.is_mixlists = 0/1` (empty for [MixlistFilter.all]) for a
+/// clause joining `Mixlists` as [alias]. A closed enum, so interpolating is
+/// safe.
 String _mixlistFilterSql(MixlistFilter filter, String alias) {
   switch (filter) {
     case MixlistFilter.all:
@@ -17,11 +15,8 @@ String _mixlistFilterSql(MixlistFilter filter, String alias) {
 }
 
 extension MixlistQueries on MusicLibraryRepository {
-  /// Every mixlist, oldest-created first. `id` order is chronological
-  /// order here (mixlists are never deleted, so ids never leave gaps) --
-  /// `dateCreated` is not reliable for this, since it's backfilled from
-  /// CSV track data and can drift (e.g. a track re-added to a playlist
-  /// after Spotify dropped it). Was `MixlistDao.getAll()`.
+  /// Every mixlist, oldest first by `id`: ids are chronological (never
+  /// deleted, no gaps), while `dateCreated` is backfilled and can drift.
   Future<List<Mixlist>> getAllMixlists({
     MixlistFilter filter = MixlistFilter.all,
   }) async {
@@ -45,15 +40,8 @@ extension MixlistQueries on MusicLibraryRepository {
     return Mixlist.fromMap(rows.first);
   }
 
-  /// The nearest mixlists before/after [mixlist] by id that also match
-  /// [filter] -- see `getAllMixlists` for why id order is chronological
-  /// order. [MixlistDetailScreen] doesn't show the filter toggle itself;
-  /// it inherits whatever the global filter was when navigated into, so
-  /// prev/next only ever step within that same filtered set (e.g.
-  /// browsing "mixlists only", next/previous skip over anything marked
-  /// as not a mixlist rather than landing on it). With
-  /// [MixlistFilter.all] this is equivalent to the old `id - 1`/`id + 1`
-  /// lookup, since ids never have gaps.
+  /// Nearest mixlists before/after [mixlist] by id within [filter], so the
+  /// detail screen's prev/next stays inside the globally filtered set.
   Future<(Mixlist? previous, Mixlist? next)> getAdjacentMixlists(
     Mixlist mixlist, {
     MixlistFilter filter = MixlistFilter.all,
@@ -85,15 +73,8 @@ extension MixlistQueries on MusicLibraryRepository {
     );
   }
 
-  /// The 1-based position of [mixlistId] within the id-ordered list under
-  /// [filter] -- the same number `AllMixlistsScreen` would show as this
-  /// mixlist's display number under that filter. Computed straight from
-  /// `(mixlistId, filter)` rather than passed in from wherever the
-  /// caller navigated from, since [MixlistDetailScreen] is reachable
-  /// from many places (the list itself, prev/next, a track's "other
-  /// mixlists" link) and a self-contained query stays correct regardless
-  /// of entry point instead of needing every call site to thread an
-  /// index through.
+  /// 1-based position of [mixlistId] under [filter], i.e. its display number.
+  /// Computed here since the detail screen has many entry points.
   Future<int> getMixlistPosition(
     int mixlistId, {
     MixlistFilter filter = MixlistFilter.all,
@@ -113,11 +94,8 @@ extension MixlistQueries on MusicLibraryRepository {
     return rows.first['position'] as int;
   }
 
-  /// Sets `is_mixlists` for every mixlist id in [flags] to the given
-  /// value -- the write path for the "Mark Mixlists" screen. Invalidates
-  /// [MixlistScopeIndex] (built from this same flag) and notifies
-  /// listeners so caches outside this repository -- currently
-  /// [DuplicateSongIndexController] -- know to reload too.
+  /// The "Mark Mixlists" write path: sets `is_mixlists`, invalidates
+  /// [MixlistScopeIndex] and notifies listeners.
   Future<void> setMixlistFlags(Map<int, bool> flags) async {
     final batch = _db.batch();
     for (final entry in flags.entries) {
@@ -182,11 +160,8 @@ extension MixlistQueries on MusicLibraryRepository {
     return rows.map(MixlistTrack.fromMap).toList();
   }
 
-  /// Up to [limit] distinct album cover URLs for [mixlistId], in track
-  /// order -- for the small cover-art mosaic [PlaylistCoverGrid] shows as
-  /// a playlist's leading thumbnail, Spotify-style. `null` entries (no
-  /// cover art on that album) are included so the caller can still tell
-  /// how many albums were found vs. left as an empty mosaic cell.
+  /// Up to [limit] distinct album cover URLs for [mixlistId] in track order,
+  /// for [PlaylistCoverGrid]. Null entries (album without art) are kept.
   Future<List<String?>> getMixlistCoverArt(
     int mixlistId, {
     int limit = 4,
@@ -207,13 +182,9 @@ extension MixlistQueries on MusicLibraryRepository {
     return rows.map((row) => row['coverImageURL'] as String?).toList();
   }
 
-  /// Maps a song's id to every mixlist it's on, for songs on more than
-  /// one within [filter] -- absent from the map otherwise, so
-  /// `containsKey` doubles as the "is this a duplicate?" check.
-  ///
-  /// Uncached -- callers that want this kept warm and reloaded on filter/
-  /// library changes should go through [DuplicateSongIndexController]
-  /// instead of calling this directly.
+  /// Song id -> its mixlists, for songs on 2+ mixlists within [filter], so
+  /// `containsKey` means duplicate. Uncached; go through
+  /// [DuplicateSongIndexController] for a warm, auto-reloading copy.
   Future<Map<int, List<MixlistSummary>>> duplicateSongIndex({
     MixlistFilter filter = MixlistFilter.all,
   }) async {

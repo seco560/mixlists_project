@@ -60,11 +60,8 @@ class _SpotifyLoginScreenState extends State<SpotifyLoginScreen> {
     );
   }
 
-  /// Android/iOS: a bound loopback port isn't a reliable redirect target,
-  /// so this uses `flutter_web_auth_2`'s custom-scheme capture
-  /// (`mixlists://spotify-callback`, registered in the platform manifest)
-  /// instead, sharing PKCE + code exchange with the desktop path via
-  /// [SpotifyAuth.buildAuthorizeUrl]/[SpotifyAuth.completeLogin].
+  /// Mobile login via `flutter_web_auth_2` custom-scheme capture (a loopback
+  /// port isn't reliable there), sharing PKCE/code exchange with desktop.
   Future<SpotifyTokens> _loginMobile(SpotifyAuth auth) async {
     final pkce = PkcePair.generate();
     final state = randomUrlSafeToken(16);

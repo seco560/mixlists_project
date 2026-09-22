@@ -172,12 +172,8 @@ void main() {
   });
 
   group('getOrCreateSongId', () {
-    /// Regression test for a real data bug: two different songs both
-    /// titled "Note to Self", by different artists, on different albums,
-    /// with durations close enough to fall within the match tolerance --
-    /// the library-wide fallback tier used to match on (name, duration)
-    /// alone with no artist check, silently collapsing them into one
-    /// Songs row and discarding the second song's own identity.
+    /// Regression: two "Note to Self" songs by different artists with close
+    /// durations used to be collapsed into one Songs row.
     test(
       'does not merge same-titled songs by different artists via the library-wide fallback',
       () async {

@@ -4,10 +4,8 @@
 enum MixlistFilter { mixlistsOnly, all, nonMixlistsOnly }
 
 extension MixlistFilterScope on MixlistFilter {
-  /// The in-memory equivalent of the SQL-level filter (`_mixlistFilterSql`
-  /// in the repository) -- for callers that already have the data in hand
-  /// (e.g. re-scoping cached search results on a filter change) instead of
-  /// building a query.
+  /// In-memory twin of the repository's SQL-level `_mixlistFilterSql`, for
+  /// re-scoping data already in hand (e.g. cached search results).
   bool matches(bool isMixlist) => switch (this) {
     MixlistFilter.all => true,
     MixlistFilter.mixlistsOnly => isMixlist,

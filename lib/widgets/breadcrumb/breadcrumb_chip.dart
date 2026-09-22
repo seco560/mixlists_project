@@ -5,10 +5,8 @@ import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/shared/playlist_cover_grid.dart';
 
-/// One stop in the trail panel's snaking grid: a per-kind thumbnail
-/// (artwork, a cover-art mosaic, or an icon, depending on what's actually
-/// available for that [BreadcrumbEntry.kind]), with its kind ("Album",
-/// "Mixlist", ...) above and its title (up to three lines) below.
+/// A trail stop: kind label, per-kind thumbnail (art, mosaic or icon), and
+/// a title of up to three lines.
 class BreadcrumbChip extends StatelessWidget {
   const BreadcrumbChip({
     super.key,
@@ -124,10 +122,8 @@ class BreadcrumbChip extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              // Always reserves room for the full _titleMaxLines, with
-              // the text sitting at the top right under the thumbnail, so
-              // every chip in a row is the same height and the row's
-              // centering keeps their thumbnails lined up.
+              // Reserve all title lines so chips in a row share
+              // a height and their thumbnails line up.
               SizedBox(
                 height:
                     MediaQuery.textScalerOf(context).scale(_titleFontSize) *

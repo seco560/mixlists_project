@@ -3,10 +3,8 @@ import 'dart:io';
 
 import 'library_record.dart';
 
-/// Reads/writes `libraries/manifest.json` -- the list of every library
-/// this install knows about. Mirrors the JSON-file-as-store pattern
-/// `spotify_import`'s `DesktopCredentialStorage` already uses, applied to
-/// a list instead of a single record.
+/// Reads/writes `libraries/manifest.json`, the list of every library this
+/// install knows about.
 class LibraryManifestStore {
   LibraryManifestStore(this._file);
 

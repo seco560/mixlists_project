@@ -4,13 +4,9 @@ import 'dart:io';
 import 'credential_storage.dart';
 import 'spotify_auth.dart';
 
-/// Persists Spotify tokens to a per-user config file on Windows/macOS/
-/// Linux. No client secret is ever stored -- PKCE is a public-client flow
-/// -- so the only sensitive material here is a refresh token scoped to
-/// read-only playlist access. That's proportionate to a chmod'd JSON file;
-/// no OS keychain integration needed. Mobile uses a separate
-/// [CredentialStorage] implementation backed by secure storage instead
-/// (see the app's `lib/data/spotify/mobile_credential_storage.dart`).
+/// Persists tokens to a per-user config file on desktop. PKCE has no client
+/// secret, only a read-only-scoped refresh token, so a chmod'd JSON file is
+/// proportionate.
 class DesktopCredentialStorage implements CredentialStorage {
   DesktopCredentialStorage({this._overridePath});
 

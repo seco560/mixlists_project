@@ -1,25 +1,6 @@
-// One-time migration/backfill script -- not part of the shipped app.
-//
-// Reads every CSV under `assets/mixlists_new_format/` (the newer, richer
-// Spotify export format: no per-artist/album URIs, but genres/record
-// label/audio features) and, for each file:
-//   - content-matches it against the existing database by Track URI
-//     overlap (never trusts the filename alone -- several of the new
-//     export's filenames had punctuation silently stripped) to find which
-//     existing mixlist it re-exports, or confirms it's genuinely new;
-//   - backfills genres/record label/audio features onto already-seeded
-//     songs (matched by spotifyURI) without touching their existing
-//     URI/disc-number/ISRC data;
-//   - inserts any genuinely new songs/mixlists via the same shared
-//     get-or-create logic the in-app "Add New Mixlist" feature uses.
-//
-// Usage:
-//   dart run bin/backfill_new_format_data.dart [--db <path>] [--csv-dir <path>] [--apply-titles]
-//
-// Always operates on a backup + working copy of --db, only overwriting the
-// given path itself once the full run succeeds. Run it once against a copy
-// of assets/database/mixlists.db to sanity-check the printed summary
-// before pointing it at the real file.
+// One-time backfill script (already run, not shipped; see CLAUDE.md).
+// Works on a backup + working copy, only replacing --db on success.
+// Usage: dart run bin/backfill_new_format_data.dart [--db <path>] [--csv-dir <path>] [--apply-titles]
 
 // Print statements are the only output this script has.
 // ignore_for_file: avoid_print
@@ -31,10 +12,8 @@ import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-/// A file's rows count toward an existing mixlist only if the majority of
-/// its Track URIs already belong to that one mixlist. Real data here is
-/// never ambiguous (matches are consistently ~90-100% or ~0%), so a plain
-/// majority threshold is sufficient -- no need for a finer heuristic.
+/// A file joins an existing mixlist if most of its Track URIs belong to it;
+/// real data is never ambiguous (~90-100% or ~0%).
 const _backfillMatchThreshold = 0.5;
 
 class _TitleReviewEntry {
@@ -83,11 +62,8 @@ Future<void> main(List<String> args) async {
   dbFile.copySync(backupPath);
   print('Backed up $dbPath -> $backupPath');
 
-  // Step 2: work on a separate copy, never the original, until success.
-  // sqflite_common_ffi resolves a relative path against its own default
-  // databases directory (.dart_tool/sqflite_common_ffi/databases/), not
-  // the working directory -- openDatabase needs an absolute path or it
-  // silently opens/creates a different, empty file there instead.
+  // Step 2: work on a copy until success. The path must be absolute:
+  // sqflite_common_ffi resolves relative ones against its own databases dir.
   final workingPath = p.absolute('$dbPath.migrating');
   final workingFile = File(workingPath);
   if (workingFile.existsSync()) workingFile.deleteSync();
@@ -192,10 +168,8 @@ Future<void> main(List<String> args) async {
     }
   }
 
-  // Step 4: print the title review list. Never auto-rename without
-  // --apply-titles -- some of the current titles are themselves already
-  // missing characters from the original 2018-era seeding, so a superset
-  // filename-derived title is a good guess, not a certainty.
+  // Step 4: print the title review list. Only rename with --apply-titles:
+  // filename-derived titles are a good guess, not a certainty.
   if (titleReview.isNotEmpty) {
     print('\n--- Title review (${titleReview.length} mixlists) ---');
     for (final entry in titleReview) {
@@ -240,14 +214,8 @@ Future<void> main(List<String> args) async {
   print('\nDone. $dbPath updated. Backup kept at $backupPath.');
 }
 
-/// Backfills [rows] into an already-matched, already-existing [mixlistId].
-/// For a row whose Track URI already exists, this updates only the
-/// currently-null genres/recordLabel/audio-features fields on that song's
-/// existing Artist/Album/SongsAudioFeatures rows -- never touching
-/// spotifyURI/disc-number/ISRC/etc, which are preserved from the original
-/// seeding. A row whose Track URI doesn't exist yet (a track added to this
-/// mixlist since original seeding) is inserted fresh via the same
-/// get-or-create path the in-app feature uses.
+/// Backfills [rows] into existing [mixlistId]: known tracks only get null
+/// genres/label/audio features filled; new tracks go through get-or-create.
 Future<void> _backfillIntoExistingMixlist(
   Database db,
   MusicLibraryRepository repo, {
@@ -336,12 +304,8 @@ Future<void> _backfillIntoExistingMixlist(
         final songCountAfter =
             (await txn.rawQuery('SELECT COUNT(*) AS c FROM Songs')).first['c']
                 as int;
-        // getOrCreateSongId may have matched an existing song via its
-        // (name, album, duration) URI-reassignment fallback instead of
-        // truly inserting -- only count it as "inserted" if the table
-        // actually grew, so the summary doesn't overstate genuinely new
-        // songs (this also refreshes that song's spotifyURI in place; see
-        // getOrCreateSongId's doc comment).
+        // getOrCreateSongId may have matched an existing song instead, so only
+        // count an insert if the table actually grew.
         if (songCountAfter != songCountBefore) {
           summary.songsInserted++;
         } else {

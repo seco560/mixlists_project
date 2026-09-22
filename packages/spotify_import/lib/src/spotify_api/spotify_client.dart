@@ -14,13 +14,9 @@ class SpotifyApiException implements Exception {
       'Spotify API error${statusCode != null ? ' ($statusCode)' : ''}: $message';
 }
 
-/// Thin wrapper around the Spotify Web API: attaches the bearer token,
-/// force-refreshes once on an unexpected 401, retries on 429 (honoring
-/// `Retry-After`) and 5xx with backoff, and paces every request by a
-/// small fixed delay. There's no published fixed rate limit for Dev Mode
-/// apps (just an undisclosed rolling 30s window), so pacing conservatively
-/// by default is deliberate, not a guess -- see the Mixlists Importer
-/// plan's pitfalls list.
+/// Spotify Web API wrapper: bearer auth, one forced refresh on 401, backoff
+/// retries on 429 (`Retry-After`)/5xx, and a small fixed delay per request
+/// since Dev Mode's rate-limit window is undisclosed.
 class SpotifyClient {
   SpotifyClient(
     this._session, {

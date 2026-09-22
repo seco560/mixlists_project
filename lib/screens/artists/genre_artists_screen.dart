@@ -12,11 +12,8 @@ import 'package:mixlists_project/widgets/shared/category_sort_toggle.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
-/// Every artist tagged with [genre] -- reached from a genre chip on
-/// [ArtistDetailScreen], a "Genres" search result, or [AllGenresScreen].
-/// Sortable by song count or alphabetically via [CategorySortToggle], like
-/// [AllGenresScreen] -- not the multi-column All Artists grid, which is a
-/// separate bespoke widget (see that class's doc comment).
+/// Every artist tagged with [genre], sortable via [CategorySortToggle] like
+/// [AllGenresScreen].
 class GenreArtistsScreen extends StatefulWidget {
   const GenreArtistsScreen({super.key, required this.genre});
 

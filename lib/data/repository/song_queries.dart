@@ -1,11 +1,8 @@
 part of 'music_library_repository.dart';
 
 extension SongQueries on MusicLibraryRepository {
-  /// Every song in the library, with its album, artist display text, and
-  /// every mixlist it appears in -- scoped to [filter] when it isn't
-  /// [MixlistFilter.all]. A song with zero qualifying appearances is
-  /// dropped entirely (the inner joins through `SongsMixlists`/`Mixlists`
-  /// naturally exclude it, same as [ArtistQueries.getArtistSongAppearances]).
+  /// Every song with album, artist text and mixlists, scoped to [filter];
+  /// songs with no qualifying appearance are dropped by the inner joins.
   Future<List<SongOverview>> getSongOverviews({
     MixlistFilter filter = MixlistFilter.all,
   }) async {

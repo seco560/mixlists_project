@@ -8,16 +8,9 @@ import 'package:mixlists_project/screens/songs/song_detail_screen.dart';
 import 'package:mixlists_project/screens/songs/song_table_cell.dart';
 import 'package:mixlists_project/widgets/shared/explicit_badge.dart';
 
-/// A single row in [AllSongsScreen]'s grid. Owns its own expand/collapse
-/// state and animation (unlike Artists' stateless `_buildRow` helper)
-/// because a one-hit wonder needs none of that -- tapping it opens its
-/// one mixlist directly -- while a song with more than one appearance
-/// needs to reveal the full list in place, right under its own row.
-///
-/// Callers MUST key this with `ValueKey(song.id)`: the parent renders
-/// rows in a plain eagerly-built `Column`, not a `ListView.builder`, so
-/// without an identity key a re-sort or filter reload could reconcile a
-/// different song into an already-expanded row's position/State.
+/// An [AllSongsScreen] row that expands in place to list the song's
+/// mixlists (a one-hit wonder opens its mixlist directly). Callers MUST
+/// key it with `ValueKey(song.id)`: rows live in an eager `Column`.
 class SongTableRow extends StatefulWidget {
   const SongTableRow({
     super.key,
@@ -177,13 +170,9 @@ class _SongTableRowState extends State<SongTableRow>
                   alignment: Alignment.topRight,
                   child: FadeTransition(
                     opacity: _fadeAnimation,
-                    // A concrete width is needed here (not just Align)
-                    // because this row sits inside the grid's
-                    // horizontally-scrolling body, which hands rows an
-                    // unbounded width -- without an explicit anchor,
-                    // Align has no extra space to work with and shrinks
-                    // to its child, leaving the outer Column's default
-                    // center alignment to (mis)place the whole panel.
+                    // Needs a concrete width: rows get unbounded
+                    // width from the scrolling grid, so a bare Align
+                    // would shrink and be centered by the Column.
                     child: SizedBox(
                       width: totalRowWidth,
                       child: Align(

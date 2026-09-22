@@ -29,12 +29,8 @@ class SpotifyPlaylistSummary {
   }
 }
 
-/// Every playlist visible to the current user, filtered down to ones we
-/// can actually read items from: owned or collaborative. `/me/playlists`
-/// also returns playlists the user merely follows -- Dev Mode genuinely
-/// rejects item access for those with a 403 (confirmed live against a
-/// real account, not just documented), so this filters proactively
-/// rather than letting the caller hit that.
+/// The user's playlists they can read items from (owned or collaborative);
+/// followed-only ones 403 in Dev Mode, so they're filtered out and counted.
 Future<({List<SpotifyPlaylistSummary> importable, int skippedFollowedOnly})>
 fetchImportablePlaylists(
   SpotifyClient client, {

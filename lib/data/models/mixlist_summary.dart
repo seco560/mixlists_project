@@ -12,10 +12,7 @@ class MixlistSummary {
   final String title;
   final String? dateCreated;
 
-  /// `Mixlists.is_mixlists` for this entry -- only populated by queries
-  /// that need to re-scope an already-fetched summary in memory (search
-  /// results, re-filtered against [MixlistFilterController] without a
-  /// fresh query); null wherever the summary already came from a query
-  /// scoped to a single [MixlistFilter] at the SQL level.
+  /// `Mixlists.is_mixlists`; only set by queries whose results get re-scoped
+  /// in memory (search). Null when the query was already filter-scoped in SQL.
   final bool? isMixlist;
 }

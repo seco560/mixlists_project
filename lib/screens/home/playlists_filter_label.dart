@@ -4,12 +4,8 @@ import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 
-/// The Home screen's nav-card label for the playlists list, swapping
-/// between "Mixlists" and "Playlists" as [MixlistFilterController]
-/// changes. Landing on "Mixlists" (the default, favorites-only state)
-/// plays a zippy, energetic pop; landing on "Playlists" (all or
-/// non-mixlists) plays a muted, low-energy fade -- the motion itself
-/// hints at which state is the "special" one.
+/// Home nav-card label swapping "Mixlists"/"Playlists" with the filter: a
+/// zippy pop for the default "Mixlists", a muted fade for "Playlists".
 class PlaylistsFilterLabel extends StatefulWidget {
   const PlaylistsFilterLabel({super.key});
 
@@ -53,10 +49,7 @@ class _PlaylistsFilterLabelState extends State<PlaylistsFilterLabel> {
       duration: Duration(milliseconds: _zippy ? 450 : 500),
       switchInCurve: _zippy ? Curves.elasticOut : Curves.easeOutCubic,
       switchOutCurve: _zippy ? Curves.easeIn : Curves.easeInCubic,
-      // AnimatedSwitcher's default layoutBuilder stacks old/new children
-      // with Alignment.center, which centers the shorter "Mixlists" under
-      // the wider "Playlists" instead of keeping both flush left like
-      // every other ListTile title on the home screen.
+      // Keep both labels flush left; the default layoutBuilder centers them.
       layoutBuilder: (currentChild, previousChildren) => Stack(
         alignment: Alignment.centerLeft,
         children: [...previousChildren, ?currentChild],

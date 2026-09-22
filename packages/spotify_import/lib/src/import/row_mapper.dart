@@ -1,10 +1,7 @@
 import 'package:mixlists_core/mixlists_core.dart';
 
-/// True if this entry from `/playlists/{id}/items` should be skipped:
-/// a local file with no real Spotify track behind it, a delisted track
-/// (null `item`), or a podcast episode (`additional_types` defaults to
-/// `track` only, but check anyway rather than assume the API respects
-/// that in every case).
+/// Whether a `/playlists/{id}/items` entry should be skipped: a local file,
+/// a delisted track (null `item`), or a podcast episode.
 bool shouldSkipPlaylistItem(Map<String, Object?> wrapper) {
   if (wrapper['is_local'] == true) return true;
   final item = wrapper['item'] as Map<String, Object?>?;
@@ -12,21 +9,9 @@ bool shouldSkipPlaylistItem(Map<String, Object?> wrapper) {
   return item['track'] != true;
 }
 
-/// Builds a [MixlistCsvRow] directly from one raw JSON entry of
-/// `/playlists/{id}/items`'s `items[]`, plus the resolved genre string
-/// for the album's primary artist (or null if unavailable). The field
-/// choices here are pinned to a real, live-verified response shape (see
-/// the Mixlists Importer plan's Phase 3 findings) -- notably `item` is
-/// flat (track fields sit directly on it, not wrapped), and
-/// `preview_url`/`popularity`/`label` are confirmed absent entirely for
-/// this Dev Mode app, not just unreliable.
-///
-/// `Albums.artist` is a single FK, but `album.artists` can list more
-/// than one. Rather than replicating the old CSV pipeline's comma-join
-/// workaround for that (a hack that only existed because CSV exports
-/// gave no structured artist list), this just takes the first credited
-/// album artist as canonical -- we now have a real artist id/uri to key
-/// on, so there's no reason to keep the workaround around.
+/// Builds a [MixlistCsvRow] from one `/playlists/{id}/items` entry plus the
+/// primary artist's genres. Pinned to the live response shape (flat `item`,
+/// no preview_url/popularity/label); the first album artist is canonical.
 MixlistCsvRow rowFromPlaylistItem(
   Map<String, Object?> wrapper, {
   required String? albumArtistGenres,

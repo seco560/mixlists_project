@@ -1,7 +1,5 @@
-/// Spotify HTML-escapes some characters in playlist descriptions (e.g.
-/// `//` comes back as `&#x2F;&#x2F;`, confirmed against a real response).
-/// No `package:html` dependency needed for this -- just numeric character
-/// references plus the handful of named entities that actually show up.
+/// Spotify HTML-escapes some description characters (`//` -> `&#x2F;&#x2F;`);
+/// numeric plus a few named entities suffice, no `package:html` needed.
 final _numericEntity = RegExp(r'&#(x?)([0-9a-fA-F]+);');
 
 const _namedEntities = {

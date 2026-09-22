@@ -1,11 +1,7 @@
 import 'spotify_client.dart';
 
-/// Resolves and caches an artist's genres (joined the same way the CSV
-/// pipeline already stores them, comma-separated) for the lifetime of a
-/// run. `genres` isn't present on the simplified artist objects embedded
-/// in track/album responses, so this is the one per-item API call the
-/// importer still needs -- caching means a prolific artist appearing
-/// across dozens of playlists costs exactly one call, not one per track.
+/// Caches artists' comma-joined genres for a run. Simplified artist objects
+/// lack `genres`, so this is the one per-artist API call the import needs.
 class ArtistGenreCache {
   ArtistGenreCache(this._client);
 

@@ -3,12 +3,8 @@ import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
 import 'package:mixlists_project/data/library/active_library_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 
-/// The breadcrumb trail: derived state that mirrors whatever tagged
-/// detail-screen routes are currently on the [Navigator] stack.
-/// [BreadcrumbNavigatorObserver] is the only thing that should call
-/// [recordPush]/[recordPop] -- this controller never pushes/pops itself,
-/// [jumpTo] included, so trail state and the real navigation stack can
-/// never drift apart.
+/// The breadcrumb trail, mirroring the tagged detail routes on the Navigator.
+/// Only [BreadcrumbNavigatorObserver] mutates it; it never pushes/pops itself.
 class BreadcrumbController extends ChangeNotifier {
   BreadcrumbController() {
     // Every id in the trail is scoped to whichever library's database it
@@ -19,10 +15,8 @@ class BreadcrumbController extends ChangeNotifier {
 
   final List<(BreadcrumbEntry, Route<Object?>)> _frames = [];
 
-  /// Whether the trail panel is open -- kept separate from this
-  /// controller's own [notifyListeners] so [BreadcrumbOverlay] can react
-  /// to open/close alone, without rebuilding on every trail change, and
-  /// [BreadcrumbTrailButton] can react to trail contents alone.
+  /// Panel open state, separate from [notifyListeners] so the overlay and the
+  /// trail button each rebuild only on the change they care about.
   final ValueNotifier<bool> isOpen = ValueNotifier(false);
 
   List<BreadcrumbEntry> get trail => [for (final frame in _frames) frame.$1];
@@ -42,17 +36,9 @@ class BreadcrumbController extends ChangeNotifier {
 
   void close() => isOpen.value = false;
 
-  /// Pops the navigator stack back to the frame at [index], closing the
-  /// trail panel in the same motion. Matched by route identity (not
-  /// kind/id) so a genuine loop through the same entity twice -- e.g.
-  /// Artist A -> Album -> Artist A -- still resolves to the exact physical
-  /// stack frame that was tapped, not whichever occurrence matches first.
-  ///
-  /// Pops via the target route's own navigator rather than a
-  /// `BuildContext` lookup: the trail panel lives in [BreadcrumbOverlay],
-  /// above the app's Navigator, so no context it has can find one. A
-  /// no-op once the panel is already closing, so a double tap during the
-  /// close animation can't pop twice.
+  /// Pops back to the frame at [index], matched by route identity so loops
+  /// resolve to the tapped frame. Uses the route's own navigator (the panel
+  /// sits above the app's Navigator); no-op once closing, so no double pops.
   void jumpTo(int index) {
     if (!isOpen.value) return;
     final targetRoute = _frames[index].$2;

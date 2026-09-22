@@ -37,10 +37,8 @@ class AlbumArtThumbnail extends StatelessWidget {
                 fit: BoxFit.cover,
                 memCacheWidth: cacheDimension,
                 memCacheHeight: cacheDimension,
-                // HtmlImage (the web default) hits a Flutter 3.47 engine
-                // regression where images render black once evicted from
-                // ImageCache, e.g. after navigating back. HttpGet decodes
-                // bytes normally instead, sidestepping that path.
+                // Web's HtmlImage renders black after ImageCache
+                // eviction (Flutter 3.47 regression); HttpGet avoids it.
                 imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
                 placeholder: (context, url) => _placeholder(),
                 errorWidget: (context, url, error) => Container(

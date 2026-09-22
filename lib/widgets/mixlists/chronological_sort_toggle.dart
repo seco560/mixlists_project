@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// How [ChronologicalSortToggle] orders a chronologically-sortable list
-/// (currently just [AllMixlistsScreen]) -- purely a display order, never
-/// touches the underlying position numbers (see the toggle's own
-/// call site for how that invariant is kept).
+/// Display order for [ChronologicalSortToggle]; never renumbers positions.
 enum ChronologicalOrder {
   /// Oldest first -- the default.
   chronological,

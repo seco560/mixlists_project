@@ -3,12 +3,8 @@ import 'package:mixlists_project/data/breadcrumb/breadcrumb_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_panel.dart';
 
-/// Wraps the whole app (via `MaterialApp.builder`) so opening the trail
-/// can animate two layers in sync from one [AnimationController]: the app
-/// content pulls back slightly (a small scale-down + upward translate)
-/// while [BreadcrumbTrailPanel] slides up over it, both driven by the
-/// same `t` every frame -- a real parallax, not a plain dialog over an
-/// inert background.
+/// Wraps the app (via `MaterialApp.builder`) so one [AnimationController]
+/// drives both the app pulling back and [BreadcrumbTrailPanel] sliding up.
 class BreadcrumbOverlay extends StatefulWidget {
   const BreadcrumbOverlay({super.key, required this.child});
 
@@ -34,13 +30,8 @@ class _BreadcrumbOverlayState extends State<BreadcrumbOverlay>
 
   double _dragExtent = 0;
 
-  // A single persistent entry, inserted once in initState -- Overlay only
-  // ever reads `initialEntries` at first mount (see initState below), so
-  // rebuilding this list on every animation tick (as a plain `Overlay(
-  // initialEntries: [...])` in build() would do) silently does nothing
-  // after the first frame. This entry's own AnimatedBuilder listens to
-  // `_t` directly instead, so it stays reactive regardless of how often
-  // the Overlay widget above it gets rebuilt.
+  // A single persistent entry: Overlay only reads `initialEntries` on first
+  // mount, so this entry's own AnimatedBuilder listens to `_t` directly.
   late final List<OverlayEntry> _entries = [
     OverlayEntry(
       builder: (context) => AnimatedBuilder(
@@ -139,14 +130,8 @@ class _BreadcrumbOverlayState extends State<BreadcrumbOverlay>
           onPopInvokedWithResult: (didPop, result) {
             if (!didPop) _breadcrumb.close();
           },
-          // This whole layer sits outside `widget.child`'s own Navigator
-          // (that's the point -- it needs to transform the Navigator as a
-          // single unit), so nothing here can reach that Navigator's
-          // Overlay. The trail panel's own Material widgets (its close
-          // button's tooltip, in particular) need one regardless, so this
-          // wraps the layer in a self-contained Overlay of its own --
-          // see [_entries] for why its content lives there instead of
-          // being rebuilt here.
+          // Sits above the app's Navigator, so it needs its own
+          // Overlay for the panel's tooltips (see [_entries]).
           child: Overlay(initialEntries: _entries),
         );
       },

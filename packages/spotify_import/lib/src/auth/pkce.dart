@@ -2,10 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
 
-/// A PKCE (Proof Key for Code Exchange) verifier/challenge pair, per
-/// RFC 7636. Required for the Authorization Code flow since this is a
-/// public client (a personal CLI tool) that can't safely hold a client
-/// secret.
+/// A PKCE verifier/challenge pair (RFC 7636); required since this public
+/// client can't hold a client secret.
 class PkcePair {
   const PkcePair(this.verifier, this.challenge);
 

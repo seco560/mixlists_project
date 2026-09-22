@@ -1,16 +1,9 @@
 import 'credential_storage.dart';
 import 'spotify_auth.dart';
 
-/// Loads a previously-stored login and refreshes it if it's expired,
-/// persisting whatever comes back (Spotify may rotate the refresh token
-/// on any refresh call, so always overwrite it rather than assuming the
-/// original stays valid). Every other command builds on this instead of
-/// re-running the interactive login.
-///
-/// Deliberately doesn't require a Client ID up front: the stored tokens
-/// already carry the Client ID they were issued under, so a valid,
-/// unexpired login needs no Client ID at all, and an expired one falls
-/// back to the stored value unless [clientIdOverride] is given.
+/// Loads the stored login and refreshes it if expired, always persisting
+/// the result (Spotify may rotate refresh tokens). Uses the stored Client
+/// ID unless [clientIdOverride] is given.
 class AuthSession {
   AuthSession(this._store, {this._clientIdOverride});
 

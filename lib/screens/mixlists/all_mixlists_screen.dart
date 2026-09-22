@@ -45,17 +45,11 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
       ? MixlistFilter.all
       : getIt<MixlistFilterController>().value;
 
-  /// The real global filter, regardless of marking mode's [_effectiveFilter]
-  /// override -- used for wording (header, "Add ..." tooltip) so those
-  /// don't flip to "All Playlists"/generic wording just because marking
-  /// mode is temporarily showing everything.
+  /// The real global filter (ignoring marking mode's override), for wording.
   MixlistFilter get _globalFilter => getIt<MixlistFilterController>().value;
 
-  /// [_mixlists] (always fetched oldest-first, see `getAllMixlists`) paired
-  /// with each entry's display number computed from that same chronological
-  /// order, then put in the order [_order] actually wants to display --
-  /// so reversing the display never renumbers anything, it just walks the
-  /// same numbers back to front.
+  /// [_mixlists] (oldest first) with display numbers from that order, then
+  /// arranged per [_order], so reversing never renumbers anything.
   List<(Mixlist mixlist, int displayNumber)> get _displayItems {
     final showingAll = _effectiveFilter == MixlistFilter.all;
     final items = [

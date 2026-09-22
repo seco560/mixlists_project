@@ -31,11 +31,8 @@ class ArtistDetailScreen extends StatefulWidget {
 }
 
 class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
-  /// Starts as whatever the caller passed in, then gets replaced by a
-  /// freshly-fetched, filter-scoped overview on every load -- this
-  /// screen doesn't otherwise re-query albums/mixlists independently, so
-  /// `artist.albums`/`artist.mixlists` must come from here, not
-  /// `widget.artist`, for the filter to actually affect what's shown.
+  /// Replaced by a fresh filter-scoped overview on every load; read albums/
+  /// mixlists from here, not `widget.artist`, or the filter won't apply.
   late ArtistOverview _artist = widget.artist;
   List<ArtistSongAppearance> _songs = [];
   bool _isLoading = true;

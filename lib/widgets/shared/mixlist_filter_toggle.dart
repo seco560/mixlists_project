@@ -3,10 +3,8 @@ import 'package:mixlists_project/data/filter/mixlist_filter.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 
-/// Tri-state segmented toggle for [MixlistFilterController] -- drop into
-/// any AppBar's `actions`. Reads/writes the shared controller directly,
-/// so every screen that includes this stays in sync with no extra wiring
-/// beyond listening for the reload itself.
+/// Tri-state toggle for [MixlistFilterController], for any AppBar's
+/// `actions`.
 class MixlistFilterToggle extends StatelessWidget {
   const MixlistFilterToggle({super.key});
 

@@ -6,12 +6,8 @@ import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_chip.dart';
 
-/// The two-thirds-height panel [BreadcrumbOverlay] slides up: the current
-/// navigation trail as [BreadcrumbChip]s connected by arrow glyphs,
-/// snaking back and forth down the panel in as many columns as the width
-/// allows (scrolling vertically once it outgrows the panel's height).
-/// Tapping a chip jumps back to that stop and closes the panel in the
-/// same motion.
+/// The two-thirds-height trail panel: chips snaking down in as many columns
+/// as fit, scrolling vertically when needed. Tapping a chip jumps there.
 class BreadcrumbTrailPanel extends StatefulWidget {
   const BreadcrumbTrailPanel({super.key});
 
@@ -68,11 +64,9 @@ class _BreadcrumbTrailPanelState extends State<BreadcrumbTrailPanel> {
     ),
   );
 
-  /// Lays [trail] out as a snake over a fixed grid of [columns]: even rows
-  /// run left to right, odd rows right to left (starting under the column
-  /// the previous row ended on), with a down arrow at each turn. Every row
-  /// keeps all [columns] slots, empty ones included, so columns line up
-  /// across rows and a partial last row still starts at the right edge.
+  /// Snakes [trail] over a fixed [columns] grid: even rows left to right, odd
+  /// rows right to left, down arrows at the turns. Empty slots are kept so
+  /// columns line up across rows.
   Widget _buildSnake(
     BuildContext context,
     List<BreadcrumbEntry> trail,

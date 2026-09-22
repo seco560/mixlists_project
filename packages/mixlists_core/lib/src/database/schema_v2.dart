@@ -1,10 +1,7 @@
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-/// The original table set: Mixlists, Artists, Albums, Songs,
-/// SongsExtraData, SongsMixlists, plus their lookup indexes. Extracted
-/// from the Flutter app's `app_database.dart` so both the app and any
-/// standalone tool building a fresh db (e.g. the importer) share one
-/// definition.
+/// The original tables (Mixlists, Artists, Albums, Songs, SongsExtraData,
+/// SongsMixlists) and their lookup indexes.
 Future<void> createSchemaV2(Database db) async {
   await db.execute('''
     CREATE TABLE Mixlists (

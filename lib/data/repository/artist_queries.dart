@@ -13,11 +13,9 @@ List<String> _parseGenres(String? raw) {
 }
 
 extension ArtistQueries on MusicLibraryRepository {
-  /// Every artist, with their albums, every mixlist their songs appear
-  /// in, and their distinct song count across all mixlists -- all scoped
-  /// to [filter] when it isn't [MixlistFilter.all]. Filtered, an artist
-  /// with zero qualifying appearances is dropped entirely, and an
-  /// artist's `albums` only lists albums with >=1 qualifying song.
+  /// Every artist with albums, mixlists and distinct song count, scoped to
+  /// [filter]: artists with no qualifying appearance are dropped, and
+  /// `albums` only lists albums with a qualifying song.
   Future<List<ArtistOverview>> getArtistOverviews({
     MixlistFilter filter = MixlistFilter.all,
   }) async {
@@ -138,11 +136,9 @@ extension ArtistQueries on MusicLibraryRepository {
         .toList();
   }
 
-  /// Every song of [artistId]'s featured in a mixlist, each with every
-  /// mixlist it appears in, ordered by `SongsMixlists.dateAdded` (per-song
-  /// add date, not the mixlist's creation date). Scoped to [filter]: a
-  /// song with no qualifying appearance is dropped entirely (an inner
-  /// join through `Mixlists`/`SongsMixlists` naturally excludes it).
+  /// [artistId]'s songs with their mixlists, ordered by per-song
+  /// `SongsMixlists.dateAdded`. Songs with no qualifying appearance under
+  /// [filter] are dropped.
   Future<List<ArtistSongAppearance>> getArtistSongAppearances(
     int artistId, {
     MixlistFilter filter = MixlistFilter.all,
@@ -200,11 +196,9 @@ extension ArtistQueries on MusicLibraryRepository {
       ..sort((a, b) => a.datesAdded.first.compareTo(b.datesAdded.first));
   }
 
-  /// A single artist in the same shape [getArtistOverviews] returns, via
-  /// scoped queries so this stays cheap regardless of library size.
-  /// Always returns the artist (if it exists) even under a [filter] that
-  /// excludes all of its appearances -- filtering thins what's *inside*
-  /// the overview, it doesn't make an already-selected artist disappear.
+  /// One artist in [getArtistOverviews]' shape via scoped queries. Always
+  /// returns the artist even if [filter] excludes all its appearances:
+  /// filtering thins the contents, it never hides a selected artist.
   Future<ArtistOverview?> getArtistOverviewById(
     int artistId, {
     MixlistFilter filter = MixlistFilter.all,
@@ -305,12 +299,9 @@ extension ArtistQueries on MusicLibraryRepository {
     );
   }
 
-  /// Scoped counterpart of [getArtistOverviews] restricted to a known set
-  /// of artists via `WHERE artist IN (...)`. Used by `SearchQueries`.
-  /// Each returned overview's own `albums`/`mixlists`/counts are always
-  /// unfiltered (unlike [getArtistOverviews]) -- `SearchResults.scopedTo`
-  /// only uses `MixlistScopeIndex` to decide whether to keep or drop the
-  /// artist entirely when the filter changes, not to thin what's inside.
+  /// [getArtistOverviews] restricted to [matched], for `SearchQueries`. The
+  /// contents are always unfiltered; `SearchResults.scopedTo` only keeps or
+  /// drops whole artists.
   Future<List<ArtistOverview>> _artistOverviewsFor(List<Artist> matched) async {
     if (matched.isEmpty) return [];
     final ids = matched.map((a) => a.id).toList();

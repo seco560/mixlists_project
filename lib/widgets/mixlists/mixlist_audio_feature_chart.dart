@@ -53,11 +53,8 @@ class MixlistAudioFeatureChart extends StatefulWidget {
 
   final List<MixlistTrack> tracks;
 
-  /// "Mixlist" or "Playlist" -- the caller's current
-  /// `MixlistFilter.playlistNounSingular`, threaded in rather than read
-  /// from GetIt here so this widget stays a pure, DI-free unit (see its
-  /// test file, which constructs it directly with no service locator
-  /// setup).
+  /// The caller's `playlistNounSingular`, passed in so this widget stays
+  /// DI-free (its test builds it with no service locator).
   final String playlistNounSingular;
 
   @override
@@ -76,10 +73,7 @@ class _MixlistAudioFeatureChartState extends State<MixlistAudioFeatureChart> {
   // _scrollbarClearance, since the chart's fixed height and y-axis
   // alignment both assume it fits here.
   static const _footerHeight = 56.0;
-  // Extra slack below the footer so the horizontal Scrollbar's track
-  // doesn't render on top of the position-index text -- SingleChildScrollView
-  // leaves unused cross-axis space below its (unstretched) child, so this
-  // just needs to be taller than the chart actually requires.
+  // Keeps the horizontal Scrollbar from covering the position-index text.
   static const _scrollbarClearance = 14.0;
   static const _artSize = 24.0;
 

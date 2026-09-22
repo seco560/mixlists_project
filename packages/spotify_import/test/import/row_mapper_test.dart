@@ -1,11 +1,8 @@
 import 'package:spotify_import/src/import/row_mapper.dart';
 import 'package:test/test.dart';
 
-// Trimmed down from a real GET /playlists/{id}/items response captured
-// live against a Dev Mode app (2026-09-17) -- see the Mixlists Importer
-// plan's Phase 3 findings. Deliberately kept close to the real shape
-// (flat `item`, boolean `track`/`episode` discriminators, no
-// `preview_url`/`popularity` keys at all) rather than an idealized one.
+// Trimmed from a real GET /playlists/{id}/items response (Dev Mode,
+// 2026-09-17); keeps the real shape (flat `item`, no preview_url/popularity).
 Map<String, Object?> _realisticItemWrapper({
   bool isLocal = false,
   Object? item = _pennywiseTrack,

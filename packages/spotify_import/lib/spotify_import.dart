@@ -1,8 +1,6 @@
-/// Spotify OAuth (PKCE) authentication and Web API client for importing a
-/// user's own playlists into Mixlists. Pure Dart, no Flutter plugin
-/// dependencies -- platform-specific redirect capture (loopback server on
-/// desktop, `flutter_web_auth_2` custom-scheme on mobile) and secure token
-/// storage on mobile live in the app instead. Not used on web.
+/// Pure-Dart Spotify OAuth (PKCE) and Web API client for importing a user's
+/// playlists. Platform redirect capture and mobile token storage live in
+/// the app. Not used on web.
 library;
 
 export 'src/auth/auth_session.dart';
