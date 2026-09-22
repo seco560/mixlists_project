@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/widgets/playlist_cover_grid.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 class MixlistTile extends StatelessWidget {
   final Mixlist mixlist;
@@ -38,20 +39,28 @@ class MixlistTile extends StatelessWidget {
               future: getIt<MusicLibraryRepository>().getMixlistCoverArt(
                 mixlist.id,
               ),
-              builder: (context, snapshot) => PlaylistCoverGrid(
-                coverImageUrls: snapshot.data ?? const [],
-              ),
+              builder: (context, snapshot) =>
+                  PlaylistCoverGrid(coverImageUrls: snapshot.data ?? const []),
             ),
-      title: Text("$displayNumber) ${mixlist.title}", style: TextStyle(fontSize: 20, fontWeight: .bold)),
-      subtitle: Text(mixlist.dateCreated.split('T')[0], style: TextStyle(fontSize: 16, fontWeight: .w600)),
+      title: Text(
+        "$displayNumber) ${mixlist.title}",
+        style: TextStyle(fontSize: 20, fontWeight: .bold),
+      ),
+      subtitle: Text(
+        mixlist.dateCreated.split('T')[0],
+        style: TextStyle(fontSize: 16, fontWeight: .w600),
+      ),
       onTap: isMarking
           ? () => onToggleMarked?.call(mixlist.id)
           : () {
-              Navigator.push(
+              pushWithBreadcrumb(
                 context,
-                QuickStylePageRoute(
-                  builder: (context) => MixlistDetailScreen(mixlist: mixlist),
+                entry: BreadcrumbEntry(
+                  kind: BreadcrumbKind.mixlist,
+                  entityId: mixlist.id,
+                  title: mixlist.title,
                 ),
+                builder: (context) => MixlistDetailScreen(mixlist: mixlist),
               );
             },
     );

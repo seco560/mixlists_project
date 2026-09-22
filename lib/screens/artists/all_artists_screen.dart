@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
@@ -7,7 +9,6 @@ import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 /// Hardcoded bespoke grid; not extensible enough to reuse for another
 /// grid, reimplement the general shape as a new widget instead.
@@ -325,11 +326,15 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
   Widget _buildRow(ArtistOverview artist, List<double> widths, int rowNumber) {
     return InkWell(
       mouseCursor: SystemMouseCursors.click,
-      onTap: () => Navigator.push(
+      onTap: () => pushWithBreadcrumb(
         context,
-        QuickStylePageRoute(
-          builder: (context) => ArtistDetailScreen(artist: artist),
+        entry: BreadcrumbEntry(
+          kind: BreadcrumbKind.artist,
+          entityId: artist.id,
+          title: artist.name,
+          mosaicUrls: [for (final a in artist.albums.take(4)) a.coverImageURL],
         ),
+        builder: (context) => ArtistDetailScreen(artist: artist),
       ),
       child: Column(
         children: [

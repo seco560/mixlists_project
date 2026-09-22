@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_controller.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_navigator_observer.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/library/active_library_controller.dart';
 import 'package:mixlists_project/data/library/library_manager.dart';
@@ -10,6 +12,7 @@ import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/screens/home/home_screen.dart';
 import 'package:mixlists_project/theme/app_theme.dart';
 import 'package:mixlists_project/theme/theme_controller.dart';
+import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_overlay.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -20,11 +23,16 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
 
   getIt.registerSingleton<LibraryManager>(libraryManager);
-  getIt.registerSingleton<MusicLibraryRepository>(MusicLibraryRepository(database));
-  getIt.registerSingleton<ActiveLibraryController>(ActiveLibraryController(record));
+  getIt.registerSingleton<MusicLibraryRepository>(
+    MusicLibraryRepository(database),
+  );
+  getIt.registerSingleton<ActiveLibraryController>(
+    ActiveLibraryController(record),
+  );
   getIt.registerSingleton<SpotifyClientIdStore>(SpotifyClientIdStore(prefs));
   getIt.registerSingleton<MixlistFilterController>(MixlistFilterController());
   getIt.registerSingleton<ThemeController>(ThemeController.load(prefs));
+  getIt.registerSingleton<BreadcrumbController>(BreadcrumbController());
   getIt.registerSingleton<DuplicateSongIndexController>(
     DuplicateSongIndexController(
       getIt<MusicLibraryRepository>(),
@@ -59,6 +67,8 @@ class MixlistsMain extends StatelessWidget {
         themeMode: themeMode,
         debugShowCheckedModeBanner: false,
         scrollBehavior: _AppScrollBehavior(),
+        navigatorObservers: [BreadcrumbNavigatorObserver()],
+        builder: (context, child) => BreadcrumbOverlay(child: child!),
         home: const HomeScreen(),
       ),
     );

@@ -9,6 +9,7 @@ class SongOverview {
     required this.id,
     required this.name,
     required this.artistNames,
+    required this.albumID,
     required this.albumName,
     required this.albumCoverImageURL,
     required this.mixlists,
@@ -17,6 +18,10 @@ class SongOverview {
 
   final int id;
   final String name;
+
+  /// `Albums.id` for [albumName] -- lets a song's detail screen link to
+  /// its album without a separate lookup.
+  final int albumID;
 
   /// From `SongsExtraData.explicit` -- null when Spotify never supplied
   /// the flag for this song.

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/mixlist_summary.dart';
@@ -9,7 +11,6 @@ import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/explicit_badge.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 class TrackTile extends StatefulWidget {
@@ -112,11 +113,15 @@ class _TrackTileState extends State<TrackTile> with TickerProviderStateMixin {
     final overview = await getIt<MusicLibraryRepository>()
         .getArtistOverviewById(artistId);
     if (!mounted || overview == null) return;
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => ArtistDetailScreen(artist: overview),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.artist,
+        entityId: overview.id,
+        title: overview.name,
+        mosaicUrls: [for (final a in overview.albums.take(4)) a.coverImageURL],
       ),
+      builder: (context) => ArtistDetailScreen(artist: overview),
     );
   }
 
@@ -125,11 +130,16 @@ class _TrackTileState extends State<TrackTile> with TickerProviderStateMixin {
       albumId,
     );
     if (!mounted || overview == null) return;
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => AlbumDetailScreen(album: overview),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.album,
+        entityId: overview.id,
+        title: overview.name,
+        subtitle: overview.artistName,
+        imageUrl: overview.coverImageURL,
       ),
+      builder: (context) => AlbumDetailScreen(album: overview),
     );
   }
 

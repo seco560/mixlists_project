@@ -9,6 +9,7 @@ class HoverableLink extends StatefulWidget {
     required this.onTap,
     this.overflow,
     this.maxLines,
+    this.style,
   });
 
   final String text;
@@ -17,6 +18,11 @@ class HoverableLink extends StatefulWidget {
   /// Unset by default; pass to hold the link to a single line instead.
   final TextOverflow? overflow;
   final int? maxLines;
+
+  /// Overrides the default subtitle-sized link style -- for a caller that
+  /// needs this tappable/hover behavior on text that isn't a subtitle
+  /// (e.g. a title-sized song name). The hover underline still applies.
+  final TextStyle? style;
 
   @override
   State<HoverableLink> createState() => _HoverableLinkState();
@@ -40,11 +46,10 @@ class _HoverableLinkState extends State<HoverableLink> {
             widget.text,
             overflow: widget.overflow,
             maxLines: widget.maxLines,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: .w500,
-              decoration: _isHovered ? .underline : .none,
-            ),
+            style:
+                (widget.style ??
+                        const TextStyle(fontSize: 15, fontWeight: .w500))
+                    .copyWith(decoration: _isHovered ? .underline : .none),
           ),
         ),
       ),

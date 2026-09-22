@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/models/mixlist_summary.dart';
+import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/get_it_init.dart';
+import 'package:mixlists_project/screens/songs/song_detail_screen.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/explicit_badge.dart';
+import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 class SongMixlistTile extends StatefulWidget {
@@ -75,6 +80,24 @@ class _SongMixlistTileState extends State<SongMixlistTile>
     super.dispose();
   }
 
+  Future<void> _openSongDetail() async {
+    final overview = await getIt<MusicLibraryRepository>().getSongOverviewById(
+      widget.songId,
+    );
+    if (!mounted || overview == null) return;
+    pushWithBreadcrumb(
+      context,
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.song,
+        entityId: overview.id,
+        title: overview.name,
+        subtitle: overview.artistNames,
+        imageUrl: overview.albumCoverImageURL,
+      ),
+      builder: (context) => SongDetailScreen(song: overview),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mixlists = widget.mixlists;
@@ -93,10 +116,12 @@ class _SongMixlistTileState extends State<SongMixlistTile>
             mainAxisSize: .min,
             children: [
               Flexible(
-                child: Text(
-                  widget.title,
+                child: HoverableLink(
+                  text: widget.title,
+                  onTap: _openSongDetail,
                   style: titleTextStyle,
                   overflow: .ellipsis,
+                  maxLines: 1,
                 ),
               ),
               if (widget.isExplicit) ...[

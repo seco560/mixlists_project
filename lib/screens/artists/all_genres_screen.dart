@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
@@ -8,7 +10,6 @@ import 'package:mixlists_project/screens/artists/genre_artists_screen.dart';
 import 'package:mixlists_project/screens/search/artist_result_tile.dart';
 import 'package:mixlists_project/widgets/category_sort_toggle.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 /// Every distinct genre, grouped in Dart from [MusicLibraryRepository.getArtistOverviews].
@@ -83,20 +84,27 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   }
 
   void _openGenre(String genre) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => GenreArtistsScreen(genre: genre),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.genre,
+        key: genre,
+        title: genre,
       ),
+      builder: (context) => GenreArtistsScreen(genre: genre),
     );
   }
 
   void _openArtist(ArtistOverview artist) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => ArtistDetailScreen(artist: artist),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.artist,
+        entityId: artist.id,
+        title: artist.name,
+        mosaicUrls: [for (final a in artist.albums.take(4)) a.coverImageURL],
       ),
+      builder: (context) => ArtistDetailScreen(artist: artist),
     );
   }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
@@ -14,7 +16,6 @@ import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/screens/search/album_result_tile.dart';
 import 'package:mixlists_project/screens/search/artist_result_tile.dart';
 import 'package:mixlists_project/widgets/mixlist_tile.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
@@ -76,50 +77,68 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     final fullMixlistData = await getIt<MusicLibraryRepository>()
         .getMixlistById(mixlistId);
     if (!mounted || fullMixlistData == null) return;
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => MixlistDetailScreen(
-          mixlist: fullMixlistData,
-          highlightSongId: highlightSongId,
-        ),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.mixlist,
+        entityId: fullMixlistData.id,
+        title: fullMixlistData.title,
+      ),
+      builder: (context) => MixlistDetailScreen(
+        mixlist: fullMixlistData,
+        highlightSongId: highlightSongId,
       ),
     );
   }
 
   void _openArtist(ArtistOverview artist) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => ArtistDetailScreen(artist: artist),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.artist,
+        entityId: artist.id,
+        title: artist.name,
+        mosaicUrls: [for (final a in artist.albums.take(4)) a.coverImageURL],
       ),
+      builder: (context) => ArtistDetailScreen(artist: artist),
     );
   }
 
   void _openAlbum(AlbumOverview album) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => AlbumDetailScreen(album: album),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.album,
+        entityId: album.id,
+        title: album.name,
+        subtitle: album.artistName,
+        imageUrl: album.coverImageURL,
       ),
+      builder: (context) => AlbumDetailScreen(album: album),
     );
   }
 
   void _openGenre(String genre) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => GenreArtistsScreen(genre: genre),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.genre,
+        key: genre,
+        title: genre,
       ),
+      builder: (context) => GenreArtistsScreen(genre: genre),
     );
   }
 
   void _openLabel(String label) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => AlbumsGridScreen(recordLabel: label),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.label,
+        key: label,
+        title: label,
       ),
+      builder: (context) => AlbumsGridScreen(recordLabel: label),
     );
   }
 

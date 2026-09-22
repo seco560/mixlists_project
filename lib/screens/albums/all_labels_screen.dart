@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
@@ -8,7 +10,6 @@ import 'package:mixlists_project/screens/albums/albums_grid_screen.dart';
 import 'package:mixlists_project/screens/search/album_result_tile.dart';
 import 'package:mixlists_project/widgets/category_sort_toggle.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 /// Every distinct record label, grouped in Dart from [MusicLibraryRepository.getAlbumOverviews].
@@ -82,20 +83,28 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
   }
 
   void _openLabel(String recordLabel) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.label,
+        key: recordLabel,
+        title: recordLabel,
       ),
+      builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
     );
   }
 
   void _openAlbum(AlbumOverview album) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => AlbumDetailScreen(album: album),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.album,
+        entityId: album.id,
+        title: album.name,
+        subtitle: album.artistName,
+        imageUrl: album.coverImageURL,
       ),
+      builder: (context) => AlbumDetailScreen(album: album),
     );
   }
 

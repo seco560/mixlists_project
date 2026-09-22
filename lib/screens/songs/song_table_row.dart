@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/models/song_overview.dart';
+import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
+import 'package:mixlists_project/screens/songs/song_detail_screen.dart';
 import 'package:mixlists_project/screens/songs/song_table_cell.dart';
 import 'package:mixlists_project/widgets/explicit_badge.dart';
 
@@ -79,6 +83,20 @@ class _SongTableRowState extends State<SongTableRow>
     super.dispose();
   }
 
+  void _openSongDetail() {
+    pushWithBreadcrumb(
+      context,
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.song,
+        entityId: widget.song.id,
+        title: widget.song.name,
+        subtitle: widget.song.artistNames,
+        imageUrl: widget.song.albumCoverImageURL,
+      ),
+      builder: (context) => SongDetailScreen(song: widget.song),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final song = widget.song;
@@ -108,10 +126,12 @@ class _SongTableRowState extends State<SongTableRow>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Flexible(
-                      child: Text(
-                        song.name,
+                      child: HoverableLink(
+                        text: song.name,
+                        onTap: _openSongDetail,
                         style: _nameTextStyle,
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                     if (song.isExplicit == true) ...[

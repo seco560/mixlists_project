@@ -7,6 +7,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_controller.dart';
 import 'package:mixlists_project/data/database/app_database.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/library/active_library_controller.dart';
@@ -36,6 +37,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     getIt.registerSingleton<ThemeController>(ThemeController.load(prefs));
+    // BreadcrumbOverlay (wrapped around MaterialApp's content via
+    // MaterialApp.builder) needs this registered too.
+    getIt.registerSingleton<BreadcrumbController>(BreadcrumbController());
   });
 
   tearDown(() {

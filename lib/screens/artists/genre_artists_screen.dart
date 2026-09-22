@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
+import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
 import 'package:mixlists_project/widgets/category_sort_toggle.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
 
 /// Every artist tagged with [genre] -- reached from a genre chip on
@@ -101,21 +103,28 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
   }
 
   void _openArtist(ArtistOverview artist) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => ArtistDetailScreen(artist: artist),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.artist,
+        entityId: artist.id,
+        title: artist.name,
+        mosaicUrls: [for (final a in artist.albums.take(4)) a.coverImageURL],
       ),
+      builder: (context) => ArtistDetailScreen(artist: artist),
     );
   }
 
   void _goToGenre(String genre, {bool asBack = false}) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => GenreArtistsScreen(genre: genre),
-        isReverse: asBack,
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.genre,
+        key: genre,
+        title: genre,
       ),
+      builder: (context) => GenreArtistsScreen(genre: genre),
+      isReverse: asBack,
     );
   }
 
@@ -205,34 +214,44 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
           const MixlistFilterToggle(),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              children: [
-                Divider(),
-                if (_artists.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Center(child: Text("No data found")),
-                  )
-                else
-                  for (final (i, artist) in _sortedArtists.indexed) ...[
-                    ListTile(
-                      title: Text(artist.name, style: titleTextStyle),
-                      subtitle: Text(
-                        '${artist.uniqueSongCount} song${artist.uniqueSongCount == 1 ? '' : 's'} • '
-                        '${artist.mixlists.length} ${_playlistCountLabel(artist.mixlists.length)}',
-                        style: metaTextStyle,
-                      ),
-                      onTap: () => _openArtist(artist),
-                    ),
-                    if (i != _artists.length - 1)
-                      Divider(),
+      body: Stack(
+        children: [
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                  children: [
+                    Divider(),
+                    if (_artists.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Center(child: Text("No data found")),
+                      )
+                    else
+                      for (final (i, artist) in _sortedArtists.indexed) ...[
+                        ListTile(
+                          title: Text(artist.name, style: titleTextStyle),
+                          subtitle: Text(
+                            '${artist.uniqueSongCount} song${artist.uniqueSongCount == 1 ? '' : 's'} • '
+                            '${artist.mixlists.length} ${_playlistCountLabel(artist.mixlists.length)}',
+                            style: metaTextStyle,
+                          ),
+                          onTap: () => _openArtist(artist),
+                        ),
+                        if (i != _artists.length - 1) Divider(),
+                      ],
+                    Divider(),
+                    _buildGenreNavigationPane(),
                   ],
-                Divider(),
-                _buildGenreNavigationPane(),
-              ],
+                ),
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: BreadcrumbTrailButton(),
             ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
@@ -12,8 +14,8 @@ import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/genre_artists_screen.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
@@ -118,23 +120,29 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
     final fullMixlistData = await getIt<MusicLibraryRepository>()
         .getMixlistById(mixlistId);
     if (!mounted || fullMixlistData == null) return;
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => MixlistDetailScreen(
-          mixlist: fullMixlistData,
-          highlightSongId: highlightSongId,
-        ),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.mixlist,
+        entityId: fullMixlistData.id,
+        title: fullMixlistData.title,
+      ),
+      builder: (context) => MixlistDetailScreen(
+        mixlist: fullMixlistData,
+        highlightSongId: highlightSongId,
       ),
     );
   }
 
   void _openGenre(String genre) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => GenreArtistsScreen(genre: genre),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.genre,
+        key: genre,
+        title: genre,
       ),
+      builder: (context) => GenreArtistsScreen(genre: genre),
     );
   }
 
@@ -149,100 +157,120 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
         centerTitle: true,
         actions: const [MixlistFilterToggle()],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-          ? Center(child: Text(_error!))
-          : ListView(
-              children: [
-                SectionHeader('Genres'),
-                if (artist.genres.isEmpty)
-                  const EmptySectionTile()
-                else
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 4,
+      body: Stack(
+        children: [
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _error != null
+              ? Center(child: Text(_error!))
+              : ListView(
+                  children: [
+                    SectionHeader('Genres'),
+                    if (artist.genres.isEmpty)
+                      const EmptySectionTile()
+                    else
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          children: [
+                            for (final genre in artist.genres)
+                              ActionChip(
+                                label: Text(genre),
+                                onPressed: () => _openGenre(genre),
+                              ),
+                          ],
+                        ),
+                      ),
+                    const Divider(height: 32),
+                    SectionHeader('Added to $playlistNounPlural Over Time'),
+                    YearAlbumArtHistogram(
+                      entriesByYear: _addedOverTimeEntries(),
                     ),
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 4,
-                      children: [
-                        for (final genre in artist.genres)
-                          ActionChip(
-                            label: Text(genre),
-                            onPressed: () => _openGenre(genre),
+                    const Divider(height: 32),
+                    SectionHeader(
+                      'Songs on $playlistNounPlural (${_songs.length})',
+                    ),
+                    if (_songs.isEmpty)
+                      const EmptySectionTile()
+                    else
+                      for (final song in _songs)
+                        SongMixlistTile(
+                          songId: song.songId,
+                          title: song.songName,
+                          isExplicit: song.isExplicit == true,
+                          leadingImageUrl: song.albumCoverImageURL,
+                          subtitle: Column(
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text(song.albumName, style: subtitleTextStyle),
+                              Text(
+                                'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',
+                                style: metaTextStyle,
+                              ),
+                            ],
                           ),
-                      ],
-                    ),
-                  ),
-                const Divider(height: 32),
-                SectionHeader('Added to $playlistNounPlural Over Time'),
-                YearAlbumArtHistogram(entriesByYear: _addedOverTimeEntries()),
-                const Divider(height: 32),
-                SectionHeader('Songs on $playlistNounPlural (${_songs.length})'),
-                if (_songs.isEmpty)
-                  const EmptySectionTile()
-                else
-                  for (final song in _songs)
-                    SongMixlistTile(
-                      songId: song.songId,
-                      title: song.songName,
-                      isExplicit: song.isExplicit == true,
-                      leadingImageUrl: song.albumCoverImageURL,
-                      subtitle: Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          Text(song.albumName, style: subtitleTextStyle),
-                          Text(
-                            'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',
+                          mixlists: song.mixlists,
+                          onOpenMixlist: _openMixlist,
+                        ),
+                    const Divider(height: 32),
+                    SectionHeader('Albums Featured (${artist.albums.length})'),
+                    if (artist.albums.isEmpty)
+                      const EmptySectionTile()
+                    else
+                      for (final album in artist.albums)
+                        ListTile(
+                          leading: AlbumArtThumbnail(
+                            imageUrl: album.coverImageURL,
+                            size: 48,
+                            borderRadius: 0,
+                          ),
+                          title: Text(album.name, style: titleTextStyle),
+                          subtitle: Text(
+                            album.releaseDate.split('T')[0],
                             style: metaTextStyle,
                           ),
-                        ],
-                      ),
-                      mixlists: song.mixlists,
-                      onOpenMixlist: _openMixlist,
-                    ),
-                const Divider(height: 32),
-                SectionHeader('Albums Featured (${artist.albums.length})'),
-                if (artist.albums.isEmpty)
-                  const EmptySectionTile()
-                else
-                  for (final album in artist.albums)
-                    ListTile(
-                      leading: AlbumArtThumbnail(
-                        imageUrl: album.coverImageURL,
-                        size: 48,
-                        borderRadius: 0,
-                      ),
-                      title: Text(album.name, style: titleTextStyle),
-                      subtitle: Text(
-                        album.releaseDate.split('T')[0],
-                        style: metaTextStyle,
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          QuickStylePageRoute(
-                            builder: (context) => AlbumDetailScreen(
-                              // AlbumSummary has no artist name; fill it in
-                              // from `artist`, which we already have.
-                              album: AlbumOverview(
-                                id: album.id,
-                                name: album.name,
-                                releaseDate: album.releaseDate,
-                                coverImageURL: album.coverImageURL,
-                                artistId: artist.id,
-                                artistName: artist.name,
-                                recordLabel: album.recordLabel,
+                          onTap: () {
+                            pushWithBreadcrumb(
+                              context,
+                              entry: BreadcrumbEntry(
+                                kind: BreadcrumbKind.album,
+                                entityId: album.id,
+                                title: album.name,
+                                subtitle: artist.name,
+                                imageUrl: album.coverImageURL,
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-              ],
+                              builder: (context) => AlbumDetailScreen(
+                                // AlbumSummary has no artist name; fill it in
+                                // from `artist`, which we already have.
+                                album: AlbumOverview(
+                                  id: album.id,
+                                  name: album.name,
+                                  releaseDate: album.releaseDate,
+                                  coverImageURL: album.coverImageURL,
+                                  artistId: artist.id,
+                                  artistName: artist.name,
+                                  recordLabel: album.recordLabel,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                  ],
+                ),
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: BreadcrumbTrailButton(),
             ),
+          ),
+        ],
+      ),
     );
   }
 }

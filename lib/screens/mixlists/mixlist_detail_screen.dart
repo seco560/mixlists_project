@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/repository/duplicate_song_index_controller.dart';
@@ -11,8 +13,8 @@ import 'package:mixlists_project/data/models/mixlist_summary.dart';
 import 'package:mixlists_project/data/models/mixlist_track.dart';
 import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/track_tile.dart';
+import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
 import 'package:mixlists_project/widgets/mixlist_audio_feature_chart.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/year_album_art_histogram.dart';
 
@@ -181,12 +183,15 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   }
 
   void _goToMixlist(Mixlist mixlist, {bool asBack = false}) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => MixlistDetailScreen(mixlist: mixlist),
-        isReverse: asBack,
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.mixlist,
+        entityId: mixlist.id,
+        title: mixlist.title,
       ),
+      builder: (context) => MixlistDetailScreen(mixlist: mixlist),
+      isReverse: asBack,
     );
   }
 
@@ -194,13 +199,16 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     final fullMixlistData = await getIt<MusicLibraryRepository>()
         .getMixlistById(mixlistId);
     if (!mounted || fullMixlistData == null) return;
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => MixlistDetailScreen(
-          mixlist: fullMixlistData,
-          highlightSongId: highlightSongId,
-        ),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.mixlist,
+        entityId: fullMixlistData.id,
+        title: fullMixlistData.title,
+      ),
+      builder: (context) => MixlistDetailScreen(
+        mixlist: fullMixlistData,
+        highlightSongId: highlightSongId,
       ),
     );
   }
@@ -210,11 +218,16 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
       albumId,
     );
     if (!mounted || overview == null) return;
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => AlbumDetailScreen(album: overview),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.album,
+        entityId: overview.id,
+        title: overview.name,
+        subtitle: overview.artistName,
+        imageUrl: overview.coverImageURL,
       ),
+      builder: (context) => AlbumDetailScreen(album: overview),
     );
   }
 
@@ -324,39 +337,51 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
         ),
         centerTitle: true,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-          ? Center(child: Text(_error!))
-          : ListView(
-              controller: _scrollController,
-              children:
-                  [
-                    _buildMixlistNavigationPane(),
-                    Divider(),
-                    for (var i = 0; i < _tracks.length; i++) ...[
-                      _buildTrackTile(_tracks[i]),
-                      if (i != _tracks.length - 1)
+      body: Stack(
+        children: [
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _error != null
+              ? Center(child: Text(_error!))
+              : ListView(
+                  controller: _scrollController,
+                  children:
+                      [
+                        _buildMixlistNavigationPane(),
                         Divider(),
-                    ],
-                  ] +
-                  [
-                    Divider(),
-                    SectionHeader('Album Release Year Spread'),
-                    YearAlbumArtHistogram(entriesByYear: _releaseYearEntries()),
-                    Divider(),
-                    SectionHeader('Audio Features'),
-                    MixlistAudioFeatureChart(
-                      tracks: _tracks,
-                      playlistNounSingular: getIt<MixlistFilterController>()
-                          .value
-                          .playlistNounSingular,
-                    ),
-                    Divider(),
-                    _buildMixlistNavigationPane(),
-                    const SizedBox(height: 16),
-                  ],
+                        for (var i = 0; i < _tracks.length; i++) ...[
+                          _buildTrackTile(_tracks[i]),
+                          if (i != _tracks.length - 1) Divider(),
+                        ],
+                      ] +
+                      [
+                        Divider(),
+                        SectionHeader('Album Release Year Spread'),
+                        YearAlbumArtHistogram(
+                          entriesByYear: _releaseYearEntries(),
+                        ),
+                        Divider(),
+                        SectionHeader('Audio Features'),
+                        MixlistAudioFeatureChart(
+                          tracks: _tracks,
+                          playlistNounSingular: getIt<MixlistFilterController>()
+                              .value
+                              .playlistNounSingular,
+                        ),
+                        Divider(),
+                        _buildMixlistNavigationPane(),
+                        const SizedBox(height: 16),
+                      ],
+                ),
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: BreadcrumbTrailButton(),
             ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
@@ -9,8 +11,8 @@ import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/widgets/album_art_thumbnail.dart';
+import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/section_header.dart';
 import 'package:mixlists_project/widgets/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/text_styles.dart';
@@ -67,20 +69,27 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
     final overview = await getIt<MusicLibraryRepository>()
         .getArtistOverviewById(artistId);
     if (!mounted || overview == null) return;
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => ArtistDetailScreen(artist: overview),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.artist,
+        entityId: overview.id,
+        title: overview.name,
+        mosaicUrls: [for (final a in overview.albums.take(4)) a.coverImageURL],
       ),
+      builder: (context) => ArtistDetailScreen(artist: overview),
     );
   }
 
   void _openLabel(String recordLabel) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.label,
+        key: recordLabel,
+        title: recordLabel,
       ),
+      builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
     );
   }
 
@@ -88,13 +97,16 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
     final fullMixlistData = await getIt<MusicLibraryRepository>()
         .getMixlistById(mixlistId);
     if (!mounted || fullMixlistData == null) return;
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => MixlistDetailScreen(
-          mixlist: fullMixlistData,
-          highlightSongId: highlightSongId,
-        ),
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.mixlist,
+        entityId: fullMixlistData.id,
+        title: fullMixlistData.title,
+      ),
+      builder: (context) => MixlistDetailScreen(
+        mixlist: fullMixlistData,
+        highlightSongId: highlightSongId,
       ),
     );
   }
@@ -108,71 +120,82 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
         centerTitle: true,
         actions: const [MixlistFilterToggle()],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-          ? Center(child: Text(_error!))
-          : ListView(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      AlbumArtThumbnail(
-                        imageUrl: album.coverImageURL,
-                        size: 96,
-                        borderRadius: 4,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: .start,
-                          children: [
-                            Text(album.name, style: titleTextStyle),
-                            HoverableLink(
-                              text: album.artistName,
-                              onTap: () => _openArtist(album.artistId),
-                            ),
-                            Text(
-                              album.releaseDate.split('T')[0],
-                              style: metaTextStyle,
-                            ),
-                            if (album.recordLabel != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: ActionChip(
-                                  label: Text(album.recordLabel!),
-                                  onPressed: () =>
-                                      _openLabel(album.recordLabel!),
+      body: Stack(
+        children: [
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _error != null
+              ? Center(child: Text(_error!))
+              : ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          AlbumArtThumbnail(
+                            imageUrl: album.coverImageURL,
+                            size: 96,
+                            borderRadius: 4,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Text(album.name, style: titleTextStyle),
+                                HoverableLink(
+                                  text: album.artistName,
+                                  onTap: () => _openArtist(album.artistId),
                                 ),
-                              ),
-                          ],
-                        ),
+                                Text(
+                                  album.releaseDate.split('T')[0],
+                                  style: metaTextStyle,
+                                ),
+                                if (album.recordLabel != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: ActionChip(
+                                      label: Text(album.recordLabel!),
+                                      onPressed: () =>
+                                          _openLabel(album.recordLabel!),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1),
-                SectionHeader('Songs (${_songs.length})'),
-                if (_songs.isEmpty)
-                  const EmptySectionTile()
-                else
-                  for (final song in _songs)
-                    SongMixlistTile(
-                      songId: song.songId,
-                      title:
-                          '${song.albumTrackNumber ?? '?'}) ${song.songName}',
-                      isExplicit: song.isExplicit == true,
-                      leadingImageUrl: album.coverImageURL,
-                      subtitle: Text(
-                        'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',
-                        style: subtitleTextStyle,
-                      ),
-                      mixlists: song.mixlists,
-                      onOpenMixlist: _openMixlist,
                     ),
-              ],
+                    const Divider(height: 1),
+                    SectionHeader('Songs (${_songs.length})'),
+                    if (_songs.isEmpty)
+                      const EmptySectionTile()
+                    else
+                      for (final song in _songs)
+                        SongMixlistTile(
+                          songId: song.songId,
+                          title:
+                              '${song.albumTrackNumber ?? '?'}) ${song.songName}',
+                          isExplicit: song.isExplicit == true,
+                          leadingImageUrl: album.coverImageURL,
+                          subtitle: Text(
+                            'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',
+                            style: subtitleTextStyle,
+                          ),
+                          mixlists: song.mixlists,
+                          onOpenMixlist: _openMixlist,
+                        ),
+                  ],
+                ),
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: BreadcrumbTrailButton(),
             ),
+          ),
+        ],
+      ),
     );
   }
 }

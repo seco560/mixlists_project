@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
+import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/screens/albums/album_grid_tile.dart';
+import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
 import 'package:mixlists_project/widgets/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/quick_style_page_route.dart';
 
 /// Grid of albums, either every album or (via [recordLabel]) just one
 /// label's -- repurposed from the original "All Albums" screen once it
@@ -85,12 +87,15 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
   }
 
   void _goToLabel(String recordLabel, {bool asBack = false}) {
-    Navigator.push(
+    pushWithBreadcrumb(
       context,
-      QuickStylePageRoute(
-        builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
-        isReverse: asBack,
+      entry: BreadcrumbEntry(
+        kind: BreadcrumbKind.label,
+        key: recordLabel,
+        title: recordLabel,
       ),
+      builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
+      isReverse: asBack,
     );
   }
 
@@ -179,53 +184,64 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
         centerTitle: true,
         actions: const [MixlistFilterToggle()],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                final columns = _columnsThatFit(
-                  constraints.maxWidth - _gridPadding * 2,
-                );
-                final gridWidth =
-                    columns * AlbumGridTile.width +
-                    (columns - 1) * _tileSpacing;
-                return ListView(
-                  padding: const EdgeInsets.all(_gridPadding),
-                  children: [
-                    if (_albums.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.all(24),
-                        child: Center(child: Text("No data found")),
-                      )
-                    else
-                      Align(
-                        alignment: .topLeft,
-                        child: SizedBox(
-                          width: gridWidth,
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: columns,
-                                  mainAxisSpacing: _tileSpacing,
-                                  crossAxisSpacing: _tileSpacing,
-                                  mainAxisExtent: AlbumGridTile.height,
-                                ),
-                            itemCount: _albums.length,
-                            itemBuilder: (context, index) =>
-                                AlbumGridTile(album: _albums[index]),
+      body: Stack(
+        children: [
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    final columns = _columnsThatFit(
+                      constraints.maxWidth - _gridPadding * 2,
+                    );
+                    final gridWidth =
+                        columns * AlbumGridTile.width +
+                        (columns - 1) * _tileSpacing;
+                    return ListView(
+                      padding: const EdgeInsets.all(_gridPadding),
+                      children: [
+                        if (_albums.isEmpty)
+                          const Padding(
+                            padding: EdgeInsets.all(24),
+                            child: Center(child: Text("No data found")),
+                          )
+                        else
+                          Align(
+                            alignment: .topLeft,
+                            child: SizedBox(
+                              width: gridWidth,
+                              child: GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: columns,
+                                      mainAxisSpacing: _tileSpacing,
+                                      crossAxisSpacing: _tileSpacing,
+                                      mainAxisExtent: AlbumGridTile.height,
+                                    ),
+                                itemCount: _albums.length,
+                                itemBuilder: (context, index) =>
+                                    AlbumGridTile(album: _albums[index]),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    if (isLabelScoped) ...[
-                      Divider(),
-                      _buildLabelNavigationPane(),
-                    ],
-                  ],
-                );
-              },
+                        if (isLabelScoped) ...[
+                          Divider(),
+                          _buildLabelNavigationPane(),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: BreadcrumbTrailButton(),
             ),
+          ),
+        ],
+      ),
     );
   }
 }
