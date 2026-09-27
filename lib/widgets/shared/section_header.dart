@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 
 class SectionHeader extends StatelessWidget {
-  const SectionHeader(this.title, {super.key});
+  const SectionHeader(this.title, {super.key, this.dense = false});
 
   final String title;
+
+  /// Tighter padding for list-heavy pages (the mixlist page).
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+      padding: dense
+          ? const EdgeInsets.fromLTRB(12, 10, 12, 4)
+          : const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Text(
+        title,
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+      ),
     );
   }
 }

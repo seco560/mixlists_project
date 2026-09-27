@@ -203,7 +203,7 @@ class _LifespanRow extends StatelessWidget {
                 width: layout.plotWidth,
                 height: _height,
                 child: CustomPaint(
-                  painter: _LifespanPainter(
+                  painter: LifespanPainter(
                     lifespan: lifespan,
                     layout: layout,
                     lineColor: lineColor,
@@ -219,18 +219,22 @@ class _LifespanRow extends StatelessWidget {
   }
 }
 
-class _LifespanPainter extends CustomPainter {
-  _LifespanPainter({
+/// Line from first to last appearance with a dot per mixlist; the artist
+/// page's `ArtistTimelineStrip` draws the line only, with album art on top.
+class LifespanPainter extends CustomPainter {
+  LifespanPainter({
     required this.lifespan,
     required this.layout,
     required this.lineColor,
     required this.dotColor,
+    this.showDots = true,
   });
 
   final ArtistLifespan lifespan;
   final TimelineLayout layout;
   final Color lineColor;
   final Color dotColor;
+  final bool showDots;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -243,6 +247,7 @@ class _LifespanPainter extends CustomPainter {
         ..strokeWidth = 2
         ..strokeCap = StrokeCap.round,
     );
+    if (!showDots) return;
     final radius = (layout.step / 2.5).clamp(1.5, 3.5);
     final dotPaint = Paint()..color = dotColor;
     for (final position in lifespan.positions) {
@@ -251,7 +256,7 @@ class _LifespanPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_LifespanPainter old) =>
+  bool shouldRepaint(LifespanPainter old) =>
       old.lifespan != lifespan ||
       old.layout.plotWidth != layout.plotWidth ||
       old.dotColor != dotColor;

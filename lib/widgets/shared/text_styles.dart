@@ -11,3 +11,7 @@ const compactTitleTextStyle = TextStyle(
 
 /// Width below which a screen/tile should switch to its condensed layout.
 const compactLayoutBreakpoint = 560.0;
+
+/// Bottom padding for detail-screen lists, so the floating breadcrumb
+/// button never covers the last row.
+const detailListBottomPadding = EdgeInsets.only(bottom: 88);

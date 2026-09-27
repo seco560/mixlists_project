@@ -4,6 +4,7 @@ class ArtistSongAppearance {
   const ArtistSongAppearance({
     required this.songId,
     required this.songName,
+    required this.albumId,
     required this.albumName,
     required this.albumCoverImageURL,
     required this.mixlists,
@@ -13,6 +14,7 @@ class ArtistSongAppearance {
 
   final int songId;
   final String songName;
+  final int albumId;
   final String albumName;
   final String? albumCoverImageURL;
   final List<MixlistSummary> mixlists;

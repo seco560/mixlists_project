@@ -14,6 +14,7 @@ import 'package:mixlists_project/screens/library/library_picker_screen.dart';
 import 'package:mixlists_project/screens/mixlists/all_mixlists_screen.dart';
 import 'package:mixlists_project/screens/songs/all_songs_screen.dart';
 import 'package:mixlists_project/screens/timeline/taste_timeline_screen.dart';
+import 'package:mixlists_project/widgets/shared/category_tile.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
@@ -22,153 +23,139 @@ import 'package:mixlists_project/widgets/home/theme_mode_toggle.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  static const _maxWidth = 760.0;
+  static const _spacing = 12.0;
+
+  void _push(BuildContext context, Widget screen) {
+    Navigator.push(
+      context,
+      QuickStylePageRoute(builder: (context) => screen),
+    );
+  }
+
+  List<Widget> _cards(BuildContext context) => [
+    HomeNavCard(
+      icon: Icons.queue_music,
+      title: const PlaylistsFilterLabel(),
+      caption: const Text('Browse, number & mark'),
+      onTap: () => _push(context, const AllMixlistsScreen()),
+    ),
+    HomeNavCard(
+      icon: Icons.timeline,
+      label: 'Timelines',
+      caption: const Text('Taste trends over time'),
+      onTap: () => _push(context, const TasteTimelineScreen()),
+    ),
+    HomeNavCard(
+      icon: Icons.person,
+      label: 'Artists',
+      caption: const Text('Who shows up most'),
+      onTap: () => _push(context, const AllArtistsScreen()),
+    ),
+    HomeNavCard(
+      icon: Icons.album,
+      label: 'Albums',
+      caption: const Text('Cover art grid'),
+      onTap: () => _push(context, const AlbumsGridScreen()),
+    ),
+    HomeNavCard(
+      icon: Icons.music_note,
+      label: 'Songs',
+      caption: const Text('Every track & repeats'),
+      onTap: () => _push(context, const AllSongsScreen()),
+    ),
+    HomeNavCard(
+      icon: CategoryTile.genreIcon,
+      label: 'Genres',
+      caption: const Text('Artists by genre'),
+      onTap: () => _push(context, const AllGenresScreen()),
+    ),
+    HomeNavCard(
+      icon: CategoryTile.labelIcon,
+      label: 'Labels',
+      caption: const Text('Albums by record label'),
+      onTap: () => _push(context, const AllLabelsScreen()),
+    ),
+    if (!kIsWeb)
+      HomeNavCard(
+        icon: Icons.library_music,
+        label: 'Libraries',
+        caption: ValueListenableBuilder<LibraryRecord>(
+          valueListenable: getIt<ActiveLibraryController>(),
+          builder: (context, library, _) =>
+              Text('Active: ${library.displayName}'),
+        ),
+        onTap: () => _push(context, const LibraryPickerScreen()),
+      ),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final cards = _cards(context);
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
             Center(
               child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 24,
+                ),
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 500),
+                  constraints: const BoxConstraints(maxWidth: _maxWidth),
                   child: Column(
-                    crossAxisAlignment: .center,
-                    mainAxisAlignment: .center,
+                    crossAxisAlignment: .stretch,
                     children: [
                       Text(
-                        "The Mixlists Project",
+                        'The Mixlists Project',
                         textAlign: .center,
                         style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: .bold,
-                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 36,
+                          fontWeight: .w800,
+                          letterSpacing: -0.5,
+                          color: scheme.primary,
                         ),
                       ),
                       const SizedBox(height: 16),
                       const SearchField(),
-                      const SizedBox(height: 24),
-                      if (!kIsWeb) ...[
-                        HomeNavCard(
-                          icon: Icons.library_music,
-                          label: 'Libraries',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              QuickStylePageRoute(
-                                builder: (context) =>
-                                    const LibraryPickerScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        ValueListenableBuilder<LibraryRecord>(
-                          valueListenable: getIt<ActiveLibraryController>(),
-                          builder: (context, library, _) => Text(
-                            "Active library: ${library.displayName}",
-                            textAlign: .center,
-                            style: metaTextStyle,
+                      const SizedBox(height: 16),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: [
+                          const MixlistFilterToggle(),
+                          Text(
+                            'Mixlists only, all playlists, or only unmarked ones',
+                            style: metaTextStyle.copyWith(
+                              color: scheme.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-                      const MixlistFilterToggle(),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Show only mixlists, all playlists in the app,'
-                        'or only the ones that aren\'t marked.',
-                        textAlign: .center,
-                        style: metaTextStyle,
+                        ],
                       ),
-                      const SizedBox(height: 24),
-                      HomeNavCard(
-                        icon: Icons.queue_music,
-                        title: const PlaylistsFilterLabel(),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            QuickStylePageRoute(
-                              builder: (context) => AllMixlistsScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      HomeNavCard(
-                        icon: Icons.timeline,
-                        label: 'Timelines',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            QuickStylePageRoute(
-                              builder: (context) => const TasteTimelineScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      HomeNavCard(
-                        icon: Icons.person,
-                        label: 'Artists',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            QuickStylePageRoute(
-                              builder: (context) => AllArtistsScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      HomeNavCard(
-                        icon: Icons.album,
-                        label: 'Albums',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            QuickStylePageRoute(
-                              builder: (context) => AlbumsGridScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      HomeNavCard(
-                        icon: Icons.music_note,
-                        label: 'Songs',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            QuickStylePageRoute(
-                              builder: (context) => AllSongsScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      HomeNavCard(
-                        icon: Icons.sell_outlined,
-                        label: 'Genres',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            QuickStylePageRoute(
-                              builder: (context) => AllGenresScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      HomeNavCard(
-                        icon: Icons.business_outlined,
-                        label: 'Labels',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            QuickStylePageRoute(
-                              builder: (context) => AllLabelsScreen(),
-                            ),
+                      const SizedBox(height: 20),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final width = constraints.maxWidth;
+                          final columns = width >= 640
+                              ? 4
+                              : width >= 420
+                              ? 3
+                              : 2;
+                          return GridView.count(
+                            crossAxisCount: columns,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            mainAxisSpacing: _spacing,
+                            crossAxisSpacing: _spacing,
+                            childAspectRatio:
+                                ((width - _spacing * (columns - 1)) /
+                                    columns) /
+                                HomeNavCard.height,
+                            children: cards,
                           );
                         },
                       ),

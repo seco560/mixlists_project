@@ -48,7 +48,6 @@ class _SearchFieldState extends State<SearchField> {
               hintText:
                   'Search ${filter.playlistNounPluralLower}, artists, albums, songs',
               prefixIcon: const Icon(Icons.search),
-              border: const OutlineInputBorder(),
             ),
             textInputAction: TextInputAction.search,
             onSubmitted: _search,

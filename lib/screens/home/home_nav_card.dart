@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
+/// One destination in the home screen's grid: tinted icon, title, caption.
 class HomeNavCard extends StatelessWidget {
   const HomeNavCard({
     super.key,
     required this.icon,
     this.label,
     this.title,
+    this.caption,
     required this.onTap,
   }) : assert(label != null || title != null);
+
+  static const height = 112.0;
 
   final IconData icon;
 
@@ -20,22 +25,51 @@ class HomeNavCard extends StatelessWidget {
   /// swap).
   final Widget? title;
 
+  /// One muted line under the title.
+  final Widget? caption;
+
   final VoidCallback onTap;
+
+  static const titleStyle = TextStyle(fontSize: 17, fontWeight: FontWeight.w700);
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Card(
-      margin: EdgeInsets.zero,
-      child: ListTile(
-        leading: Icon(icon),
-        title:
-            title ??
-            Text(
-              label!,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-        trailing: const Icon(Icons.chevron_right),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 20, color: scheme.onPrimaryContainer),
+              ),
+              const Spacer(),
+              DefaultTextStyle.merge(
+                style: titleStyle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                child: title ?? Text(label!),
+              ),
+              if (caption != null)
+                DefaultTextStyle.merge(
+                  style: metaTextStyle.copyWith(color: scheme.onSurfaceVariant),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  child: caption!,
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

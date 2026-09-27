@@ -75,11 +75,8 @@ class _PlaylistsFilterLabelState extends State<PlaylistsFilterLabel> {
           ),
         );
       },
-      child: Text(
-        label,
-        key: ValueKey(label),
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-      ),
+      // Inherits the card's title style.
+      child: Text(label, key: ValueKey(label)),
     );
   }
 }

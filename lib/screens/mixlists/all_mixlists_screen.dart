@@ -7,6 +7,7 @@ import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/screens/mixlists/add_mixlist_screen.dart';
 import 'package:mixlists_project/widgets/mixlists/chronological_sort_toggle.dart';
+import 'package:mixlists_project/widgets/shared/empty_state.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_tile.dart';
 import 'package:mixlists_project/widgets/shared/quick_style_page_route.dart';
@@ -132,7 +133,6 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_globalFilter.allScreenHeader),
-        centerTitle: true,
         actions: [
           if (!_isMarkingMode)
             ChronologicalSortToggle(
@@ -164,9 +164,14 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _mixlists.isEmpty
-          ? const Center(child: Text("No data found"))
+          ? EmptyState(
+              message:
+                  'No ${_globalFilter.playlistNounPluralLower} yet. Mark some from '
+                  'the checklist button, or change the filter.',
+            )
           : ListView.separated(
-              separatorBuilder: (_, _) => Divider(),
+              separatorBuilder: (_, _) => const Divider(),
+              padding: const EdgeInsets.only(bottom: 88),
               itemCount: displayItems.length,
               itemBuilder: (context, index) {
                 final (mixlist, displayNumber) = displayItems[index];

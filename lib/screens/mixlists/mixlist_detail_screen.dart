@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/repository/duplicate_song_index_controller.dart';
@@ -11,11 +9,16 @@ import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/mixlist_summary.dart';
 import 'package:mixlists_project/data/models/mixlist_track.dart';
-import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
 import 'package:mixlists_project/screens/mixlists/track_tile.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
 import 'package:mixlists_project/widgets/mixlists/mixlist_audio_feature_chart.dart';
+import 'package:mixlists_project/widgets/shared/adjacent_nav_pane.dart';
+import 'package:mixlists_project/widgets/shared/detail_header.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/playlist_cover_grid.dart';
 import 'package:mixlists_project/widgets/shared/section_header.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 import 'package:mixlists_project/widgets/shared/year_album_art_histogram.dart';
 
 class MixlistDetailScreen extends StatefulWidget {
@@ -42,8 +45,8 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   Mixlist? _previousMixlist;
   Mixlist? _nextMixlist;
 
-  /// Shown in the AppBar title in place of the raw id -- starts as the id
-  /// itself so the title has *something* before the position query resolves
+  /// Shown in place of the raw id -- starts as the id itself so the header
+  /// has *something* before the position query resolves.
   late int _displayNumber = widget.mixlist.id;
   bool _isLoading = true;
   String? _error;
@@ -65,10 +68,27 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     super.dispose();
   }
 
-  String _durationInSeconds(int durationMs) {
-    final minutes = (durationMs / 1000 / 60).toInt();
-    final seconds = (durationMs / 1000 % 60).toInt();
-    return "$minutes:${seconds < 10 ? '0' : ''}$seconds";
+  static String _formatDuration(int durationMs) {
+    final totalSeconds = durationMs ~/ 1000;
+    final seconds = totalSeconds % 60;
+    return "${totalSeconds ~/ 60}:${seconds < 10 ? '0' : ''}$seconds";
+  }
+
+  /// "1 h 12 min" / "48 min" for the header.
+  static String _formatRuntime(int durationMs) {
+    final minutes = (durationMs / 60000).round();
+    return minutes >= 60
+        ? '${minutes ~/ 60} h ${minutes % 60} min'
+        : '$minutes min';
+  }
+
+  /// Up to 4 distinct album covers in track order, for the header mosaic.
+  List<String?> get _coverUrls {
+    final seen = <int>{};
+    return [
+      for (final track in _tracks)
+        if (seen.add(track.albumId)) track.albumCoverImageURL,
+    ].take(4).toList();
   }
 
   /// Tracks bucketed by the calendar year prefix of `Albums.releaseDate`
@@ -91,7 +111,7 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
             AlbumArtHistogramEntry(
               imageUrl: track.albumCoverImageURL,
               tooltip: '${track.albumName}\n${track.songName}',
-              onTap: () => _openAlbum(track.albumId),
+              onTap: () => openAlbumById(context, track.albumId),
             ),
           );
     }
@@ -180,55 +200,6 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     );
   }
 
-  void _goToMixlist(Mixlist mixlist, {bool asBack = false}) {
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.mixlist,
-        entityId: mixlist.id,
-        title: mixlist.title,
-      ),
-      builder: (context) => MixlistDetailScreen(mixlist: mixlist),
-      isReverse: asBack,
-    );
-  }
-
-  Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
-    final fullMixlistData = await getIt<MusicLibraryRepository>()
-        .getMixlistById(mixlistId);
-    if (!mounted || fullMixlistData == null) return;
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.mixlist,
-        entityId: fullMixlistData.id,
-        title: fullMixlistData.title,
-      ),
-      builder: (context) => MixlistDetailScreen(
-        mixlist: fullMixlistData,
-        highlightSongId: highlightSongId,
-      ),
-    );
-  }
-
-  Future<void> _openAlbum(int albumId) async {
-    final overview = await getIt<MusicLibraryRepository>().getAlbumOverviewById(
-      albumId,
-    );
-    if (!mounted || overview == null) return;
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.album,
-        entityId: overview.id,
-        title: overview.name,
-        subtitle: overview.artistName,
-        imageUrl: overview.coverImageURL,
-      ),
-      builder: (context) => AlbumDetailScreen(album: overview),
-    );
-  }
-
   Widget _buildTrackTile(MixlistTrack track) {
     final otherMixlists =
         (_duplicateSongIndex[track.songId] ?? const <MixlistSummary>[])
@@ -238,89 +209,62 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
     return TrackTile(
       key: _trackKeys[track.position],
       track: track,
-      durationLabel: _durationInSeconds(track.durationMs!),
+      durationLabel: track.durationMs == null
+          ? '–:––'
+          : _formatDuration(track.durationMs!),
       otherMixlists: otherMixlists,
-      onOtherMixlistTap: _openMixlist,
       mixlistCreationDate: widget.mixlist.dateCreated.split('T')[0],
       isHighlighted: track.songId == widget.highlightSongId,
     );
   }
 
-  Widget _buildMixlistNavButton({
-    required IconData icon,
-    required String label,
-    required Mixlist? mixlist,
-    required bool alignEnd,
-    required bool isPrevious,
-  }) {
-    final children = [
-      Icon(icon),
-      const SizedBox(width: 8),
-      Flexible(
-        child: Column(
-          crossAxisAlignment: alignEnd
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(label, style: const TextStyle(fontSize: 12)),
-            Text(
-              mixlist?.title ?? '—',
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            if (mixlist != null)
-              Text(
-                mixlist.dateCreated.split('T')[0],
-                style: const TextStyle(fontSize: 12),
-              ),
-          ],
-        ),
-      ),
-    ];
-    return Expanded(
-      child: InkWell(
-        mouseCursor: mixlist == null
-            ? MouseCursor.defer
-            : SystemMouseCursors.click,
-        onTap: mixlist == null
-            ? null
-            : () => _goToMixlist(mixlist, asBack: isPrevious),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Opacity(
-            opacity: mixlist == null ? 0.4 : 1,
-            child: Row(
-              mainAxisAlignment: alignEnd
-                  ? MainAxisAlignment.end
-                  : MainAxisAlignment.start,
-              children: alignEnd ? children.reversed.toList() : children,
-            ),
-          ),
-        ),
-      ),
+  AdjacentNavTarget? _navTarget(Mixlist? mixlist, {required bool isPrevious}) {
+    if (mixlist == null) return null;
+    return AdjacentNavTarget(
+      title: mixlist.title,
+      subtitle: mixlist.dateCreated.split('T')[0],
+      onTap: () => openMixlist(context, mixlist, isReverse: isPrevious),
     );
   }
 
-  Widget _buildMixlistNavigationPane() {
-    final playlistNoun =
-        getIt<MixlistFilterController>().value.playlistNounSingularLower;
-    return Row(
-      children: [
-        _buildMixlistNavButton(
-          icon: Icons.arrow_back,
-          label: 'Previous $playlistNoun',
-          mixlist: _previousMixlist,
-          alignEnd: false,
-          isPrevious: true,
-        ),
-        _buildMixlistNavButton(
-          icon: Icons.arrow_forward,
-          label: 'Next $playlistNoun',
-          mixlist: _nextMixlist,
-          alignEnd: true,
-          isPrevious: false,
-        ),
+  Widget _buildNavigationPane() {
+    return AdjacentNavPane(
+      noun: getIt<MixlistFilterController>().value.playlistNounSingularLower,
+      previous: _navTarget(_previousMixlist, isPrevious: true),
+      next: _navTarget(_nextMixlist, isPrevious: false),
+      dense: true,
+    );
+  }
+
+  Widget _buildHeader() {
+    final mixlist = widget.mixlist;
+    final noun = getIt<MixlistFilterController>().value.playlistNounSingular;
+    final totalMs = _tracks.fold<int>(0, (sum, t) => sum + (t.durationMs ?? 0));
+    final description = mixlist.description.trim();
+    return DetailHeader(
+      artwork: PlaylistCoverGrid(
+        coverImageUrls: _coverUrls,
+        size: DetailHeader.denseArtSize,
+      ),
+      dense: true,
+      overline: '$noun #$_displayNumber',
+      title: mixlist.title,
+      lines: [
+        DetailFacts([
+          mixlist.dateCreated.split('T')[0],
+          '${_tracks.length} ${_tracks.length == 1 ? 'song' : 'songs'}',
+          if (totalMs > 0) _formatRuntime(totalMs),
+        ]),
+        if (description.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              description,
+              style: metaTextStyle,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
       ],
     );
   }
@@ -329,11 +273,8 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "$_displayNumber) ${widget.mixlist.title} | ${widget.mixlist.dateCreated.split('T')[0]}",
-          overflow: TextOverflow.ellipsis,
-        ),
-        centerTitle: true,
+        title: Text(widget.mixlist.title, overflow: TextOverflow.ellipsis),
+        actions: const [MixlistFilterToggle()],
       ),
       body: Stack(
         children: [
@@ -341,35 +282,43 @@ class _MixlistDetailScreenState extends State<MixlistDetailScreen> {
               ? const Center(child: CircularProgressIndicator())
               : _error != null
               ? Center(child: Text(_error!))
-              : ListView(
-                  controller: _scrollController,
-                  children:
-                      [
-                        _buildMixlistNavigationPane(),
-                        Divider(),
-                        for (var i = 0; i < _tracks.length; i++) ...[
-                          _buildTrackTile(_tracks[i]),
-                          if (i != _tracks.length - 1) Divider(),
-                        ],
-                      ] +
-                      [
-                        Divider(),
-                        SectionHeader('Album Release Year Spread'),
-                        YearAlbumArtHistogram(
-                          entriesByYear: _releaseYearEntries(),
-                        ),
-                        Divider(),
-                        SectionHeader('Audio Features'),
-                        MixlistAudioFeatureChart(
-                          tracks: _tracks,
-                          playlistNounSingular: getIt<MixlistFilterController>()
-                              .value
-                              .playlistNounSingular,
-                        ),
-                        Divider(),
-                        _buildMixlistNavigationPane(),
-                        const SizedBox(height: 16),
+              : ListTileTheme.merge(
+                  // Track lists are long; keep rows tight.
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  horizontalTitleGap: 12,
+                  minVerticalPadding: 2,
+                  visualDensity: VisualDensity.compact,
+                  child: ListView(
+                    controller: _scrollController,
+                    padding: detailListBottomPadding,
+                    children: [
+                      _buildHeader(),
+                      _buildNavigationPane(),
+                      const Divider(),
+                      for (var i = 0; i < _tracks.length; i++) ...[
+                        _buildTrackTile(_tracks[i]),
+                        if (i != _tracks.length - 1) const Divider(),
                       ],
+                      const Divider(),
+                      const SectionHeader(
+                        'Album Release Year Spread',
+                        dense: true,
+                      ),
+                      YearAlbumArtHistogram(
+                        entriesByYear: _releaseYearEntries(),
+                      ),
+                      const Divider(),
+                      const SectionHeader('Audio Features', dense: true),
+                      MixlistAudioFeatureChart(
+                        tracks: _tracks,
+                        playlistNounSingular: getIt<MixlistFilterController>()
+                            .value
+                            .playlistNounSingular,
+                      ),
+                      const Divider(),
+                      _buildNavigationPane(),
+                    ],
+                  ),
                 ),
           const Align(
             alignment: Alignment.bottomCenter,

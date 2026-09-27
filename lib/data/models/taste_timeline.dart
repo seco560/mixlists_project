@@ -40,6 +40,16 @@ class TimelineMixlistPoint {
     required this.medianMusicAgeYears,
   });
 
+  /// Just the position, for timelines that only need the x-axis (e.g. the
+  /// artist page), without aggregating any tracks.
+  const TimelineMixlistPoint.positionOnly({
+    required this.position,
+    required this.mixlist,
+  }) : trackCount = 0,
+       featureMeans = const {},
+       featureTrackCount = 0,
+       medianMusicAgeYears = null;
+
   /// 1-based position in id order under the filter, i.e. the display number.
   final int position;
   final Mixlist mixlist;

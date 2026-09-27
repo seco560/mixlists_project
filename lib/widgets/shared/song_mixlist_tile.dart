@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/models/mixlist_summary.dart';
-import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/get_it_init.dart';
-import 'package:mixlists_project/screens/songs/song_detail_screen.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
+import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
 import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
 import 'package:mixlists_project/widgets/shared/explicit_badge.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_count_chip.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
+/// A song plus the mixlists it's on, for album/artist/search lists. Same
+/// interactions as a mixlist's [TrackTile]: the title opens the song, a
+/// single mixlist opens on tap, several expand from a [MixlistCountChip].
 class SongMixlistTile extends StatefulWidget {
   const SongMixlistTile({
     super.key,
@@ -20,7 +22,6 @@ class SongMixlistTile extends StatefulWidget {
     required this.subtitle,
     required this.leadingImageUrl,
     required this.mixlists,
-    required this.onOpenMixlist,
     this.isExplicit = false,
   });
 
@@ -29,7 +30,6 @@ class SongMixlistTile extends StatefulWidget {
   final Widget subtitle;
   final String? leadingImageUrl;
   final List<MixlistSummary> mixlists;
-  final void Function(int mixlistId, int songId) onOpenMixlist;
   final bool isExplicit;
 
   @override
@@ -38,17 +38,14 @@ class SongMixlistTile extends StatefulWidget {
 
 class _SongMixlistTileState extends State<SongMixlistTile>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 300),
+  );
 
   late final Animation<double> _revealAnimation = CurvedAnimation(
     parent: _controller,
     curve: Curves.easeOut,
-    reverseCurve: Curves.easeIn,
-  );
-
-  late final Animation<double> _popAnimation = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeOutBack,
     reverseCurve: Curves.easeIn,
   );
 
@@ -66,42 +63,19 @@ class _SongMixlistTileState extends State<SongMixlistTile>
   }
 
   @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-  }
-
-  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
-  Future<void> _openSongDetail() async {
-    final overview = await getIt<MusicLibraryRepository>().getSongOverviewById(
-      widget.songId,
-    );
-    if (!mounted || overview == null) return;
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.song,
-        entityId: overview.id,
-        title: overview.name,
-        subtitle: overview.artistNames,
-        imageUrl: overview.albumCoverImageURL,
-      ),
-      builder: (context) => SongDetailScreen(song: overview),
-    );
-  }
+  void _openMixlist(int mixlistId) =>
+      openMixlistById(context, mixlistId, highlightSongId: widget.songId);
 
   @override
   Widget build(BuildContext context) {
     final mixlists = widget.mixlists;
     final hasSingleMixlist = mixlists.length == 1;
+    final scheme = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: .start,
@@ -110,7 +84,6 @@ class _SongMixlistTileState extends State<SongMixlistTile>
           leading: AlbumArtThumbnail(
             imageUrl: widget.leadingImageUrl,
             size: 48,
-            borderRadius: 0,
           ),
           title: Row(
             mainAxisSize: .min,
@@ -118,7 +91,7 @@ class _SongMixlistTileState extends State<SongMixlistTile>
               Flexible(
                 child: HoverableLink(
                   text: widget.title,
-                  onTap: _openSongDetail,
+                  onTap: () => openSongById(context, widget.songId),
                   style: titleTextStyle,
                   overflow: .ellipsis,
                   maxLines: 1,
@@ -150,7 +123,9 @@ class _SongMixlistTileState extends State<SongMixlistTile>
                             ),
                             Text(
                               (mixlists.first.dateCreated ?? '').split('T')[0],
-                              style: metaTextStyle,
+                              style: metaTextStyle.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
                               textAlign: .right,
                             ),
                           ],
@@ -160,80 +135,36 @@ class _SongMixlistTileState extends State<SongMixlistTile>
                     ],
                   ),
                 )
-              : ActionChip(
-                  label: Text(
-                    '${mixlists.length} '
-                    '${getIt<MixlistFilterController>().value.playlistNounPluralLower}',
-                  ),
+              : MixlistCountChip(
+                  label:
+                      '${mixlists.length} '
+                      '${getIt<MixlistFilterController>().value.playlistNounPluralLower}',
+                  isExpanded: _isExpanded,
                   onPressed: _toggleExpanded,
                 ),
           onTap: hasSingleMixlist
-              ? () => widget.onOpenMixlist(mixlists.first.id, widget.songId)
+              ? () => _openMixlist(mixlists.first.id)
               : _toggleExpanded,
         ),
         if (!hasSingleMixlist)
-          Align(
-            alignment: .topRight,
-            child: SizeTransition(
-              sizeFactor: _revealAnimation,
-              alignment: .bottomLeft,
-              child: ScaleTransition(
-                scale: _popAnimation,
-                alignment: .topRight,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 32,
-                      right: 16,
-                      bottom: 8,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      children: mixlists
-                          .map(
-                            (mixlist) => MixlistRow(
-                              mixlist: mixlist,
-                              onTap: () => widget.onOpenMixlist(
-                                mixlist.id,
-                                widget.songId,
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
+          SizeTransition(
+            sizeFactor: _revealAnimation,
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Align(
+                alignment: .centerRight,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 360),
+                  child: OtherMixlistsList(
+                    header: 'Appears in',
+                    mixlists: mixlists,
+                    onTap: _openMixlist,
                   ),
                 ),
               ),
             ),
           ),
       ],
-    );
-  }
-}
-
-class MixlistRow extends StatelessWidget {
-  const MixlistRow({super.key, required this.mixlist, required this.onTap});
-
-  final MixlistSummary mixlist;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      dense: true,
-      visualDensity: .compact,
-      title: Text(
-        mixlist.title,
-        style: compactTitleTextStyle,
-        textAlign: .right,
-      ),
-      subtitle: Text(
-        (mixlist.dateCreated ?? '').split('T')[0],
-        style: metaTextStyle,
-        textAlign: .right,
-      ),
-      onTap: onTap,
     );
   }
 }

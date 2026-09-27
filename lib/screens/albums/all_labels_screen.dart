@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
-import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
-import 'package:mixlists_project/screens/albums/albums_grid_screen.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
 import 'package:mixlists_project/screens/search/album_result_tile.dart';
 import 'package:mixlists_project/widgets/shared/category_sort_toggle.dart';
+import 'package:mixlists_project/widgets/shared/category_tile.dart';
+import 'package:mixlists_project/widgets/shared/empty_state.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
@@ -82,32 +81,6 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
     }
   }
 
-  void _openLabel(String recordLabel) {
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.label,
-        key: recordLabel,
-        title: recordLabel,
-      ),
-      builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
-    );
-  }
-
-  void _openAlbum(AlbumOverview album) {
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.album,
-        entityId: album.id,
-        title: album.name,
-        subtitle: album.artistName,
-        imageUrl: album.coverImageURL,
-      ),
-      builder: (context) => AlbumDetailScreen(album: album),
-    );
-  }
-
   /// [_labels] sorted per [_sortOrder] -- computed on demand, not stored.
   List<String> get _sortedLabels {
     if (_sortOrder == CategorySortOrder.alphabetical) return _labels;
@@ -125,7 +98,6 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Labels"),
-        centerTitle: true,
         actions: [
           CategorySortToggle(
             value: _sortOrder,
@@ -137,21 +109,19 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : isEmpty
-          ? const Center(child: Text("No data found"))
+          ? const EmptyState(message: 'No labels under this filter.')
           : ListView(
+              padding: const EdgeInsets.only(bottom: 24),
               children: [
-                Divider(),
                 for (final label in _sortedLabels) ...[
-                  ListTile(
-                    leading: const Icon(Icons.business_outlined),
-                    title: Text(label, style: titleTextStyle),
-                    subtitle: Text(
-                      '${_albumCountByLabel[label]} album${_albumCountByLabel[label] == 1 ? '' : 's'}',
-                      style: metaTextStyle,
-                    ),
-                    onTap: () => _openLabel(label),
+                  CategoryTile(
+                    icon: CategoryTile.labelIcon,
+                    name: label,
+                    countLabel:
+                        '${_albumCountByLabel[label]} album${_albumCountByLabel[label] == 1 ? '' : 's'}',
+                    onTap: () => openLabel(context, label),
                   ),
-                  Divider(),
+                  const Divider(),
                 ],
                 if (_albumsWithoutLabel.isNotEmpty) ...[
                   _buildWithoutLabelRow(),
@@ -159,7 +129,7 @@ class _AllLabelsScreenState extends State<AllLabelsScreen> {
                     for (final album in _albumsWithoutLabel)
                       AlbumResultTile(
                         album: album,
-                        onTap: () => _openAlbum(album),
+                        onTap: () => openAlbum(context, album),
                       ),
                   Divider(),
                 ],

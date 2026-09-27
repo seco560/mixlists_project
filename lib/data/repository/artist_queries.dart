@@ -149,6 +149,7 @@ extension ArtistQueries on MusicLibraryRepository {
       SELECT DISTINCT
         s.id              AS songId,
         s.name            AS songName,
+        al.id             AS albumId,
         al.name           AS albumName,
         al.coverImageURL  AS albumCoverImageURL,
         ed.explicit       AS explicit,
@@ -181,6 +182,7 @@ extension ArtistQueries on MusicLibraryRepository {
         appearancesBySong[songId] = ArtistSongAppearance(
           songId: songId,
           songName: row['songName'] as String,
+          albumId: row['albumId'] as int,
           albumName: row['albumName'] as String,
           albumCoverImageURL: row['albumCoverImageURL'] as String?,
           mixlists: [mixlist],

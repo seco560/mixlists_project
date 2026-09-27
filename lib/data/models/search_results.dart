@@ -54,6 +54,7 @@ class SearchResults {
         SongSearchResult(
           songId: song.songId,
           songName: song.songName,
+          albumId: song.albumId,
           albumName: song.albumName,
           albumCoverImageURL: song.albumCoverImageURL,
           artistNames: song.artistNames,

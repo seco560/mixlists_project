@@ -7,17 +7,23 @@ class AlbumArtThumbnail extends StatelessWidget {
     super.key,
     required this.imageUrl,
     this.size = 40,
-    this.borderRadius = 5,
+    this.borderRadius = defaultRadius,
   });
+
+  /// Shared corner radius so art reads the same on every tile.
+  static const defaultRadius = 6.0;
 
   final String? imageUrl;
   final double size;
   final double borderRadius;
 
-  static Widget _placeholder() => Container(
-    color: Colors.grey.shade300,
-    child: const Icon(Icons.album, color: Colors.grey),
-  );
+  static Widget _placeholder(BuildContext context, IconData icon) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      color: scheme.surfaceContainerHighest,
+      child: Icon(icon, color: scheme.onSurfaceVariant),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +37,7 @@ class AlbumArtThumbnail extends StatelessWidget {
         width: size,
         height: size,
         child: url == null
-            ? _placeholder()
+            ? _placeholder(context, Icons.album)
             : CachedNetworkImage(
                 imageUrl: url,
                 fit: BoxFit.cover,
@@ -40,11 +46,10 @@ class AlbumArtThumbnail extends StatelessWidget {
                 // Web's HtmlImage renders black after ImageCache
                 // eviction (Flutter 3.47 regression); HttpGet avoids it.
                 imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
-                placeholder: (context, url) => _placeholder(),
-                errorWidget: (context, url, error) => Container(
-                  color: Colors.grey.shade300,
-                  child: const Icon(Icons.broken_image, color: Colors.grey),
-                ),
+                placeholder: (context, url) =>
+                    _placeholder(context, Icons.album),
+                errorWidget: (context, url, error) =>
+                    _placeholder(context, Icons.broken_image),
               ),
       ),
     );

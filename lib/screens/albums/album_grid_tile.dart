@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
-import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
 import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
 
 const _titleTextStyle = TextStyle(fontSize: 16, fontWeight: .bold, height: 1.2);
@@ -26,27 +24,12 @@ class AlbumGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       mouseCursor: SystemMouseCursors.click,
-      onTap: () {
-        pushWithBreadcrumb(
-          context,
-          entry: BreadcrumbEntry(
-            kind: BreadcrumbKind.album,
-            entityId: album.id,
-            title: album.name,
-            subtitle: album.artistName,
-            imageUrl: album.coverImageURL,
-          ),
-          builder: (context) => AlbumDetailScreen(album: album),
-        );
-      },
+      borderRadius: BorderRadius.circular(AlbumArtThumbnail.defaultRadius),
+      onTap: () => openAlbum(context, album),
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          AlbumArtThumbnail(
-            imageUrl: album.coverImageURL,
-            size: width,
-            borderRadius: 4,
-          ),
+          AlbumArtThumbnail(imageUrl: album.coverImageURL, size: width),
           const SizedBox(height: 6),
           Text(
             album.name,

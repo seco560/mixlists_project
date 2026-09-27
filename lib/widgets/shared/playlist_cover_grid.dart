@@ -23,7 +23,7 @@ class PlaylistCoverGrid extends StatelessWidget {
     );
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(5),
+      borderRadius: BorderRadius.circular(AlbumArtThumbnail.defaultRadius),
       child: SizedBox(
         width: size,
         height: size,

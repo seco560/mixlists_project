@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
+import 'package:mixlists_project/widgets/shared/empty_state.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
-import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
 import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 
@@ -187,13 +186,12 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("All Artists"),
-        centerTitle: true,
         actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _artists.isEmpty
-          ? const Center(child: Text("No data found"))
+          ? const EmptyState(message: 'Nothing here under this filter.')
           : LayoutBuilder(
               builder: (context, constraints) {
                 final widths = _resolveColumnWidths(constraints.maxWidth);
@@ -326,16 +324,7 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
   Widget _buildRow(ArtistOverview artist, List<double> widths, int rowNumber) {
     return InkWell(
       mouseCursor: SystemMouseCursors.click,
-      onTap: () => pushWithBreadcrumb(
-        context,
-        entry: BreadcrumbEntry(
-          kind: BreadcrumbKind.artist,
-          entityId: artist.id,
-          title: artist.name,
-          mosaicUrls: [for (final a in artist.albums.take(4)) a.coverImageURL],
-        ),
-        builder: (context) => ArtistDetailScreen(artist: artist),
-      ),
+      onTap: () => openArtist(context, artist),
       child: Column(
         children: [
           Row(

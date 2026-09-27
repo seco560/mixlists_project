@@ -174,6 +174,7 @@ extension SearchQueries on MusicLibraryRepository {
         s.id             AS songId,
         s.name           AS songName,
         s.artists        AS artistNames,
+        al.id            AS albumId,
         al.name          AS albumName,
         al.coverImageURL AS albumCoverImageURL,
         ed.explicit      AS explicit,
@@ -201,6 +202,7 @@ extension SearchQueries on MusicLibraryRepository {
         result = SongSearchResult(
           songId: songId,
           songName: row['songName'] as String,
+          albumId: row['albumId'] as int,
           albumName: row['albumName'] as String,
           albumCoverImageURL: row['albumCoverImageURL'] as String?,
           artistNames: row['artistNames'] as String,

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_core/mixlists_core.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/models/taste_timeline.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/get_it_init.dart';
-import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
-import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/shared/section_header.dart';
@@ -64,34 +60,11 @@ class _TasteTimelineScreenState extends State<TasteTimelineScreen> {
     }
   }
 
-  void _openMixlist(TimelineMixlistPoint point) {
-    final Mixlist mixlist = point.mixlist;
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.mixlist,
-        entityId: mixlist.id,
-        title: mixlist.title,
-      ),
-      builder: (context) => MixlistDetailScreen(mixlist: mixlist),
-    );
-  }
+  void _openMixlist(TimelineMixlistPoint point) =>
+      openMixlist(context, point.mixlist);
 
-  Future<void> _openArtist(ArtistLifespan lifespan) async {
-    final overview = await getIt<MusicLibraryRepository>()
-        .getArtistOverviewById(lifespan.artistId);
-    if (!mounted || overview == null) return;
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.artist,
-        entityId: overview.id,
-        title: overview.name,
-        mosaicUrls: [for (final a in overview.albums.take(4)) a.coverImageURL],
-      ),
-      builder: (context) => ArtistDetailScreen(artist: overview),
-    );
-  }
+  void _openArtist(ArtistLifespan lifespan) =>
+      openArtistById(context, lifespan.artistId);
 
   Widget _buildBody(TasteTimeline timeline) {
     final filter = getIt<MixlistFilterController>().value;
@@ -120,7 +93,7 @@ class _TasteTimelineScreenState extends State<TasteTimelineScreen> {
           playlistNounPluralLower: plural,
         ),
         const Divider(),
-        const SectionHeader('Genre Drift'),
+        const SectionHeader('Genre Mix Over Time'),
         GenreDriftChart(
           points: points,
           bands: timeline.genreBands,
@@ -145,7 +118,6 @@ class _TasteTimelineScreenState extends State<TasteTimelineScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Timelines'),
-        centerTitle: true,
         actions: const [MixlistFilterToggle()],
       ),
       body: Stack(

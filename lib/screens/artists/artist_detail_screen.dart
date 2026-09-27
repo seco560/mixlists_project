@@ -1,25 +1,29 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
+import 'package:mixlists_core/mixlists_core.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
+import 'package:mixlists_project/data/models/taste_timeline.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/data/models/artist_song_appearance.dart';
-import 'package:mixlists_project/screens/albums/album_detail_screen.dart';
-import 'package:mixlists_project/screens/artists/genre_artists_screen.dart';
-import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
-import 'package:mixlists_project/widgets/shared/album_art_thumbnail.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
+import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
+import 'package:mixlists_project/screens/search/album_result_tile.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
+import 'package:mixlists_project/widgets/shared/category_tile.dart';
+import 'package:mixlists_project/widgets/shared/detail_header.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/playlist_cover_grid.dart';
 import 'package:mixlists_project/widgets/shared/section_header.dart';
 import 'package:mixlists_project/widgets/shared/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
 import 'package:mixlists_project/widgets/shared/year_album_art_histogram.dart';
+import 'package:mixlists_project/widgets/timeline/artist_timeline_strip.dart';
 
 class ArtistDetailScreen extends StatefulWidget {
   const ArtistDetailScreen({super.key, required this.artist});
@@ -35,6 +39,9 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
   /// mixlists from here, not `widget.artist`, or the filter won't apply.
   late ArtistOverview _artist = widget.artist;
   List<ArtistSongAppearance> _songs = [];
+
+  /// Every mixlist under the filter, oldest first: the timeline's x-axis.
+  List<Mixlist> _allMixlists = [];
   bool _isLoading = true;
   String? _error;
 
@@ -63,11 +70,14 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
         widget.artist.id,
         filter: filter,
       );
+      final allMixlistsFuture = repository.getAllMixlists(filter: filter);
       final songs = await songsFuture;
       final artist = await artistFuture;
+      final allMixlists = await allMixlistsFuture;
       if (!mounted) return;
       setState(() {
         _songs = songs;
+        _allMixlists = allMixlists;
         if (artist != null) _artist = artist;
         _isLoading = false;
       });
@@ -98,7 +108,11 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                 tooltip: '${song.songName} — ${mixlist?.title ?? ''}',
                 onTap: mixlist == null
                     ? null
-                    : () => _openMixlist(mixlist.id, song.songId),
+                    : () => openMixlistById(
+                        context,
+                        mixlist.id,
+                        highlightSongId: song.songId,
+                      ),
               ),
             );
       }
@@ -113,45 +127,53 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
     return entries;
   }
 
-  Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
-    final fullMixlistData = await getIt<MusicLibraryRepository>()
-        .getMixlistById(mixlistId);
-    if (!mounted || fullMixlistData == null) return;
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.mixlist,
-        entityId: fullMixlistData.id,
-        title: fullMixlistData.title,
-      ),
-      builder: (context) => MixlistDetailScreen(
-        mixlist: fullMixlistData,
-        highlightSongId: highlightSongId,
-      ),
-    );
-  }
-
-  void _openGenre(String genre) {
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.genre,
-        key: genre,
-        title: genre,
-      ),
-      builder: (context) => GenreArtistsScreen(genre: genre),
+  Widget _buildTimeline(MixlistFilter filter) {
+    final positionById = {
+      for (var i = 0; i < _allMixlists.length; i++) _allMixlists[i].id: i + 1,
+    };
+    final songsByPosition = <int, List<ArtistTimelineSong>>{};
+    for (final song in _songs) {
+      for (final mixlist in song.mixlists) {
+        final position = positionById[mixlist.id];
+        if (position == null) continue;
+        songsByPosition
+            .putIfAbsent(position, () => [])
+            .add(
+              ArtistTimelineSong(
+                songId: song.songId,
+                songName: song.songName,
+                albumCoverImageURL: song.albumCoverImageURL,
+              ),
+            );
+      }
+    }
+    return ArtistTimelineStrip(
+      artistId: _artist.id,
+      artistName: _artist.name,
+      points: [
+        for (var i = 0; i < _allMixlists.length; i++)
+          TimelineMixlistPoint.positionOnly(
+            position: i + 1,
+            mixlist: _allMixlists[i],
+          ),
+      ],
+      songsByPosition: songsByPosition,
+      onSongTap: (point, song) =>
+          openMixlist(context, point.mixlist, highlightSongId: song.songId),
+      playlistNounSingularLower: filter.playlistNounSingularLower,
+      playlistNounPluralLower: filter.playlistNounPluralLower,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final artist = _artist;
-    final playlistNounPlural =
-        getIt<MixlistFilterController>().value.playlistNounPlural;
+    final filter = getIt<MixlistFilterController>().value;
+    final playlistNounPlural = filter.playlistNounPlural;
+    final mixlistCount = artist.mixlists.length;
     return Scaffold(
       appBar: AppBar(
-        title: Text(artist.name),
-        centerTitle: true,
+        title: Text(artist.name, overflow: TextOverflow.ellipsis),
         actions: const [MixlistFilterToggle()],
       ),
       body: Stack(
@@ -161,30 +183,44 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
               : _error != null
               ? Center(child: Text(_error!))
               : ListView(
+                  padding: detailListBottomPadding,
                   children: [
-                    SectionHeader('Genres'),
-                    if (artist.genres.isEmpty)
-                      const EmptySectionTile()
-                    else
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
-                        ),
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 4,
-                          children: [
-                            for (final genre in artist.genres)
-                              ActionChip(
-                                label: Text(genre),
-                                onPressed: () => _openGenre(genre),
-                              ),
-                          ],
-                        ),
+                    DetailHeader(
+                      artwork: PlaylistCoverGrid(
+                        coverImageUrls: [
+                          for (final a in artist.albums.take(4))
+                            a.coverImageURL,
+                        ],
+                        size: DetailHeader.artSize,
                       ),
+                      overline: 'Artist',
+                      title: artist.name,
+                      lines: [
+                        DetailFacts([
+                          '${_songs.length} ${_songs.length == 1 ? 'song' : 'songs'}',
+                          '${artist.albums.length} ${artist.albums.length == 1 ? 'album' : 'albums'}',
+                          '$mixlistCount ${mixlistCount == 1 ? filter.playlistNounSingularLower : filter.playlistNounPluralLower}',
+                        ]),
+                      ],
+                      chips: [
+                        for (final genre in artist.genres)
+                          ActionChip(
+                            avatar: const Icon(
+                              CategoryTile.genreIcon,
+                              size: 16,
+                            ),
+                            label: Text(genre),
+                            onPressed: () => openGenre(context, genre),
+                          ),
+                      ],
+                    ),
+                    const Divider(),
+                    const SectionHeader('Timeline'),
+                    _buildTimeline(filter),
                     const Divider(height: 32),
-                    SectionHeader('Added to $playlistNounPlural Over Time'),
+                    SectionHeader(
+                      'Added to $playlistNounPlural ${_songs.length} Times',
+                    ),
                     YearAlbumArtHistogram(
                       entriesByYear: _addedOverTimeEntries(),
                     ),
@@ -204,7 +240,14 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                           subtitle: Column(
                             crossAxisAlignment: .start,
                             children: [
-                              Text(song.albumName, style: subtitleTextStyle),
+                              LinkLine(
+                                parts: [
+                                  (
+                                    song.albumName,
+                                    () => openAlbumById(context, song.albumId),
+                                  ),
+                                ],
+                              ),
                               Text(
                                 'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',
                                 style: metaTextStyle,
@@ -212,50 +255,28 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                             ],
                           ),
                           mixlists: song.mixlists,
-                          onOpenMixlist: _openMixlist,
                         ),
                     const Divider(height: 32),
                     SectionHeader('Albums Featured (${artist.albums.length})'),
                     if (artist.albums.isEmpty)
                       const EmptySectionTile()
                     else
-                      for (final album in artist.albums)
-                        ListTile(
-                          leading: AlbumArtThumbnail(
-                            imageUrl: album.coverImageURL,
-                            size: 48,
-                            borderRadius: 0,
-                          ),
-                          title: Text(album.name, style: titleTextStyle),
-                          subtitle: Text(
-                            album.releaseDate.split('T')[0],
-                            style: metaTextStyle,
-                          ),
-                          onTap: () {
-                            pushWithBreadcrumb(
-                              context,
-                              entry: BreadcrumbEntry(
-                                kind: BreadcrumbKind.album,
-                                entityId: album.id,
-                                title: album.name,
-                                subtitle: artist.name,
-                                imageUrl: album.coverImageURL,
-                              ),
-                              builder: (context) => AlbumDetailScreen(
-                                // AlbumSummary has no artist name; fill it in
-                                // from `artist`, which we already have.
-                                album: AlbumOverview(
-                                  id: album.id,
-                                  name: album.name,
-                                  releaseDate: album.releaseDate,
-                                  coverImageURL: album.coverImageURL,
-                                  artistId: artist.id,
-                                  artistName: artist.name,
-                                  recordLabel: album.recordLabel,
-                                ),
-                              ),
-                            );
-                          },
+                      // AlbumSummary has no artist; fill it from `artist`.
+                      for (final album in artist.albums.map(
+                        (a) => AlbumOverview(
+                          id: a.id,
+                          name: a.name,
+                          releaseDate: a.releaseDate,
+                          coverImageURL: a.coverImageURL,
+                          artistId: artist.id,
+                          artistName: artist.name,
+                          recordLabel: a.recordLabel,
+                        ),
+                      ))
+                        AlbumResultTile(
+                          showArtist: false,
+                          album: album,
+                          onTap: () => openAlbum(context, album),
                         ),
                   ],
                 ),

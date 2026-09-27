@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
 import 'package:mixlists_project/data/models/song_overview.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/mixlists/other_mixlists_list.dart';
-import 'package:mixlists_project/screens/songs/song_detail_screen.dart';
+import 'package:mixlists_project/widgets/shared/mixlist_count_chip.dart';
 import 'package:mixlists_project/screens/songs/song_table_cell.dart';
 import 'package:mixlists_project/widgets/shared/explicit_badge.dart';
 
@@ -51,12 +50,6 @@ class _SongTableRowState extends State<SongTableRow>
     reverseCurve: Curves.easeIn,
   );
 
-  late final Animation<double> _popAnimation = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeOutBack,
-    reverseCurve: Curves.easeIn,
-  );
-
   late final Animation<double> _fadeAnimation = CurvedAnimation(
     parent: _controller,
     curve: const Interval(0.3, 1.0, curve: Curves.easeIn),
@@ -74,20 +67,6 @@ class _SongTableRowState extends State<SongTableRow>
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  void _openSongDetail() {
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.song,
-        entityId: widget.song.id,
-        title: widget.song.name,
-        subtitle: widget.song.artistNames,
-        imageUrl: widget.song.albumCoverImageURL,
-      ),
-      builder: (context) => SongDetailScreen(song: widget.song),
-    );
   }
 
   @override
@@ -121,7 +100,7 @@ class _SongTableRowState extends State<SongTableRow>
                     Flexible(
                       child: HoverableLink(
                         text: song.name,
-                        onTap: _openSongDetail,
+                        onTap: () => openSong(context, song),
                         style: _nameTextStyle,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
@@ -146,46 +125,45 @@ class _SongTableRowState extends State<SongTableRow>
               SongTableCell(
                 width: widths[3],
                 numeric: false,
-                child: Text(
-                  song.albumName,
+                child: HoverableLink(
+                  text: song.albumName,
+                  onTap: () => openAlbumById(context, song.albumID),
                   style: _countTextStyle,
                   overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
               SongTableCell(
                 width: widths[4],
                 numeric: true,
-                child: Text('${song.appearanceCount}', style: _countTextStyle),
+                child: isOneHitWonder
+                    ? Text('1', style: _countTextStyle)
+                    : MixlistCountChip(
+                        label: '${song.appearanceCount}',
+                        isExpanded: _isExpanded,
+                        onPressed: _toggleExpanded,
+                      ),
               ),
             ],
           ),
           if (!isOneHitWonder)
-            Align(
-              alignment: Alignment.topRight,
-              child: SizeTransition(
-                sizeFactor: _revealAnimation,
-                alignment: Alignment.bottomLeft,
-                child: ScaleTransition(
-                  scale: _popAnimation,
-                  alignment: Alignment.topRight,
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    // Needs a concrete width: rows get unbounded
-                    // width from the scrolling grid, so a bare Align
-                    // would shrink and be centered by the Column.
-                    child: SizedBox(
-                      width: totalRowWidth,
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 330),
-                          child: OtherMixlistsList(
-                            header: 'Appears in',
-                            mixlists: song.mixlists,
-                            onTap: (mixlistId) =>
-                                widget.onOpenMixlist(mixlistId, song.id),
-                          ),
-                        ),
+            SizeTransition(
+              sizeFactor: _revealAnimation,
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                // Needs a concrete width: rows get unbounded width from
+                // the scrolling grid, so a bare Align would shrink.
+                child: SizedBox(
+                  width: totalRowWidth,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 360),
+                      child: OtherMixlistsList(
+                        header: 'Appears in',
+                        mixlists: song.mixlists,
+                        onTap: (mixlistId) =>
+                            widget.onOpenMixlist(mixlistId, song.id),
                       ),
                     ),
                   ),

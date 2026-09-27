@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
-import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
+import 'package:mixlists_project/screens/search/artist_result_tile.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
+import 'package:mixlists_project/widgets/shared/adjacent_nav_pane.dart';
 import 'package:mixlists_project/widgets/shared/category_sort_toggle.dart';
+import 'package:mixlists_project/widgets/shared/empty_state.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
@@ -92,117 +93,20 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
     return artists;
   }
 
-  String _playlistCountLabel(int count) {
-    final filter = getIt<MixlistFilterController>().value;
-    return count == 1
-        ? filter.playlistNounSingularLower
-        : filter.playlistNounPluralLower;
-  }
-
-  void _openArtist(ArtistOverview artist) {
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.artist,
-        entityId: artist.id,
-        title: artist.name,
-        mosaicUrls: [for (final a in artist.albums.take(4)) a.coverImageURL],
-      ),
-      builder: (context) => ArtistDetailScreen(artist: artist),
-    );
-  }
-
-  void _goToGenre(String genre, {bool asBack = false}) {
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.genre,
-        key: genre,
-        title: genre,
-      ),
-      builder: (context) => GenreArtistsScreen(genre: genre),
-      isReverse: asBack,
-    );
-  }
-
-  Widget _buildGenreNavButton({
-    required IconData icon,
-    required String label,
-    required String? genre,
-    required bool alignEnd,
-    required bool isPrevious,
-  }) {
-    final children = [
-      Icon(icon),
-      const SizedBox(width: 8),
-      Flexible(
-        child: Column(
-          crossAxisAlignment: alignEnd
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(label, style: const TextStyle(fontSize: 12)),
-            Text(
-              genre ?? '—',
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    ];
-    return Expanded(
-      child: InkWell(
-        mouseCursor: genre == null
-            ? MouseCursor.defer
-            : SystemMouseCursors.click,
-        onTap: genre == null
-            ? null
-            : () => _goToGenre(genre, asBack: isPrevious),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Opacity(
-            opacity: genre == null ? 0.4 : 1,
-            child: Row(
-              mainAxisAlignment: alignEnd
-                  ? MainAxisAlignment.end
-                  : MainAxisAlignment.start,
-              children: alignEnd ? children.reversed.toList() : children,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGenreNavigationPane() {
-    return Row(
-      children: [
-        _buildGenreNavButton(
-          icon: Icons.arrow_back,
-          label: 'Previous genre',
-          genre: _previousGenre,
-          alignEnd: false,
-          isPrevious: true,
-        ),
-        _buildGenreNavButton(
-          icon: Icons.arrow_forward,
-          label: 'Next genre',
-          genre: _nextGenre,
-          alignEnd: true,
-          isPrevious: false,
-        ),
-      ],
+  AdjacentNavTarget? _navTarget(String? genre, {required bool isPrevious}) {
+    if (genre == null) return null;
+    return AdjacentNavTarget(
+      title: genre,
+      onTap: () => openGenre(context, genre, isReverse: isPrevious),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final noun = getIt<MixlistFilterController>().value.playlistNounPluralLower;
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.genre} Artists"),
-        centerTitle: true,
+        title: Text('${widget.genre} Artists'),
         actions: [
           CategorySortToggle(
             value: _sortOrder,
@@ -216,28 +120,28 @@ class _GenreArtistsScreenState extends State<GenreArtistsScreen> {
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : ListView(
+                  padding: detailListBottomPadding,
                   children: [
-                    Divider(),
                     if (_artists.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.all(24),
-                        child: Center(child: Text("No data found")),
+                      EmptyState(
+                        message:
+                            'No ${widget.genre} artists on $noun under this '
+                            'filter.',
                       )
                     else
                       for (final (i, artist) in _sortedArtists.indexed) ...[
-                        ListTile(
-                          title: Text(artist.name, style: titleTextStyle),
-                          subtitle: Text(
-                            '${artist.uniqueSongCount} song${artist.uniqueSongCount == 1 ? '' : 's'} • '
-                            '${artist.mixlists.length} ${_playlistCountLabel(artist.mixlists.length)}',
-                            style: metaTextStyle,
-                          ),
-                          onTap: () => _openArtist(artist),
+                        ArtistResultTile(
+                          artist: artist,
+                          onTap: () => openArtist(context, artist),
                         ),
-                        if (i != _artists.length - 1) Divider(),
+                        if (i != _artists.length - 1) const Divider(),
                       ],
-                    Divider(),
-                    _buildGenreNavigationPane(),
+                    const Divider(),
+                    AdjacentNavPane(
+                      noun: 'genre',
+                      previous: _navTarget(_previousGenre, isPrevious: true),
+                      next: _navTarget(_nextGenre, isPrevious: false),
+                    ),
                   ],
                 ),
           const Align(

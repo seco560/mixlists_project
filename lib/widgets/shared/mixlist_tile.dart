@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mixlists_core/mixlists_core.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/get_it_init.dart';
-import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
 import 'package:mixlists_project/widgets/shared/playlist_cover_grid.dart';
+import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
 class MixlistTile extends StatelessWidget {
   final Mixlist mixlist;
@@ -21,6 +20,9 @@ class MixlistTile extends StatelessWidget {
   final bool isMarked;
   final ValueChanged<int>? onToggleMarked;
 
+  /// Scrolled to and flashed when the mixlist opens (e.g. from a song).
+  final int? highlightSongId;
+
   MixlistTile({
     super.key,
     required this.mixlist,
@@ -29,10 +31,12 @@ class MixlistTile extends StatelessWidget {
     this.isMarking = false,
     this.isMarked = false,
     this.onToggleMarked,
+    this.highlightSongId,
   }) : displayNumber = displayNumber ?? mixlist.id;
 
   @override
   Widget build(BuildContext context) {
+    final date = mixlist.dateCreated.split('T')[0];
     return ListTile(
       leading: isMarking
           ? Checkbox(
@@ -47,29 +51,23 @@ class MixlistTile extends StatelessWidget {
                   PlaylistCoverGrid(coverImageUrls: snapshot.data ?? const []),
             ),
       title: Text(
-        "$displayNumber) ${mixlist.title}",
-        style: TextStyle(fontSize: 20, fontWeight: .bold),
+        '$displayNumber) ${mixlist.title}',
+        style: titleTextStyle,
+        overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
         songCount == null
-            ? mixlist.dateCreated.split('T')[0]
-            : '${mixlist.dateCreated.split('T')[0]} · $songCount '
-                  '${songCount == 1 ? 'song' : 'songs'}',
-        style: TextStyle(fontSize: 16, fontWeight: .w600),
+            ? date
+            : '$date · $songCount ${songCount == 1 ? 'song' : 'songs'}',
+        style: subtitleTextStyle.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
       ),
+      trailing: isMarking ? null : const Icon(Icons.chevron_right),
       onTap: isMarking
           ? () => onToggleMarked?.call(mixlist.id)
-          : () {
-              pushWithBreadcrumb(
-                context,
-                entry: BreadcrumbEntry(
-                  kind: BreadcrumbKind.mixlist,
-                  entityId: mixlist.id,
-                  title: mixlist.title,
-                ),
-                builder: (context) => MixlistDetailScreen(mixlist: mixlist),
-              );
-            },
+          : () =>
+                openMixlist(context, mixlist, highlightSongId: highlightSongId),
     );
   }
 }

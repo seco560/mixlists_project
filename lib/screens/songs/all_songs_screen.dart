@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
+import 'package:mixlists_project/widgets/shared/empty_state.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/song_overview.dart';
-import 'package:mixlists_project/screens/mixlists/mixlist_detail_screen.dart';
 import 'package:mixlists_project/screens/songs/song_table_cell.dart';
 import 'package:mixlists_project/screens/songs/song_table_row.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
@@ -156,23 +155,8 @@ class _AllSongsScreenState extends State<AllSongsScreen> {
     });
   }
 
-  Future<void> _openMixlist(int mixlistId, int highlightSongId) async {
-    final fullMixlistData = await getIt<MusicLibraryRepository>()
-        .getMixlistById(mixlistId);
-    if (!mounted || fullMixlistData == null) return;
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.mixlist,
-        entityId: fullMixlistData.id,
-        title: fullMixlistData.title,
-      ),
-      builder: (context) => MixlistDetailScreen(
-        mixlist: fullMixlistData,
-        highlightSongId: highlightSongId,
-      ),
-    );
-  }
+  void _openMixlist(int mixlistId, int highlightSongId) =>
+      openMixlistById(context, mixlistId, highlightSongId: highlightSongId);
 
   @override
   Widget build(BuildContext context) {
@@ -182,13 +166,12 @@ class _AllSongsScreenState extends State<AllSongsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("All Songs"),
-        centerTitle: true,
         actions: const [MixlistFilterToggle()],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _songs.isEmpty
-          ? const Center(child: Text("No data found"))
+          ? const EmptyState(message: 'Nothing here under this filter.')
           : LayoutBuilder(
               builder: (context, constraints) {
                 final widths = _resolveColumnWidths(constraints.maxWidth);

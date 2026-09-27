@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/screens/albums/album_grid_tile.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
+import 'package:mixlists_project/widgets/shared/adjacent_nav_pane.dart';
+import 'package:mixlists_project/widgets/shared/empty_state.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 
 /// Grid of albums, either every album or (via [recordLabel]) just one
@@ -86,102 +88,25 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
     return columns < 1 ? 1 : columns;
   }
 
-  void _goToLabel(String recordLabel, {bool asBack = false}) {
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.label,
-        key: recordLabel,
-        title: recordLabel,
-      ),
-      builder: (context) => AlbumsGridScreen(recordLabel: recordLabel),
-      isReverse: asBack,
-    );
-  }
-
-  Widget _buildLabelNavButton({
-    required IconData icon,
-    required String label,
-    required String? recordLabel,
-    required bool alignEnd,
-    required bool isPrevious,
-  }) {
-    final children = [
-      Icon(icon),
-      const SizedBox(width: 8),
-      Flexible(
-        child: Column(
-          crossAxisAlignment: alignEnd
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(label, style: const TextStyle(fontSize: 12)),
-            Text(
-              recordLabel ?? '—',
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    ];
-    return Expanded(
-      child: InkWell(
-        mouseCursor: recordLabel == null
-            ? MouseCursor.defer
-            : SystemMouseCursors.click,
-        onTap: recordLabel == null
-            ? null
-            : () => _goToLabel(recordLabel, asBack: isPrevious),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Opacity(
-            opacity: recordLabel == null ? 0.4 : 1,
-            child: Row(
-              mainAxisAlignment: alignEnd
-                  ? MainAxisAlignment.end
-                  : MainAxisAlignment.start,
-              children: alignEnd ? children.reversed.toList() : children,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLabelNavigationPane() {
-    return Row(
-      children: [
-        _buildLabelNavButton(
-          icon: Icons.arrow_back,
-          label: 'Previous label',
-          recordLabel: _previousLabel,
-          alignEnd: false,
-          isPrevious: true,
-        ),
-        _buildLabelNavButton(
-          icon: Icons.arrow_forward,
-          label: 'Next label',
-          recordLabel: _nextLabel,
-          alignEnd: true,
-          isPrevious: false,
-        ),
-      ],
+  AdjacentNavTarget? _navTarget(String? label, {required bool isPrevious}) {
+    if (label == null) return null;
+    return AdjacentNavTarget(
+      title: label,
+      onTap: () => openLabel(context, label, isReverse: isPrevious),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final isLabelScoped = widget.recordLabel != null;
+    final noun = getIt<MixlistFilterController>().value.playlistNounPluralLower;
     return Scaffold(
       appBar: AppBar(
         title: Text(
           widget.recordLabel == null
-              ? "All Albums"
-              : "${widget.recordLabel} Albums",
+              ? 'All Albums'
+              : '${widget.recordLabel} Albums',
         ),
-        centerTitle: true,
         actions: const [MixlistFilterToggle()],
       ),
       body: Stack(
@@ -197,16 +122,19 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
                         columns * AlbumGridTile.width +
                         (columns - 1) * _tileSpacing;
                     return ListView(
-                      padding: const EdgeInsets.all(_gridPadding),
+                      padding: const EdgeInsets.fromLTRB(
+                        _gridPadding,
+                        _gridPadding,
+                        _gridPadding,
+                        88,
+                      ),
                       children: [
                         if (_albums.isEmpty)
-                          const Padding(
-                            padding: EdgeInsets.all(24),
-                            child: Center(child: Text("No data found")),
+                          EmptyState(
+                            message: 'No albums on $noun under this filter.',
                           )
                         else
-                          Align(
-                            alignment: .topLeft,
+                          Center(
                             child: SizedBox(
                               width: gridWidth,
                               child: GridView.builder(
@@ -226,8 +154,15 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
                             ),
                           ),
                         if (isLabelScoped) ...[
-                          Divider(),
-                          _buildLabelNavigationPane(),
+                          const SizedBox(height: 16),
+                          AdjacentNavPane(
+                            noun: 'label',
+                            previous: _navTarget(
+                              _previousLabel,
+                              isPrevious: true,
+                            ),
+                            next: _navTarget(_nextLabel, isPrevious: false),
+                          ),
                         ],
                       ],
                     );

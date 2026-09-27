@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_entry.dart';
-import 'package:mixlists_project/data/breadcrumb/breadcrumb_push.dart';
 import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
 import 'package:mixlists_project/get_it_init.dart';
 import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
-import 'package:mixlists_project/screens/artists/artist_detail_screen.dart';
-import 'package:mixlists_project/screens/artists/genre_artists_screen.dart';
+import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
 import 'package:mixlists_project/screens/search/artist_result_tile.dart';
 import 'package:mixlists_project/widgets/shared/category_sort_toggle.dart';
+import 'package:mixlists_project/widgets/shared/category_tile.dart';
+import 'package:mixlists_project/widgets/shared/empty_state.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
 
@@ -83,31 +82,6 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     }
   }
 
-  void _openGenre(String genre) {
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.genre,
-        key: genre,
-        title: genre,
-      ),
-      builder: (context) => GenreArtistsScreen(genre: genre),
-    );
-  }
-
-  void _openArtist(ArtistOverview artist) {
-    pushWithBreadcrumb(
-      context,
-      entry: BreadcrumbEntry(
-        kind: BreadcrumbKind.artist,
-        entityId: artist.id,
-        title: artist.name,
-        mosaicUrls: [for (final a in artist.albums.take(4)) a.coverImageURL],
-      ),
-      builder: (context) => ArtistDetailScreen(artist: artist),
-    );
-  }
-
   /// [_genres] sorted per [_sortOrder] -- computed on demand, not stored.
   List<String> get _sortedGenres {
     if (_sortOrder == CategorySortOrder.alphabetical) return _genres;
@@ -127,7 +101,6 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Genres"),
-        centerTitle: true,
         actions: [
           CategorySortToggle(
             value: _sortOrder,
@@ -139,21 +112,19 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : isEmpty
-          ? const Center(child: Text("No data found"))
+          ? const EmptyState(message: 'No genres under this filter.')
           : ListView(
+              padding: const EdgeInsets.only(bottom: 24),
               children: [
-                Divider(),
                 for (final genre in _sortedGenres) ...[
-                  ListTile(
-                    leading: const Icon(Icons.sell_outlined),
-                    title: Text(genre, style: titleTextStyle),
-                    subtitle: Text(
-                      '${_artistCountByGenre[genre]} artist${_artistCountByGenre[genre] == 1 ? '' : 's'}',
-                      style: metaTextStyle,
-                    ),
-                    onTap: () => _openGenre(genre),
+                  CategoryTile(
+                    icon: CategoryTile.genreIcon,
+                    name: genre,
+                    countLabel:
+                        '${_artistCountByGenre[genre]} artist${_artistCountByGenre[genre] == 1 ? '' : 's'}',
+                    onTap: () => openGenre(context, genre),
                   ),
-                  Divider(),
+                  const Divider(),
                 ],
                 if (_artistsWithoutGenre.isNotEmpty) ...[
                   _buildWithoutGenreRow(),
@@ -161,7 +132,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
                     for (final artist in _artistsWithoutGenre)
                       ArtistResultTile(
                         artist: artist,
-                        onTap: () => _openArtist(artist),
+                        onTap: () => openArtist(context, artist),
                       ),
                   Divider(),
                 ],
