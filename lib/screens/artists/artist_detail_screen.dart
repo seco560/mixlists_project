@@ -171,6 +171,8 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
     final filter = getIt<MixlistFilterController>().value;
     final playlistNounPlural = filter.playlistNounPlural;
     final mixlistCount = artist.mixlists.length;
+    final entries = _addedOverTimeEntries();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(artist.name, overflow: TextOverflow.ellipsis),
@@ -219,11 +221,9 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                     _buildTimeline(filter),
                     const Divider(height: 32),
                     SectionHeader(
-                      'Added to $playlistNounPlural ${_songs.length} Times',
+                      'Added to $playlistNounPlural ${[for (final e in entries.values) ...e].length} Times',
                     ),
-                    YearAlbumArtHistogram(
-                      entriesByYear: _addedOverTimeEntries(),
-                    ),
+                    YearAlbumArtHistogram(entriesByYear: entries),
                     const Divider(height: 32),
                     SectionHeader(
                       'Songs on $playlistNounPlural (${_songs.length})',
