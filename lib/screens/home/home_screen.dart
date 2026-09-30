@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
+import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/library/active_library_controller.dart';
 import 'package:mixlists_project/data/library/library_record.dart';
 import 'package:mixlists_project/get_it_init.dart';
@@ -27,53 +29,52 @@ class HomeScreen extends StatelessWidget {
   static const _spacing = 12.0;
 
   void _push(BuildContext context, Widget screen) {
-    Navigator.push(
-      context,
-      QuickStylePageRoute(builder: (context) => screen),
-    );
+    Navigator.push(context, QuickStylePageRoute(builder: (context) => screen));
   }
 
   List<Widget> _cards(BuildContext context) => [
     HomeNavCard(
       icon: Icons.queue_music,
       title: const PlaylistsFilterLabel(),
-      caption: const Text('Browse, number & mark'),
+      caption: Text(
+        'Simplest view',
+      ),
       onTap: () => _push(context, const AllMixlistsScreen()),
     ),
     HomeNavCard(
       icon: Icons.timeline,
       label: 'Timelines',
-      caption: const Text('Taste trends over time'),
+      caption: const Text('Visualizations of trends'),
       onTap: () => _push(context, const TasteTimelineScreen()),
     ),
     HomeNavCard(
       icon: Icons.person,
       label: 'Artists',
-      caption: const Text('Who shows up most'),
+      caption: const Text('A proper leaderboard'),
       onTap: () => _push(context, const AllArtistsScreen()),
     ),
     HomeNavCard(
       icon: Icons.album,
       label: 'Albums',
-      caption: const Text('Cover art grid'),
+      caption: const Text('The records of origin'),
       onTap: () => _push(context, const AlbumsGridScreen()),
     ),
     HomeNavCard(
       icon: Icons.music_note,
       label: 'Songs',
-      caption: const Text('Every track & repeats'),
+      caption: const Text('Leaderboard, for songs'),
       onTap: () => _push(context, const AllSongsScreen()),
     ),
     HomeNavCard(
       icon: CategoryTile.genreIcon,
       label: 'Genres',
-      caption: const Text('Artists by genre'),
+      caption: const Text('Artists in genre buckets'),
       onTap: () => _push(context, const AllGenresScreen()),
     ),
     HomeNavCard(
       icon: CategoryTile.labelIcon,
       label: 'Labels',
-      caption: const Text('Albums by record label'),
+      caption: const Text('Albums in label buckets'),
       onTap: () => _push(context, const AllLabelsScreen()),
     ),
     if (!kIsWeb)
@@ -129,7 +130,7 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           const MixlistFilterToggle(),
                           Text(
-                            'Mixlists only, all playlists, or only unmarked ones',
+                            'Filter by mixlists only, all playlists, or only unmarked ones',
                             style: metaTextStyle.copyWith(
                               color: scheme.onSurfaceVariant,
                             ),
@@ -152,8 +153,7 @@ class HomeScreen extends StatelessWidget {
                             mainAxisSpacing: _spacing,
                             crossAxisSpacing: _spacing,
                             childAspectRatio:
-                                ((width - _spacing * (columns - 1)) /
-                                    columns) /
+                                ((width - _spacing * (columns - 1)) / columns) /
                                 HomeNavCard.height,
                             children: cards,
                           );

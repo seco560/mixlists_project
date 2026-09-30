@@ -127,47 +127,102 @@ class _AllMixlistsScreenState extends State<AllMixlistsScreen> {
     await _loadData();
   }
 
+  Future<void> _addMixlist() async {
+    final added = await Navigator.push<bool>(
+      context,
+      QuickStylePageRoute(builder: (context) => const AddMixlistScreen()),
+    );
+    if (added == true) _loadData();
+  }
+
+  /// Below this width the full action row pushes the back button off-screen,
+  /// so sort/add/mark collapse into an overflow menu.
+  static const double _compactActionsWidth = 600;
+
+  List<Widget> _actions(BuildContext context) {
+    if (_isMarkingMode) {
+      return [
+        IconButton(
+          icon: const Icon(Icons.close),
+          tooltip: 'Cancel marking',
+          onPressed: _cancelMarking,
+        ),
+      ];
+    }
+    final addTooltip = 'Add ${_globalFilter.playlistNounSingular}';
+    if (MediaQuery.sizeOf(context).width < _compactActionsWidth) {
+      final isChronological = _order == ChronologicalOrder.chronological;
+      return [
+        const MixlistFilterToggle(),
+        PopupMenuButton<VoidCallback>(
+          tooltip: 'More options',
+          onSelected: (action) => action(),
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              value: () => setState(
+                () => _order = isChronological
+                    ? ChronologicalOrder.reverseChronological
+                    : ChronologicalOrder.chronological,
+              ),
+              child: ListTile(
+                leading: Icon(
+                  isChronological ? Icons.arrow_upward : Icons.arrow_downward,
+                ),
+                title: Text(isChronological ? 'Newest first' : 'Oldest first'),
+              ),
+            ),
+            PopupMenuItem(
+              value: _addMixlist,
+              child: ListTile(
+                leading: const Icon(Icons.add),
+                title: Text(addTooltip),
+              ),
+            ),
+            PopupMenuItem(
+              value: _startMarking,
+              child: const ListTile(
+                leading: Icon(Icons.playlist_add_check),
+                title: Text('Mark Mixlists'),
+              ),
+            ),
+          ],
+        ),
+      ];
+    }
+    return [
+      ChronologicalSortToggle(
+        value: _order,
+        onChanged: (order) => setState(() => _order = order),
+      ),
+      const MixlistFilterToggle(),
+      IconButton(
+        icon: const Icon(Icons.add),
+        tooltip: addTooltip,
+        onPressed: _addMixlist,
+      ),
+      IconButton(
+        icon: const Icon(Icons.playlist_add_check),
+        tooltip: 'Mark Mixlists',
+        onPressed: _startMarking,
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final displayItems = _displayItems;
     return Scaffold(
       appBar: AppBar(
         title: Text(_globalFilter.allScreenHeader),
-        actions: [
-          if (!_isMarkingMode)
-            ChronologicalSortToggle(
-              value: _order,
-              onChanged: (order) => setState(() => _order = order),
-            ),
-          if (!_isMarkingMode) const MixlistFilterToggle(),
-          if (!_isMarkingMode)
-            IconButton(
-              icon: const Icon(Icons.add),
-              tooltip: 'Add ${_globalFilter.playlistNounSingular}',
-              onPressed: () async {
-                final added = await Navigator.push<bool>(
-                  context,
-                  QuickStylePageRoute(
-                    builder: (context) => const AddMixlistScreen(),
-                  ),
-                );
-                if (added == true) _loadData();
-              },
-            ),
-          IconButton(
-            icon: Icon(_isMarkingMode ? Icons.close : Icons.playlist_add_check),
-            tooltip: _isMarkingMode ? 'Cancel marking' : 'Mark Mixlists',
-            onPressed: _isMarkingMode ? _cancelMarking : _startMarking,
-          ),
-        ],
+        actions: _actions(context),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _mixlists.isEmpty
           ? EmptyState(
               message:
-                  'No ${_globalFilter.playlistNounPluralLower} yet. Mark some from '
-                  'the checklist button, or change the filter.',
+                  'No ${_globalFilter.playlistNounPluralLower} yet. Mark some with '
+                  '"Mark Mixlists", or change the filter.',
             )
           : ListView.separated(
               separatorBuilder: (_, _) => const Divider(),

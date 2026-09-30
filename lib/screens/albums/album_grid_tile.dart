@@ -12,13 +12,21 @@ const _subtitleTextStyle = TextStyle(
 const _metaTextStyle = TextStyle(fontSize: 12, height: 1.2);
 
 class AlbumGridTile extends StatelessWidget {
-  const AlbumGridTile({super.key, required this.album});
+  const AlbumGridTile({
+    super.key,
+    required this.album,
+    this.size = defaultWidth,
+  });
 
   final AlbumOverview album;
 
-  static const double width = 200;
+  /// Tile (and cover art) width; narrow grids shrink it to fit two columns.
+  final double size;
+
+  static const double defaultWidth = 200;
   static const double _textAreaHeight = 66;
-  static const double height = width + _textAreaHeight;
+
+  static double heightFor(double size) => size + _textAreaHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +37,7 @@ class AlbumGridTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          AlbumArtThumbnail(imageUrl: album.coverImageURL, size: width),
+          AlbumArtThumbnail(imageUrl: album.coverImageURL, size: size),
           const SizedBox(height: 6),
           Text(
             album.name,

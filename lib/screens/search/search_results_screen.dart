@@ -150,6 +150,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
               isExplicit: song.isExplicit == true,
               leadingImageUrl: song.albumCoverImageURL,
               subtitle: LinkLine(
+                singleLine: true,
                 parts: [
                   (song.artistNames, null),
                   (song.albumName, () => openAlbumById(context, song.albumId)),

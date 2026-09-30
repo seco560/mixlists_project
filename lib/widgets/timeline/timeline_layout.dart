@@ -10,15 +10,16 @@ class TimelineLayout {
   static const gutterWidth = 120.0;
   static const rightPadding = 16.0;
 
-  /// Builds a layout from a [LayoutBuilder]'s total width.
-  factory TimelineLayout.fromWidth(int count, double totalWidth) =>
-      TimelineLayout(
-        count: count,
-        plotWidth: (totalWidth - gutterWidth - rightPadding).clamp(
-          1.0,
-          double.infinity,
-        ),
-      );
+  /// Builds a layout from a [LayoutBuilder]'s total width. A standalone
+  /// plot with no row labels can pass a narrower [gutter].
+  factory TimelineLayout.fromWidth(
+    int count,
+    double totalWidth, {
+    double gutter = gutterWidth,
+  }) => TimelineLayout(
+    count: count,
+    plotWidth: (totalWidth - gutter - rightPadding).clamp(1.0, double.infinity),
+  );
 
   final int count;
   final double plotWidth;
@@ -32,9 +33,14 @@ class TimelineLayout {
 /// Year labels (from `dateCreated`, as labels only) at each year's first
 /// mixlist, skipping any that would crowd the previous one.
 class TimelineXAxis extends StatelessWidget {
-  const TimelineXAxis({super.key, required this.points});
+  const TimelineXAxis({
+    super.key,
+    required this.points,
+    this.gutter = TimelineLayout.gutterWidth,
+  });
 
   final List<TimelineMixlistPoint> points;
+  final double gutter;
 
   static const height = 18.0;
 
@@ -46,9 +52,10 @@ class TimelineXAxis extends StatelessWidget {
         final layout = TimelineLayout.fromWidth(
           points.length,
           constraints.maxWidth,
+          gutter: gutter,
         );
         return Padding(
-          padding: const EdgeInsets.only(left: TimelineLayout.gutterWidth),
+          padding: EdgeInsets.only(left: gutter),
           child: SizedBox(
             width: layout.plotWidth,
             height: height,

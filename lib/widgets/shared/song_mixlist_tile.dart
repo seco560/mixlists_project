@@ -80,71 +80,88 @@ class _SongMixlistTileState extends State<SongMixlistTile>
     return Column(
       crossAxisAlignment: .start,
       children: [
-        ListTile(
-          leading: AlbumArtThumbnail(
-            imageUrl: widget.leadingImageUrl,
-            size: 48,
-          ),
-          title: Row(
-            mainAxisSize: .min,
-            children: [
-              Flexible(
-                child: HoverableLink(
-                  text: widget.title,
-                  onTap: () => openSongById(context, widget.songId),
-                  style: titleTextStyle,
-                  overflow: .ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-              if (widget.isExplicit) ...[
-                const SizedBox(width: 6),
-                const ExplicitBadge(),
-              ],
-            ],
-          ),
-          subtitle: widget.subtitle,
-          trailing: hasSingleMixlist
-              ? ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 260),
-                  child: Row(
-                    mainAxisSize: .min,
-                    children: [
-                      Flexible(
-                        child: Column(
-                          mainAxisSize: .min,
-                          crossAxisAlignment: .end,
-                          children: [
-                            Text(
-                              mixlists.first.title,
-                              style: subtitleTextStyle,
-                              textAlign: .right,
-                              overflow: .ellipsis,
-                            ),
-                            Text(
-                              (mixlists.first.dateCreated ?? '').split('T')[0],
-                              style: metaTextStyle.copyWith(
-                                color: scheme.onSurfaceVariant,
-                              ),
-                              textAlign: .right,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.chevron_right),
-                    ],
+        // Cap the trailing mixlist so narrow screens abridge its name instead
+        // of squeezing the song info into a one-word-wide column.
+        LayoutBuilder(
+          builder: (context, constraints) => ListTile(
+            leading: AlbumArtThumbnail(
+              imageUrl: widget.leadingImageUrl,
+              size: 48,
+            ),
+            title: Row(
+              mainAxisSize: .min,
+              children: [
+                Flexible(
+                  child: HoverableLink(
+                    text: widget.title,
+                    onTap: () => openSongById(context, widget.songId),
+                    style: titleTextStyle,
+                    overflow: .ellipsis,
+                    maxLines: 1,
                   ),
-                )
-              : MixlistCountChip(
-                  label:
-                      '${mixlists.length} '
-                      '${getIt<MixlistFilterController>().value.playlistNounPluralLower}',
-                  isExpanded: _isExpanded,
-                  onPressed: _toggleExpanded,
                 ),
-          onTap: hasSingleMixlist
-              ? () => _openMixlist(mixlists.first.id)
-              : _toggleExpanded,
+                if (widget.isExplicit) ...[
+                  const SizedBox(width: 6),
+                  const ExplicitBadge(),
+                ],
+              ],
+            ),
+            subtitle: DefaultTextStyle.merge(
+              maxLines: 1,
+              overflow: .ellipsis,
+              softWrap: false,
+              child: widget.subtitle,
+            ),
+            trailing: hasSingleMixlist
+                ? ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: (constraints.maxWidth * 0.35).clamp(0, 260),
+                    ),
+                    child: Row(
+                      mainAxisSize: .min,
+                      children: [
+                        Flexible(
+                          child: Column(
+                            mainAxisSize: .min,
+                            crossAxisAlignment: .end,
+                            children: [
+                              Text(
+                                mixlists.first.title,
+                                style: subtitleTextStyle,
+                                textAlign: .right,
+                                maxLines: 1,
+                                overflow: .ellipsis,
+                              ),
+                              Text(
+                                (mixlists.first.dateCreated ?? '').split(
+                                  'T',
+                                )[0],
+                                style: metaTextStyle.copyWith(
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                                textAlign: .right,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: .fade,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right),
+                      ],
+                    ),
+                  )
+                : MixlistCountChip(
+                    label:
+                        '${mixlists.length} '
+                        '${getIt<MixlistFilterController>().value.playlistNounPluralLower}',
+                    isExpanded: _isExpanded,
+                    onPressed: _toggleExpanded,
+                  ),
+            onTap: hasSingleMixlist
+                ? () => _openMixlist(mixlists.first.id)
+                : _toggleExpanded,
+          ),
         ),
         if (!hasSingleMixlist)
           SizeTransition(

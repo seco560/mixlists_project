@@ -35,6 +35,11 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
   static const double _tileSpacing = 16;
   static const double _gridPadding = 16;
 
+  /// Used instead of the above once two full-size tiles no longer fit.
+  static const double _narrowSpacing = 8;
+  static const double _narrowPadding = 8;
+  static const int _minColumns = 2;
+
   @override
   void initState() {
     super.initState();
@@ -83,9 +88,8 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
   }
 
   int _columnsThatFit(double availableWidth) {
-    const step = AlbumGridTile.width + _tileSpacing;
-    final columns = ((availableWidth + _tileSpacing) / step).floor();
-    return columns < 1 ? 1 : columns;
+    const step = AlbumGridTile.defaultWidth + _tileSpacing;
+    return ((availableWidth + _tileSpacing) / step).floor();
   }
 
   AdjacentNavTarget? _navTarget(String? label, {required bool isPrevious}) {
@@ -115,17 +119,28 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
               ? const Center(child: CircularProgressIndicator())
               : LayoutBuilder(
                   builder: (context, constraints) {
-                    final columns = _columnsThatFit(
+                    var columns = _columnsThatFit(
                       constraints.maxWidth - _gridPadding * 2,
                     );
+                    final isNarrow = columns < _minColumns;
+                    final padding = isNarrow ? _narrowPadding : _gridPadding;
+                    final spacing = isNarrow ? _narrowSpacing : _tileSpacing;
+                    var tileSize = AlbumGridTile.defaultWidth;
+                    if (isNarrow) {
+                      columns = _minColumns;
+                      tileSize =
+                          (constraints.maxWidth -
+                              padding * 2 -
+                              (columns - 1) * spacing) /
+                          columns;
+                    }
                     final gridWidth =
-                        columns * AlbumGridTile.width +
-                        (columns - 1) * _tileSpacing;
+                        columns * tileSize + (columns - 1) * spacing;
                     return ListView(
-                      padding: const EdgeInsets.fromLTRB(
-                        _gridPadding,
-                        _gridPadding,
-                        _gridPadding,
+                      padding: EdgeInsets.fromLTRB(
+                        padding,
+                        padding,
+                        padding,
                         88,
                       ),
                       children: [
@@ -143,13 +158,17 @@ class _AlbumsGridScreenState extends State<AlbumsGridScreen> {
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: columns,
-                                      mainAxisSpacing: _tileSpacing,
-                                      crossAxisSpacing: _tileSpacing,
-                                      mainAxisExtent: AlbumGridTile.height,
+                                      mainAxisSpacing: spacing,
+                                      crossAxisSpacing: spacing,
+                                      mainAxisExtent: AlbumGridTile.heightFor(
+                                        tileSize,
+                                      ),
                                     ),
                                 itemCount: _albums.length,
-                                itemBuilder: (context, index) =>
-                                    AlbumGridTile(album: _albums[index]),
+                                itemBuilder: (context, index) => AlbumGridTile(
+                                  album: _albums[index],
+                                  size: tileSize,
+                                ),
                               ),
                             ),
                           ),

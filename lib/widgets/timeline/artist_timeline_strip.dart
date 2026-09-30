@@ -29,6 +29,7 @@ class ArtistTimelineStrip extends StatelessWidget {
     required this.points,
     required this.songsByPosition,
     this.onSongTap,
+    this.showArtistName = true,
     this.playlistNounSingularLower = 'mixlist',
     this.playlistNounPluralLower = 'mixlists',
   });
@@ -46,12 +47,19 @@ class ArtistTimelineStrip extends StatelessWidget {
   /// mixlist can open scrolled to that song.
   final void Function(TimelineMixlistPoint point, ArtistTimelineSong song)?
   onSongTap;
+
+  /// Off on the artist's own page: drops the name gutter so the plot spans
+  /// the full width.
+  final bool showArtistName;
   final String playlistNounSingularLower;
   final String playlistNounPluralLower;
 
   static const _height = 36.0;
   static const _artSize = 18.0;
   static const _maxTooltipSongs = 6;
+
+  /// Matches [TimelineLayout.rightPadding] when there's no name gutter.
+  static const _bareGutter = 16.0;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +84,7 @@ class ArtistTimelineStrip extends StatelessWidget {
     final first = pointByPosition[lifespan.firstPosition]!;
     final last = pointByPosition[lifespan.lastPosition]!;
     final colors = Theme.of(context).colorScheme;
+    final gutter = showArtistName ? TimelineLayout.gutterWidth : _bareGutter;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,26 +106,29 @@ class ArtistTimelineStrip extends StatelessWidget {
             final layout = TimelineLayout.fromWidth(
               points.length,
               constraints.maxWidth,
+              gutter: gutter,
             );
             return Row(
               children: [
                 SizedBox(
-                  width: TimelineLayout.gutterWidth,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 8),
-                    // Two lines at most, so the row height (and the art
-                    // centered in it) stays fixed.
-                    child: Text(
-                      artistName,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                      style: metaTextStyle.copyWith(
-                        fontWeight: FontWeight.w700,
-                        height: 1.15,
-                      ),
-                    ),
-                  ),
+                  width: gutter,
+                  child: !showArtistName
+                      ? null
+                      : Padding(
+                          padding: const EdgeInsets.only(left: 16, right: 8),
+                          // Two lines at most, so the row height (and the art
+                          // centered in it) stays fixed.
+                          child: Text(
+                            artistName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
+                            style: metaTextStyle.copyWith(
+                              fontWeight: FontWeight.w700,
+                              height: 1.15,
+                            ),
+                          ),
+                        ),
                 ),
                 SizedBox(
                   width: layout.plotWidth,
@@ -152,7 +164,7 @@ class ArtistTimelineStrip extends StatelessWidget {
             );
           },
         ),
-        TimelineXAxis(points: points),
+        TimelineXAxis(points: points, gutter: gutter),
       ],
     );
   }

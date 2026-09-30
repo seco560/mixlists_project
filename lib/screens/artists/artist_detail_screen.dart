@@ -160,6 +160,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
       songsByPosition: songsByPosition,
       onSongTap: (point, song) =>
           openMixlist(context, point.mixlist, highlightSongId: song.songId),
+      showArtistName: false,
       playlistNounSingularLower: filter.playlistNounSingularLower,
       playlistNounPluralLower: filter.playlistNounPluralLower,
     );
@@ -241,6 +242,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                             crossAxisAlignment: .start,
                             children: [
                               LinkLine(
+                                singleLine: true,
                                 parts: [
                                   (
                                     song.albumName,
