@@ -4,6 +4,7 @@ import 'package:mixlists_project/data/filter/mixlist_filter.dart';
 import 'package:mixlists_project/data/models/album_overview.dart';
 import 'package:mixlists_project/data/models/album_song_appearance.dart';
 import 'package:mixlists_project/data/models/album_summary.dart';
+import 'package:mixlists_project/data/models/artist_connections.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/data/models/artist_song_appearance.dart';
 import 'package:mixlists_project/data/models/audio_feature_field.dart';
@@ -22,6 +23,7 @@ part 'album_queries.dart';
 part 'song_queries.dart';
 part 'search_queries.dart';
 part 'timeline_queries.dart';
+part 'connection_queries.dart';
 
 /// `SongsExtraData.explicit` is stored as text (`"true"`/`"false"`/absent).
 bool? _parseExplicit(String? raw) =>

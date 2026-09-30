@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mixlists_project/data/filter/mixlist_filter_controller.dart';
-import 'package:mixlists_project/data/filter/mixlist_wording.dart';
 import 'package:mixlists_project/data/library/active_library_controller.dart';
 import 'package:mixlists_project/data/library/library_record.dart';
 import 'package:mixlists_project/get_it_init.dart';
@@ -9,6 +7,7 @@ import 'package:mixlists_project/screens/albums/albums_grid_screen.dart';
 import 'package:mixlists_project/screens/albums/all_labels_screen.dart';
 import 'package:mixlists_project/screens/artists/all_artists_screen.dart';
 import 'package:mixlists_project/screens/artists/all_genres_screen.dart';
+import 'package:mixlists_project/screens/connections/six_degrees_screen.dart';
 import 'package:mixlists_project/screens/home/home_nav_card.dart';
 import 'package:mixlists_project/screens/home/playlists_filter_label.dart';
 import 'package:mixlists_project/screens/home/search_field.dart';
@@ -36,9 +35,7 @@ class HomeScreen extends StatelessWidget {
     HomeNavCard(
       icon: Icons.queue_music,
       title: const PlaylistsFilterLabel(),
-      caption: Text(
-        'Simplest view',
-      ),
+      caption: Text('Simplest view'),
       onTap: () => _push(context, const AllMixlistsScreen()),
     ),
     HomeNavCard(
@@ -76,6 +73,12 @@ class HomeScreen extends StatelessWidget {
       label: 'Labels',
       caption: const Text('Albums in label buckets'),
       onTap: () => _push(context, const AllLabelsScreen()),
+    ),
+    HomeNavCard(
+      icon: Icons.hub_outlined,
+      label: 'Six Degrees',
+      caption: const Text('How artists connect'),
+      onTap: () => _push(context, const SixDegreesScreen()),
     ),
     if (!kIsWeb)
       HomeNavCard(

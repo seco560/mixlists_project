@@ -103,6 +103,12 @@ Code comments are kept to ≤3 lines; the reasoning behind non-obvious decisions
 - The artist page's Timeline section (`ArtistTimelineStrip`) reuses the lifespan row's `LifespanPainter` (line only) over every mixlist under the filter, with small album art per appearance; tapping opens the mixlist highlighting the artist's first song on it, like every other into-a-mixlist link. Its points are `TimelineMixlistPoint.positionOnly`, so the artist page never runs the whole-library `getTasteTimeline` query. It hides the artist-name gutter there (`showArtistName: false`) so the plot spans the full width; it's the one timeline that doesn't need to line up with other sections.
 - Key/mode/time signature are never averaged (`AudioFeatureField.isContinuous`). All sections share `TimelineLayout`'s gutter and fit-to-width scale so the mixlists line up vertically.
 
+### Six Degrees
+
+- `SixDegreesScreen` finds the shortest chain of shared mixlists between two artists, using the uncached `getArtistConnectionGraph` and the pure-Dart `ArtistConnectionGraph` (unit-tested without a db). As elsewhere, an artist is on a mixlist via the **album artist**; each hop shows both artists' first song on that mixlist.
+- The graph is bipartite (artists ↔ mixlists) so each hop can name its mixlist. The default route prefers the earliest mixlists; "Another route" samples uniformly over all shortest chains (weighted by route counts, not a per-step coin flip). "Surprise me" pairs a random artist with one of the artists farthest from it.
+- The real library is dense: every sampled artist reached everyone within 3 degrees (Sept 2026), and a few artists are isolated because they only appear on single-artist playlists.
+
 ### UI notes
 
 - Colours come from `Theme.of(context)` (see `AppTheme`), never hardcoded `Colors.*`; album art is never tinted. `ThemeController` is deliberately binary (no "system") so the toggle has one obvious next state. Dark mode overrides the whole `surfaceContainer*` ladder with navy tones (cards, chips, panels and empty chart cells all sit on those; overriding only `surface` left them neutral grey).
