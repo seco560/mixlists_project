@@ -12,9 +12,12 @@ void main() {
 
   setUp(() async {
     db = await databaseFactoryFfi.openDatabase(inMemoryDatabasePath);
+    await db.execute('PRAGMA foreign_keys = ON');
     await createSchemaV2(db);
     await applySchemaV3(db);
     await applySchemaV4(db);
+    await applySchemaV5(db);
+    await applySchemaV6(db);
     ingestion = MixlistIngestion(db);
   });
 
@@ -324,5 +327,90 @@ void main() {
         expect(rows, hasLength(1));
       },
     );
+  });
+
+  group('creditedArtist', () {
+    MixlistCsvRow row({
+      required String trackURI,
+      required String artistURIs,
+      required String artistNames,
+      required String albumArtistURI,
+      required String albumArtistName,
+    }) => MixlistCsvRow(
+      trackURI: trackURI,
+      trackName: 'Song $trackURI',
+      artistURIs: artistURIs,
+      artistNames: artistNames,
+      albumURI: 'spotify:album:split',
+      albumName: 'Split',
+      albumArtistURI: albumArtistURI,
+      albumArtistName: albumArtistName,
+      albumReleaseDate: '2012',
+      albumImageURL: null,
+      discNumber: 1,
+      albumTrackNumber: 1,
+      durationMs: 200000,
+      audioPreviewURL: null,
+      isExplicit: false,
+      popularity: null,
+      isrc: null,
+      addedAt: '2024-01-01T00:00:00Z',
+      genres: null,
+      trackArtistImageURL: 'https://img/turnover',
+      recordLabel: null,
+      danceability: null,
+      energy: null,
+      key: null,
+      loudness: null,
+      mode: null,
+      speechiness: null,
+      acousticness: null,
+      instrumentalness: null,
+      liveness: null,
+      valence: null,
+      tempo: null,
+      timeSignature: null,
+    );
+
+    test('credits the song artist only when the album artist is not one of '
+        'the song artists', () async {
+      await ingestion.importMixlistFromCsvRows(
+        title: 'Splits',
+        description: '',
+        imageURL: 'https://img/cover',
+        rows: [
+          // Citizen's own song on the Citizen/Turnover split: no credit.
+          row(
+            trackURI: 'spotify:track:c',
+            artistURIs: 'spotify:artist:citizen',
+            artistNames: 'Citizen',
+            albumArtistURI: 'spotify:artist:citizen',
+            albumArtistName: 'Citizen',
+          ),
+          // Turnover's song on the same split: credited to Turnover.
+          row(
+            trackURI: 'spotify:track:t',
+            artistURIs: 'spotify:artist:turnover',
+            artistNames: 'Turnover',
+            albumArtistURI: 'spotify:artist:citizen',
+            albumArtistName: 'Citizen',
+          ),
+        ],
+      );
+      final songs = {
+        for (final r in await db.rawQuery('''
+          SELECT s.spotifyURI AS uri, ar.name AS credited, ar.imageURL AS image
+          FROM Songs s LEFT JOIN Artists ar ON ar.id = s.creditedArtist
+        '''))
+          r['uri']: r,
+      };
+      expect(songs['spotify:track:c']!['credited'], isNull);
+      expect(songs['spotify:track:t']!['credited'], 'Turnover');
+      expect(songs['spotify:track:t']!['image'], 'https://img/turnover');
+      final mixlist = (await db.query('Mixlists')).single;
+      expect(mixlist['imageURL'], 'https://img/cover');
+      final albums = await db.query('Albums');
+      expect(albums, hasLength(1));
+    });
   });
 }

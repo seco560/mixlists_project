@@ -24,37 +24,10 @@ extension ArtistQueries on MusicLibraryRepository {
     final artistRows = await _db.query('Artists', orderBy: 'name ASC');
     final allArtists = artistRows.map(Artist.fromMap).toList();
 
-    final albumRows = await _db.rawQuery('''
-      SELECT
-        artist         AS artistId,
-        id             AS albumId,
-        name           AS albumName,
-        releaseDate,
-        coverImageURL,
-        recordLabel
-      FROM Albums
-      ORDER BY releaseDate ASC
-    ''');
-
-    Set<int>? qualifyingAlbumIds;
-    if (filter != MixlistFilter.all) {
-      final rows = await _db.rawQuery('''
-        SELECT DISTINCT al.id AS albumId
-        FROM Albums al
-        JOIN Songs s ON s.album = al.id
-        JOIN SongsMixlists sm ON sm.song = s.id
-        JOIN Mixlists m ON m.id = sm.mixlist
-        WHERE 1=1 $filterSql
-      ''');
-      qualifyingAlbumIds = {for (final row in rows) row['albumId'] as int};
-    }
-
+    final albumRows = await _creditedAlbumRows(filter: filter);
     final albumsByArtist = <int, List<AlbumSummary>>{};
     for (final row in albumRows) {
       final albumId = row['albumId'] as int;
-      if (qualifyingAlbumIds != null && !qualifyingAlbumIds.contains(albumId)) {
-        continue;
-      }
       final artistId = row['artistId'] as int;
       albumsByArtist
           .putIfAbsent(artistId, () => [])
@@ -71,7 +44,7 @@ extension ArtistQueries on MusicLibraryRepository {
 
     final mixlistRows = await _db.rawQuery('''
       SELECT DISTINCT
-        al.artist     AS artistId,
+        $_songArtistSql AS artistId,
         m.id          AS mixlistId,
         m.title       AS mixlistTitle,
         m.dateCreated AS dateCreated
@@ -98,7 +71,7 @@ extension ArtistQueries on MusicLibraryRepository {
 
     final songCountRows = await _db.rawQuery('''
       SELECT
-        al.artist              AS artistId,
+        $_songArtistSql        AS artistId,
         COUNT(DISTINCT s.id)   AS songCount,
         COUNT(*)               AS appearanceCount
       FROM SongsMixlists sm
@@ -106,7 +79,7 @@ extension ArtistQueries on MusicLibraryRepository {
       JOIN Albums al ON al.id = s.album
       JOIN Mixlists m ON m.id = sm.mixlist
       WHERE 1=1 $filterSql
-      GROUP BY al.artist
+      GROUP BY $_songArtistSql
     ''');
     final songCountByArtist = <int, int>{
       for (final row in songCountRows)
@@ -117,9 +90,11 @@ extension ArtistQueries on MusicLibraryRepository {
         row['artistId'] as int: row['appearanceCount'] as int,
     };
 
-    final artistsToShow = filter == MixlistFilter.all
-        ? allArtists
-        : allArtists.where((a) => (songCountByArtist[a.id] ?? 0) > 0).toList();
+    // Also hides placeholder album artists (Various Artists etc.): they
+    // have albums but no songs of their own.
+    final artistsToShow = allArtists
+        .where((a) => (songCountByArtist[a.id] ?? 0) > 0)
+        .toList();
 
     return artistsToShow
         .map(
@@ -131,6 +106,7 @@ extension ArtistQueries on MusicLibraryRepository {
             uniqueSongCount: songCountByArtist[artist.id] ?? 0,
             appearanceCount: appearanceCountByArtist[artist.id] ?? 0,
             genres: _parseGenres(artist.genres),
+            imageURL: artist.imageURL,
           ),
         )
         .toList();
@@ -162,7 +138,7 @@ extension ArtistQueries on MusicLibraryRepository {
       JOIN SongsMixlists sm ON sm.song = s.id
       JOIN Mixlists m ON m.id = sm.mixlist
       LEFT JOIN SongsExtraData ed ON ed.song = s.id
-      WHERE al.artist = ? $filterSql
+      WHERE $_songArtistSql = ? $filterSql
       ORDER BY sm.dateAdded ASC
     ''',
       [artistId],
@@ -215,43 +191,19 @@ extension ArtistQueries on MusicLibraryRepository {
     if (artistRows.isEmpty) return null;
     final artist = Artist.fromMap(artistRows.first);
 
-    final albumRows = await _db.rawQuery(
-      '''
-      SELECT id AS albumId, name AS albumName, releaseDate, coverImageURL, recordLabel
-      FROM Albums
-      WHERE artist = ?
-      ORDER BY releaseDate ASC
-    ''',
-      [artistId],
+    final albumRows = await _creditedAlbumRows(
+      filter: filter,
+      artistIds: [artistId],
     );
-
-    Set<int>? qualifyingAlbumIds;
-    if (filter != MixlistFilter.all) {
-      final rows = await _db.rawQuery(
-        '''
-        SELECT DISTINCT al.id AS albumId
-        FROM Albums al
-        JOIN Songs s ON s.album = al.id
-        JOIN SongsMixlists sm ON sm.song = s.id
-        JOIN Mixlists m ON m.id = sm.mixlist
-        WHERE al.artist = ? $filterSql
-      ''',
-        [artistId],
-      );
-      qualifyingAlbumIds = {for (final row in rows) row['albumId'] as int};
-    }
-
     final albums = [
       for (final row in albumRows)
-        if (qualifyingAlbumIds == null ||
-            qualifyingAlbumIds.contains(row['albumId'] as int))
-          AlbumSummary(
-            id: row['albumId'] as int,
-            name: row['albumName'] as String,
-            releaseDate: row['releaseDate'] as String,
-            coverImageURL: row['coverImageURL'] as String?,
-            recordLabel: row['recordLabel'] as String?,
-          ),
+        AlbumSummary(
+          id: row['albumId'] as int,
+          name: row['albumName'] as String,
+          releaseDate: row['releaseDate'] as String,
+          coverImageURL: row['coverImageURL'] as String?,
+          recordLabel: row['recordLabel'] as String?,
+        ),
     ];
 
     final mixlistRows = await _db.rawQuery(
@@ -264,7 +216,7 @@ extension ArtistQueries on MusicLibraryRepository {
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
       JOIN Mixlists m ON m.id = sm.mixlist
-      WHERE al.artist = ? $filterSql
+      WHERE $_songArtistSql = ? $filterSql
       ORDER BY m.dateCreated ASC
     ''',
       [artistId],
@@ -285,7 +237,7 @@ extension ArtistQueries on MusicLibraryRepository {
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
       JOIN Mixlists m ON m.id = sm.mixlist
-      WHERE al.artist = ? $filterSql
+      WHERE $_songArtistSql = ? $filterSql
     ''',
       [artistId],
     );
@@ -298,6 +250,7 @@ extension ArtistQueries on MusicLibraryRepository {
       uniqueSongCount: songCountRows.first['songCount'] as int,
       appearanceCount: songCountRows.first['appearanceCount'] as int,
       genres: _parseGenres(artist.genres),
+      imageURL: artist.imageURL,
     );
   }
 
@@ -309,18 +262,7 @@ extension ArtistQueries on MusicLibraryRepository {
     final ids = matched.map((a) => a.id).toList();
     final placeholders = List.filled(ids.length, '?').join(',');
 
-    final albumRows = await _db.rawQuery('''
-      SELECT
-        artist         AS artistId,
-        id             AS albumId,
-        name           AS albumName,
-        releaseDate,
-        coverImageURL,
-        recordLabel
-      FROM Albums
-      WHERE artist IN ($placeholders)
-      ORDER BY releaseDate ASC
-    ''', ids);
+    final albumRows = await _creditedAlbumRows(artistIds: ids);
     final albumsByArtist = <int, List<AlbumSummary>>{};
     for (final row in albumRows) {
       final artistId = row['artistId'] as int;
@@ -339,7 +281,7 @@ extension ArtistQueries on MusicLibraryRepository {
 
     final mixlistRows = await _db.rawQuery('''
       SELECT DISTINCT
-        al.artist     AS artistId,
+        $_songArtistSql AS artistId,
         m.id          AS mixlistId,
         m.title       AS mixlistTitle,
         m.dateCreated AS dateCreated
@@ -347,7 +289,7 @@ extension ArtistQueries on MusicLibraryRepository {
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
       JOIN Mixlists m ON m.id = sm.mixlist
-      WHERE al.artist IN ($placeholders)
+      WHERE $_songArtistSql IN ($placeholders)
       ORDER BY m.dateCreated ASC
     ''', ids);
     final mixlistsByArtist = <int, List<MixlistSummary>>{};
@@ -366,14 +308,14 @@ extension ArtistQueries on MusicLibraryRepository {
 
     final songCountRows = await _db.rawQuery('''
       SELECT
-        al.artist              AS artistId,
+        $_songArtistSql        AS artistId,
         COUNT(DISTINCT s.id)   AS songCount,
         COUNT(*)               AS appearanceCount
       FROM SongsMixlists sm
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
-      WHERE al.artist IN ($placeholders)
-      GROUP BY al.artist
+      WHERE $_songArtistSql IN ($placeholders)
+      GROUP BY $_songArtistSql
     ''', ids);
     final songCountByArtist = <int, int>{
       for (final row in songCountRows)
@@ -394,9 +336,37 @@ extension ArtistQueries on MusicLibraryRepository {
             uniqueSongCount: songCountByArtist[artist.id] ?? 0,
             appearanceCount: appearanceCountByArtist[artist.id] ?? 0,
             genres: _parseGenres(artist.genres),
+            imageURL: artist.imageURL,
           ),
         )
         .toList();
+  }
+
+  /// (artist, album) pairs where the album has a song credited to the artist
+  /// (so compilations and splits show on the right artist pages), scoped to
+  /// [filter] and optionally to [artistIds]. Oldest album first.
+  Future<List<Map<String, Object?>>> _creditedAlbumRows({
+    MixlistFilter filter = MixlistFilter.all,
+    List<int>? artistIds,
+  }) {
+    final scoped = filter != MixlistFilter.all;
+    final artistWhere = artistIds == null
+        ? ''
+        : 'AND $_songArtistSql IN (${List.filled(artistIds.length, '?').join(',')})';
+    return _db.rawQuery('''
+      SELECT DISTINCT
+        $_songArtistSql  AS artistId,
+        al.id            AS albumId,
+        al.name          AS albumName,
+        al.releaseDate   AS releaseDate,
+        al.coverImageURL AS coverImageURL,
+        al.recordLabel   AS recordLabel
+      FROM Songs s
+      JOIN Albums al ON al.id = s.album
+      ${scoped ? 'JOIN SongsMixlists sm ON sm.song = s.id JOIN Mixlists m ON m.id = sm.mixlist' : ''}
+      WHERE 1=1 ${_mixlistFilterSql(filter, 'm')} $artistWhere
+      ORDER BY al.releaseDate ASC
+    ''', artistIds ?? const []);
   }
 
   /// Every distinct genre token across all artists, sorted -- cached

@@ -52,7 +52,7 @@ extension SearchQueries on MusicLibraryRepository {
   Future<MixlistScopeIndex> _loadMixlistScopeIndex() async {
     final rows = await _db.rawQuery('''
       SELECT DISTINCT
-        al.artist      AS artistId,
+        ar.id          AS artistId,
         al.id          AS albumId,
         al.recordLabel AS recordLabel,
         ar.genres      AS genres,
@@ -60,7 +60,7 @@ extension SearchQueries on MusicLibraryRepository {
       FROM SongsMixlists sm
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
-      JOIN Artists ar ON ar.id = al.artist
+      JOIN Artists ar ON ar.id = $_songArtistSql
       JOIN Mixlists m ON m.id = sm.mixlist
     ''');
 
@@ -134,10 +134,15 @@ extension SearchQueries on MusicLibraryRepository {
 
   Future<List<ArtistOverview>> _searchArtists(String likePattern) async {
     final rows = await _db.rawQuery(
-      'SELECT id, spotifyURI, name FROM Artists WHERE name LIKE ? ORDER BY name ASC',
+      'SELECT id, spotifyURI, name, genres, imageURL FROM Artists '
+      'WHERE name LIKE ? ORDER BY name ASC',
       [likePattern],
     );
-    return _artistOverviewsFor(rows.map(Artist.fromMap).toList());
+    final artists = await _artistOverviewsFor(
+      rows.map(Artist.fromMap).toList(),
+    );
+    // Placeholder album artists (Various Artists etc.) have no own songs.
+    return artists.where((a) => a.uniqueSongCount > 0).toList();
   }
 
   Future<List<AlbumOverview>> _searchAlbums(

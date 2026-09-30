@@ -125,7 +125,7 @@ extension MixlistQueries on MusicLibraryRepository {
         s.name             AS songName,
         s.artists          AS artists,
         s.artistsURIs      AS artistsURIs,
-        al.artist          AS artistId,
+        $_songArtistSql AS artistId,
         al.id              AS albumId,
         al.name            AS albumName,
         al.coverImageURL   AS albumCoverImageURL,

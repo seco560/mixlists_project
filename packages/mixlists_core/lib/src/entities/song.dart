@@ -6,6 +6,9 @@ class Song {
   final String? artistsURIs;
   final int albumID;
 
+  /// The song's own artist when it isn't the album artist; null otherwise.
+  final int? creditedArtistID;
+
   Song({
     required this.id,
     required this.spotifyURI,
@@ -13,6 +16,7 @@ class Song {
     required this.artists,
     required this.artistsURIs,
     required this.albumID,
+    this.creditedArtistID,
   });
 
   factory Song.fromMap(Map<String, Object?> map) {
@@ -23,6 +27,7 @@ class Song {
       artists: map['artists'] as String,
       artistsURIs: map['artistsURIs'] as String?,
       albumID: map['album'] as int,
+      creditedArtistID: map['creditedArtist'] as int?,
     );
   }
 
@@ -34,6 +39,7 @@ class Song {
       'artists': artists,
       'artistsURIs': artistsURIs,
       'album': albumID,
+      'creditedArtist': creditedArtistID,
     };
   }
 }

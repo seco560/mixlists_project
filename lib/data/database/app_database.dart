@@ -11,7 +11,7 @@ import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 const String _dbAssetPath = 'assets/database/mixlists.db';
 const String bundledLibraryDbFileName = 'bundled.db';
 
-const int _dbVersion = 5;
+const int _dbVersion = 6;
 
 /// Opens the bundled library (id `"bundled"`, the fallback library), seeding
 /// it from the app asset on first run.
@@ -28,7 +28,7 @@ Future<Database> openBundledLibraryDatabase() async {
     path,
     options: OpenDatabaseOptions(
       version: _dbVersion,
-      onConfigure: (db) async {},
+      onConfigure: _enableForeignKeys,
       onCreate: (db, version) async {
         // The seeded asset may already hold data while sqflite treats it as new
         // (user_version unset); only create the schema if it's truly empty.
@@ -38,6 +38,7 @@ Future<Database> openBundledLibraryDatabase() async {
           await applySchemaV3(db);
           await applySchemaV4(db);
           await applySchemaV5(db);
+          await applySchemaV6(db);
         }
       },
       onUpgrade: _onUpgrade,
@@ -55,12 +56,13 @@ Future<Database> openOrCreateLibraryDatabase(String dbFileName) async {
     path,
     options: OpenDatabaseOptions(
       version: _dbVersion,
-      onConfigure: (db) async {},
+      onConfigure: _enableForeignKeys,
       onCreate: (db, version) async {
         await createSchemaV2(db);
         await applySchemaV3(db);
         await applySchemaV4(db);
         await applySchemaV5(db);
+        await applySchemaV6(db);
       },
       onUpgrade: _onUpgrade,
     ),
@@ -75,6 +77,10 @@ Future<Uint8List> readLibraryDatabaseBytes(String dbFileName) async {
   return factory.readDatabaseBytes(path);
 }
 
+/// sqlite leaves foreign keys unenforced unless set on each connection.
+Future<void> _enableForeignKeys(Database db) =>
+    db.execute('PRAGMA foreign_keys = ON');
+
 Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
   if (oldVersion < 2) {
     await createSchemaV2Indexes(db);
@@ -87,6 +93,9 @@ Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
   }
   if (oldVersion < 5) {
     await applySchemaV5(db);
+  }
+  if (oldVersion < 6) {
+    await applySchemaV6(db);
   }
 }
 

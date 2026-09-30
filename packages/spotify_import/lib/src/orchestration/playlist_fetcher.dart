@@ -2,7 +2,7 @@ import 'package:mixlists_core/mixlists_core.dart';
 
 import '../import/ordering.dart';
 import '../import/row_mapper.dart';
-import '../spotify_api/artist_genre_cache.dart';
+import '../spotify_api/artist_image_cache.dart';
 import '../spotify_api/me.dart';
 import '../spotify_api/paging.dart';
 import '../spotify_api/playlists.dart';
@@ -94,7 +94,7 @@ class SpotifyPlaylistFetcher {
       skippedFollowedOnly: playlistResult.skippedFollowedOnly,
     );
 
-    final genreCache = ArtistGenreCache(_client);
+    final imageCache = ArtistImageCache(_client);
     final batches = <PlaylistImportBatch>[];
     final playlists = only ?? playlistResult.importable;
 
@@ -123,8 +123,24 @@ class SpotifyPlaylistFetcher {
         final albumArtistId =
             (album['artists'] as List).cast<Map<String, Object?>>().first['id']
                 as String;
-        final genres = await genreCache.genresFor(albumArtistId);
-        rows.add(rowFromPlaylistItem(wrapper, albumArtistGenres: genres));
+        final trackArtists = (item['artists'] as List)
+            .cast<Map<String, Object?>>()
+            .map((a) => a['id'] as String?)
+            .toList();
+        // Compilations/splits: the song gets credited to its own artist.
+        final trackArtistImageURL =
+            trackArtists.isEmpty ||
+                trackArtists.first == null ||
+                trackArtists.contains(albumArtistId)
+            ? null
+            : await imageCache.imageUrlFor(trackArtists.first!);
+        rows.add(
+          rowFromPlaylistItem(
+            wrapper,
+            albumArtistImageURL: await imageCache.imageUrlFor(albumArtistId),
+            trackArtistImageURL: trackArtistImageURL,
+          ),
+        );
       }
 
       if (rows.isEmpty) continue;

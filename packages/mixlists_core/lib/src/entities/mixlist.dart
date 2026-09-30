@@ -7,12 +7,16 @@ class Mixlist {
   /// Whether the user marked this as a curated mixlist (`is_mixlists`).
   final bool isMixlist;
 
+  /// A cover the user uploaded on Spotify; null for auto-generated mosaics.
+  final String? imageURL;
+
   Mixlist({
     required this.id,
     required this.title,
     required this.description,
     required this.dateCreated,
     this.isMixlist = false,
+    this.imageURL,
   });
 
   factory Mixlist.fromMap(Map<String, Object?> map) {
@@ -22,6 +26,7 @@ class Mixlist {
       description: map['description'] as String,
       dateCreated: map['dateCreated'] as String,
       isMixlist: (map['is_mixlists'] as int?) == 1,
+      imageURL: map['imageURL'] as String?,
     );
   }
 
@@ -32,6 +37,7 @@ class Mixlist {
       'description': description,
       'dateCreated': dateCreated,
       'is_mixlists': isMixlist ? 1 : 0,
+      'imageURL': imageURL,
     };
   }
 }

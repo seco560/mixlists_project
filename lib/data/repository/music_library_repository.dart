@@ -25,6 +25,10 @@ part 'search_queries.dart';
 part 'timeline_queries.dart';
 part 'connection_queries.dart';
 
+/// The artist a song counts toward: its credited artist on compilations and
+/// splits, else the album artist. Needs `Songs s` and `Albums al` in scope.
+const _songArtistSql = 'COALESCE(s.creditedArtist, al.artist)';
+
 /// `SongsExtraData.explicit` is stored as text (`"true"`/`"false"`/absent).
 bool? _parseExplicit(String? raw) =>
     raw == null ? null : raw.toLowerCase() == 'true';

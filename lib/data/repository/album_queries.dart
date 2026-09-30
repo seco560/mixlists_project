@@ -66,6 +66,8 @@ extension AlbumQueries on MusicLibraryRepository {
       SELECT
         s.id                AS songId,
         s.name              AS songName,
+        s.artists           AS artistNames,
+        s.creditedArtist    AS creditedArtistId,
         se.albumTrackNumber AS albumTrackNumber,
         se.explicit         AS explicit,
         m.id                AS mixlistId,
@@ -95,6 +97,8 @@ extension AlbumQueries on MusicLibraryRepository {
           mixlists: [],
           datesAdded: [],
           isExplicit: _parseExplicit(row['explicit'] as String?),
+          artistNames: row['artistNames'] as String,
+          creditedArtistId: row['creditedArtistId'] as int?,
         );
         appearancesBySong[songId] = appearance;
         songOrder.add(songId);

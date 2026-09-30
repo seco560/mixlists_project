@@ -12,7 +12,7 @@ export 'src/auth/spotify_auth.dart';
 export 'src/import/ordering.dart';
 export 'src/import/row_mapper.dart';
 export 'src/orchestration/playlist_fetcher.dart';
-export 'src/spotify_api/artist_genre_cache.dart';
+export 'src/spotify_api/artist_image_cache.dart';
 export 'src/spotify_api/html_entities.dart';
 export 'src/spotify_api/me.dart';
 export 'src/spotify_api/paging.dart';

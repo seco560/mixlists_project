@@ -119,7 +119,7 @@ class TasteTimeline {
   static const otherGenre = 'other';
   static const namedGenreCoverage = 0.8;
   static const minBandShare = 0.01;
-  static const minArtistMixlists = 3;
+  static const minArtistMixlists = 2;
   static const _targetWindowCount = 14;
   static const _minWindowSize = 3;
 

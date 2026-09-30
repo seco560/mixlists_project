@@ -8,6 +8,8 @@ class AlbumSongAppearance {
     required this.mixlists,
     required this.datesAdded,
     required this.isExplicit,
+    required this.artistNames,
+    this.creditedArtistId,
   });
 
   final int songId;
@@ -21,4 +23,10 @@ class AlbumSongAppearance {
   final bool? isExplicit;
 
   final List<String> datesAdded;
+
+  /// `Songs.artists`, the display string.
+  final String artistNames;
+
+  /// Set when the song isn't by the album artist (compilations, splits).
+  final int? creditedArtistId;
 }

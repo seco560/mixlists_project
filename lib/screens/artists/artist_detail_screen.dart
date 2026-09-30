@@ -15,10 +15,10 @@ import 'package:mixlists_project/data/breadcrumb/entity_navigation.dart';
 import 'package:mixlists_project/screens/mixlists/hoverable_link.dart';
 import 'package:mixlists_project/screens/search/album_result_tile.dart';
 import 'package:mixlists_project/widgets/breadcrumb/breadcrumb_trail_button.dart';
+import 'package:mixlists_project/widgets/shared/artist_avatar.dart';
 import 'package:mixlists_project/widgets/shared/category_tile.dart';
 import 'package:mixlists_project/widgets/shared/detail_header.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
-import 'package:mixlists_project/widgets/shared/playlist_cover_grid.dart';
 import 'package:mixlists_project/widgets/shared/section_header.dart';
 import 'package:mixlists_project/widgets/shared/song_mixlist_tile.dart';
 import 'package:mixlists_project/widgets/shared/text_styles.dart';
@@ -189,11 +189,8 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                   padding: detailListBottomPadding,
                   children: [
                     DetailHeader(
-                      artwork: PlaylistCoverGrid(
-                        coverImageUrls: [
-                          for (final a in artist.albums.take(4))
-                            a.coverImageURL,
-                        ],
+                      artwork: ArtistAvatar(
+                        artist: artist,
                         size: DetailHeader.artSize,
                       ),
                       overline: 'Artist',

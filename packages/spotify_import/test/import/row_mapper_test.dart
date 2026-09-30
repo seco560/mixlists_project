@@ -91,7 +91,7 @@ void main() {
     test('maps every field from a real-shaped response correctly', () {
       final row = rowFromPlaylistItem(
         _realisticItemWrapper(),
-        albumArtistGenres: 'punk, skate punk',
+        albumArtistImageURL: 'https://i.scdn.co/image/artist',
       );
 
       expect(row.trackURI, 'spotify:track:6n7NLrONaFUBHXKQZfYdxH');
@@ -109,7 +109,8 @@ void main() {
       expect(row.isExplicit, isFalse);
       expect(row.isrc, 'USEP40419301');
       expect(row.addedAt, '2026-09-15T18:56:49Z');
-      expect(row.genres, 'punk, skate punk');
+      expect(row.genres, isNull);
+      expect(row.albumArtistImageURL, 'https://i.scdn.co/image/artist');
 
       // Confirmed absent from Dev Mode responses -- must stay null, not
       // silently default to 0/empty-string.
@@ -129,7 +130,6 @@ void main() {
       };
       final row = rowFromPlaylistItem(
         _realisticItemWrapper(item: multiArtistTrack),
-        albumArtistGenres: null,
       );
       expect(row.artistNames, 'Artist One, Artist Two');
       expect(row.artistURIs, 'spotify:artist:a1, spotify:artist:a2');
@@ -152,7 +152,6 @@ void main() {
       };
       final row = rowFromPlaylistItem(
         _realisticItemWrapper(item: multiAlbumArtist),
-        albumArtistGenres: null,
       );
       expect(row.albumArtistName, 'Lead Artist');
       expect(row.albumArtistURI, 'spotify:artist:lead');
@@ -166,10 +165,7 @@ void main() {
           'images': <Object?>[],
         },
       };
-      final row = rowFromPlaylistItem(
-        _realisticItemWrapper(item: noImages),
-        albumArtistGenres: null,
-      );
+      final row = rowFromPlaylistItem(_realisticItemWrapper(item: noImages));
       expect(row.albumImageURL, isNull);
     });
 
@@ -177,7 +173,6 @@ void main() {
       final noExternalIds = {..._pennywiseTrack}..remove('external_ids');
       final row = rowFromPlaylistItem(
         _realisticItemWrapper(item: noExternalIds),
-        albumArtistGenres: null,
       );
       expect(row.isrc, isNull);
     });

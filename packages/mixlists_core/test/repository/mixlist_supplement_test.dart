@@ -55,6 +55,7 @@ void main() {
 
   setUp(() async {
     db = await databaseFactoryFfi.openDatabase(inMemoryDatabasePath);
+    await db.execute('PRAGMA foreign_keys = ON');
     await createSchemaV2(db);
     await applySchemaV3(db);
     await applySchemaV4(db);

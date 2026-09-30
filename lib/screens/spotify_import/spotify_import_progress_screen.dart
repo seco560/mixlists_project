@@ -103,6 +103,7 @@ class _SpotifyImportProgressScreenState
           title: batch.playlist.name,
           description: batch.playlist.description,
           rows: batch.rows,
+          imageURL: batch.playlist.imageURL,
         );
         imported++;
       } on MixlistTitleExistsException {

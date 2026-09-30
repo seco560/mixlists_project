@@ -1,7 +1,7 @@
 part of 'music_library_repository.dart';
 
 extension ConnectionQueries on MusicLibraryRepository {
-  /// Every (album artist, mixlist) appearance under [filter], as the "Six
+  /// Every (song artist, mixlist) appearance under [filter], as the "Six
   /// Degrees" graph. Uncached, like [getTasteTimeline].
   Future<ArtistConnectionGraph> getArtistConnectionGraph({
     MixlistFilter filter = MixlistFilter.all,
@@ -19,7 +19,7 @@ extension ConnectionQueries on MusicLibraryRepository {
       JOIN Mixlists m ON m.id = sm.mixlist
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
-      JOIN Artists ar ON ar.id = al.artist
+      JOIN Artists ar ON ar.id = $_songArtistSql
       WHERE 1 = 1 ${_mixlistFilterSql(filter, 'm')}
       ORDER BY m.id, sm.positionIndex
     ''');

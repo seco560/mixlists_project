@@ -36,7 +36,7 @@ extension TimelineQueries on MusicLibraryRepository {
       JOIN Mixlists m ON m.id = sm.mixlist
       JOIN Songs s ON s.id = sm.song
       JOIN Albums al ON al.id = s.album
-      LEFT JOIN Artists ar ON ar.id = al.artist
+      LEFT JOIN Artists ar ON ar.id = $_songArtistSql
       LEFT JOIN SongsAudioFeatures af ON af.song = s.id
       WHERE 1 = 1 ${_mixlistFilterSql(filter, 'm')}
       ORDER BY m.id, sm.positionIndex

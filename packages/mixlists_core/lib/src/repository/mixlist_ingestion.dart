@@ -37,6 +37,7 @@ class MixlistIngestion {
     required String? spotifyURI,
     required String name,
     String? genres,
+    String? imageURL,
   }) async {
     List<Map<String, Object?>> existing;
     if (spotifyURI != null) {
@@ -60,11 +61,16 @@ class MixlistIngestion {
 
     if (existing.length == 1) {
       final artistId = existing.first['id'] as int;
-      if (genres != null) {
+      // Only fill gaps; never overwrite what's stored.
+      for (final MapEntry(:key, :value) in {
+        'genres': genres,
+        'imageURL': imageURL,
+      }.entries) {
+        if (value == null) continue;
         await txn.update(
           'Artists',
-          {'genres': genres},
-          where: 'id = ? AND genres IS NULL',
+          {key: value},
+          where: 'id = ? AND $key IS NULL',
           whereArgs: [artistId],
         );
       }
@@ -75,6 +81,7 @@ class MixlistIngestion {
       'spotifyURI': spotifyURI,
       'name': name,
       'genres': genres,
+      'imageURL': imageURL,
     });
   }
 
@@ -259,6 +266,49 @@ class MixlistIngestion {
     return songId;
   }
 
+  /// The song's own artist when the album artist isn't among its artists
+  /// (compilations, splits, soundtracks); null when it is. Uses the first
+  /// track artist, compared by URI when present, else by name.
+  Future<int?> getOrCreateCreditedArtistId(
+    DatabaseExecutor txn, {
+    required MixlistCsvRow row,
+  }) async {
+    List<String> split(String? s) => (s ?? '')
+        .split(',')
+        .map((x) => x.trim())
+        .where((x) => x.isNotEmpty)
+        .toList();
+    final trackUris = split(row.artistURIs);
+    final trackNames = split(row.artistNames);
+    // Names can contain commas, so only trust the split when it lines up.
+    final firstName =
+        trackNames.length == trackUris.length && trackNames.isNotEmpty
+        ? trackNames.first
+        : row.artistNames.trim();
+    final albumArtistUris = split(row.albumArtistURI);
+
+    if (trackUris.isNotEmpty && albumArtistUris.isNotEmpty) {
+      if (trackUris.contains(albumArtistUris.first)) return null;
+      return getOrCreateArtistId(
+        txn,
+        spotifyURI: trackUris.first,
+        name: firstName,
+        imageURL: row.trackArtistImageURL,
+      );
+    }
+    final albumArtist = row.albumArtistName.trim().toLowerCase();
+    final isAlbumArtist =
+        trackNames.any((n) => n.toLowerCase() == albumArtist) ||
+        row.artistNames.trim().toLowerCase().startsWith(albumArtist);
+    if (albumArtist.isEmpty || isAlbumArtist) return null;
+    return getOrCreateArtistId(
+      txn,
+      spotifyURI: null,
+      name: firstName,
+      imageURL: row.trackArtistImageURL,
+    );
+  }
+
   /// Inserts a SongsAudioFeatures row for [songId] from [row] if one
   /// doesn't already exist. Never overwrites -- audio features don't
   /// change once captured.
@@ -315,6 +365,7 @@ class MixlistIngestion {
     required String title,
     required String description,
     required List<MixlistCsvRow> rows,
+    String? imageURL,
   }) async {
     if (rows.isEmpty) {
       throw ArgumentError('Cannot import a mixlist with zero rows');
@@ -332,6 +383,7 @@ class MixlistIngestion {
         'title': title,
         'description': description,
         'dateCreated': dateCreated,
+        'imageURL': imageURL,
       });
 
       var position = 1;
@@ -341,6 +393,7 @@ class MixlistIngestion {
           spotifyURI: row.albumArtistURI,
           name: row.albumArtistName,
           genres: row.genres,
+          imageURL: row.albumArtistImageURL,
         );
         final albumId = await getOrCreateAlbumId(
           txn,
@@ -371,6 +424,18 @@ class MixlistIngestion {
             songID: songId,
           ),
         );
+        final creditedArtistId = await getOrCreateCreditedArtistId(
+          txn,
+          row: row,
+        );
+        if (creditedArtistId != null) {
+          await txn.update(
+            'Songs',
+            {'creditedArtist': creditedArtistId},
+            where: 'id = ? AND creditedArtist IS NULL',
+            whereArgs: [songId],
+          );
+        }
         await upsertSongAudioFeatures(txn, songId: songId, row: row);
         await txn.insert('SongsMixlists', {
           'positionIndex': position,

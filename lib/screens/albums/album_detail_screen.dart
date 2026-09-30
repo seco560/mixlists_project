@@ -67,6 +67,11 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
   Widget build(BuildContext context) {
     final album = widget.album;
     final recordLabel = album.recordLabel;
+    // Compilations/splits credit some songs to their own artists; if every
+    // song is, the album artist is a placeholder (e.g. Various Artists).
+    final isCompilation = _songs.any((s) => s.creditedArtistId != null);
+    final isPlaceholderArtist =
+        _songs.isNotEmpty && _songs.every((s) => s.creditedArtistId != null);
     return Scaffold(
       appBar: AppBar(
         title: Text(album.name, overflow: TextOverflow.ellipsis),
@@ -93,7 +98,10 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                           parts: [
                             (
                               album.artistName,
-                              () => openArtistById(context, album.artistId),
+                              isPlaceholderArtist
+                                  ? null
+                                  : () =>
+                                        openArtistById(context, album.artistId),
                             ),
                           ],
                         ),
@@ -126,9 +134,27 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                               '${song.albumTrackNumber ?? '?'}) ${song.songName}',
                           isExplicit: song.isExplicit == true,
                           leadingImageUrl: album.coverImageURL,
-                          subtitle: Text(
-                            'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',
-                            style: metaTextStyle,
+                          subtitle: Column(
+                            crossAxisAlignment: .start,
+                            children: [
+                              if (isCompilation)
+                                LinkLine(
+                                  singleLine: true,
+                                  parts: [
+                                    (
+                                      song.artistNames,
+                                      () => openArtistById(
+                                        context,
+                                        song.creditedArtistId ?? album.artistId,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              Text(
+                                'Added on ${song.datesAdded.map((d) => d.split('T')[0]).join(', ')}',
+                                style: metaTextStyle,
+                              ),
+                            ],
                           ),
                           mixlists: song.mixlists,
                         ),

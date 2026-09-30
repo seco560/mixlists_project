@@ -1,0 +1,923 @@
+{
+  "owned": false,
+  "id": "PLhKHCVhC73KzM2lDPF3j1AAyqHKsqNYTt",
+  "privacy": "PUBLIC",
+  "description": "can’t live what happened yesterday",
+  "views": 275,
+  "duration": "1 hour, 34 minutes",
+  "trackCount": 24,
+  "title": "today is tomorrow’s yesterday",
+  "thumbnails": [
+    {
+      "url": "https://i.ytimg.com/pl_c/PLhKHCVhC73KzM2lDPF3j1AAyqHKsqNYTt/studio_square_thumbnail.jpg?sqp=CJ629NUG-oaymwEICDwQPCAASFqi85f_AwYIvcz_zAY&rs=AMzJL3mut624gzC1napho4qAyirkzvijRw",
+      "width": 60,
+      "height": 60
+    },
+    {
+      "url": "https://i.ytimg.com/pl_c/PLhKHCVhC73KzM2lDPF3j1AAyqHKsqNYTt/studio_square_thumbnail.jpg?sqp=CJ629NUG-oaymwEICHgQeCAASFqi85f_AwYIvcz_zAY&rs=AMzJL3mY7kCQsJWHZZDTI9IPnqb6O2jA7Q",
+      "width": 120,
+      "height": 120
+    },
+    {
+      "url": "https://i.ytimg.com/pl_c/PLhKHCVhC73KzM2lDPF3j1AAyqHKsqNYTt/studio_square_thumbnail.jpg?sqp=CJ629NUG-oaymwEKCOIBEOIBIABIWqLzl_8DBgi9zP_MBg&rs=AMzJL3kUi73kAG3mEzPCSkI2g7kI1_qIRA",
+      "width": 226,
+      "height": 226
+    },
+    {
+      "url": "https://i.ytimg.com/pl_c/PLhKHCVhC73KzM2lDPF3j1AAyqHKsqNYTt/studio_square_thumbnail.jpg?sqp=CJ629NUG-oaymwEKCKAEEKAEIABIWqLzl_8DBgi9zP_MBg&rs=AMzJL3kDmPdUzgO4UrOenhL3NV_oojtA_Q",
+      "width": 544,
+      "height": 544
+    }
+  ],
+  "author": {
+    "name": "Seco Vlad",
+    "id": "UC4pvon6mIMiN2X7G6PCBLsQ"
+  },
+  "year": "2026",
+  "related": [],
+  "tracks": [
+    {
+      "videoId": "uXeIrEIn2XU",
+      "title": "Stone the Crow",
+      "artists": [
+        {
+          "name": "Down",
+          "id": "UCKKxCacxMuyDSjG7Ep7BlFw"
+        }
+      ],
+      "album": {
+        "name": "Nola",
+        "id": "MPREb_ieTzpphIdCd"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpIObhOAh65JEG0YYn2xrKznaxpauxY94C7uO2foHlhXPfS6KGXoRPd81_zuI1EvQLFPt07e1AaG0dy0cwhhB6fbkOhirQ"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/jpyZ9P6ffbQKCF1_CwKsblZqMgOqeDGIjutiL1sen5CzdUmh9w74d9UKPyUVzrZkeDAykusKcS-rS0Hz=w60-h60-s-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/jpyZ9P6ffbQKCF1_CwKsblZqMgOqeDGIjutiL1sen5CzdUmh9w74d9UKPyUVzrZkeDAykusKcS-rS0Hz=w120-h120-s-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:43",
+      "duration_seconds": 283,
+      "creditsBrowseId": "MPTCuXeIrEIn2XU"
+    },
+    {
+      "videoId": "2nLfjHV-HiM",
+      "title": "denial",
+      "artists": [
+        {
+          "name": "tourist",
+          "id": "UCYkkiJ-6ffrg7yQclP_fGrg"
+        }
+      ],
+      "album": {
+        "name": "denial",
+        "id": "MPREb_Sh16At581og"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpLDnRhiLhvlv7nH5FeUDATAXL9UpadN4_P-0GRmh1D9elMCUfrG7ikPuDStX4Hz43FssmFMv1gxerjXShkaccGPhkOlYg"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/2y56XNbBefqp4cBkRT3ICRSinGG2lU2uqam3rCETWBZQhN5bG0tI1dzp08SMOyRx9Dw19s2rFN0iaZ_h=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/2y56XNbBefqp4cBkRT3ICRSinGG2lU2uqam3rCETWBZQhN5bG0tI1dzp08SMOyRx9Dw19s2rFN0iaZ_h=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:00",
+      "duration_seconds": 240
+    },
+    {
+      "videoId": "a2lhQtWw9PU",
+      "title": "Safer in the Forest/Love Song for Poor Michigan",
+      "artists": [
+        {
+          "name": "La Dispute",
+          "id": "UC0wiweNrg2WISercjt2aDxw"
+        }
+      ],
+      "album": {
+        "name": "Wildlife",
+        "id": "MPREb_oxWavD7MskB"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpLXZtf47zk781HgyQ7ZIRLfYFvWzFGuJQxZaLGK5c0UI-SFl4ER1SnKujFeTOGI5pH_Zs5BPv5ZAz15oBgTPub7zpwSUQ"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/aXQY3y32Tp00HETHFuBRI3kOwQf3PSis623aZyODQe3zaWeXzTJxLOvqtJUKgj4FxbTkOT5_mcYK16w1=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/aXQY3y32Tp00HETHFuBRI3kOwQf3PSis623aZyODQe3zaWeXzTJxLOvqtJUKgj4FxbTkOT5_mcYK16w1=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:37",
+      "duration_seconds": 277,
+      "creditsBrowseId": "MPTCa2lhQtWw9PU"
+    },
+    {
+      "videoId": "hj0YbVptbcA",
+      "title": "Asincron - Covor Persan (Live in Underworld)",
+      "artists": [
+        {
+          "name": "Asincron",
+          "id": "UC3DCDFrvhzsW7WmLCByIpVA"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/hj0YbVptbcA/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3myAFjyggD97MhwAPtfxeZ_nQpSDg",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_UGC",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:56",
+      "duration_seconds": 296
+    },
+    {
+      "videoId": "ZVt4SvZ3ZIA",
+      "title": "hide (midwest emo version)",
+      "artists": [
+        {
+          "name": "jacal",
+          "id": "UC5UvW7-cyLQW1YWWvls34Qw"
+        }
+      ],
+      "album": {
+        "name": "hide (midwest emo version)",
+        "id": "MPREb_VFhj9fCRigX"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpI_gDjTtj3513rr0WBZHfKLxCXNQHhJCYbK-VYV2ebwp2GPuPnC9Bgb5gkMGv4W1pX0p-KvSM1uTARGel_uuPnurBCLpg"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/rV4ErdOKeVziQ-oRzcYJp5kwIKiZ2_ExoK0qe2V2UtTfYZyoJH5a6mjqB-l9xnbHP1V7yxaVw8PDjZ8m=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/rV4ErdOKeVziQ-oRzcYJp5kwIKiZ2_ExoK0qe2V2UtTfYZyoJH5a6mjqB-l9xnbHP1V7yxaVw8PDjZ8m=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:03",
+      "duration_seconds": 243,
+      "creditsBrowseId": "MPTCZVt4SvZ3ZIA"
+    },
+    {
+      "videoId": "T6pySVV0qh0",
+      "title": "Comfort",
+      "artists": [
+        {
+          "name": "Basement",
+          "id": "UC7Ccjp1JYTpIcTRdM1EpgFw"
+        }
+      ],
+      "album": {
+        "name": "Colourmeinkindness (Deluxe Anniversary Edition)",
+        "id": "MPREb_RrK8B5uS8jl"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpJgiurAhTKxtJnbKdlqX6hMriC9r3QraWS1Lz_qH9qCeaZDn0KaR6_z9mBLJe3RlZFyTZyu8PaKRSQ8gktlK4c7mSLVrQ"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/M-srpE6-ULr5LvhLuzmSfQQ8L3qFDo2zmnCH7mYs3h4iC3qM44I25RhE1yCVZEPnX368_oxDKaNNaIqQ=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/M-srpE6-ULr5LvhLuzmSfQQ8L3qFDo2zmnCH7mYs3h4iC3qM44I25RhE1yCVZEPnX368_oxDKaNNaIqQ=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "2:20",
+      "duration_seconds": 140,
+      "creditsBrowseId": "MPTCT6pySVV0qh0"
+    },
+    {
+      "videoId": "i0f2rrCH8hs",
+      "title": "Title Fight -  Flood of '72 (Acoustic) [Vinyl Rip]",
+      "artists": [
+        {
+          "name": "Devin Earlly",
+          "id": "UCfgYYGXEVDvjF3l4vx3Z9zQ"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/i0f2rrCH8hs/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3ncbEIHR_A4kJovH7yOAKS5fRmAZw",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_UGC",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:13",
+      "duration_seconds": 253
+    },
+    {
+      "videoId": "1Iz5DaX8f7w",
+      "title": "Eulogy",
+      "artists": [
+        {
+          "name": "TOOL",
+          "id": "UCW6FSIkA04g7pBvMXlnaKqg"
+        }
+      ],
+      "album": {
+        "name": "Ænima",
+        "id": "MPREb_rrHMsdVJZK0"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpKxc2BmBpIVZwiE-dgAjw8zJwXDkCiGJ1SyhVm32wJxzrEv4t3u6e_6rx-YoBTUu5QbFIXPkivgeIQADR-FldxEzykyPg"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/2xA18gtK4ifDK4FdLV5PMHOOGztNmirl0Nj0U051cPSSc3a1WdpeGz5rEMP_V94hJ7E6HwnhEK055ZtsDQ=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/2xA18gtK4ifDK4FdLV5PMHOOGztNmirl0Nj0U051cPSSc3a1WdpeGz5rEMP_V94hJ7E6HwnhEK055ZtsDQ=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": true,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "8:26",
+      "duration_seconds": 506,
+      "creditsBrowseId": "MPTC1Iz5DaX8f7w"
+    },
+    {
+      "videoId": "2mXNRsyTitA",
+      "title": "Faint",
+      "artists": [
+        {
+          "name": "Linkin Park",
+          "id": "UCxgN32UVVztKAQd2HkXzBtw"
+        }
+      ],
+      "album": {
+        "name": "Meteora (Bonus Edition)",
+        "id": "MPREb_ebWSmYnO2aa"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpIdh42OLlgw1XApTP-CSL6HWO09_ziQ38VXzUcYNqb2dmAeJXv8OGwi_eyzmrSq2VHu37Nv4fKRc6N62MV5lU65xbOdMg"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/Rqh2HDAD-Fj1-oHYqVklPGklMHIV3r6SMPMZmFE3FlLiWeBBnP3SCESfgeNdzQ-DmpCIvOGE4J0hzVxa=w60-h60-s-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/Rqh2HDAD-Fj1-oHYqVklPGklMHIV3r6SMPMZmFE3FlLiWeBBnP3SCESfgeNdzQ-DmpCIvOGE4J0hzVxa=w120-h120-s-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "2:43",
+      "duration_seconds": 163,
+      "creditsBrowseId": "MPTC2mXNRsyTitA"
+    },
+    {
+      "videoId": "66yH8RZSwUc",
+      "title": "Blur - Song 2, but every \"woohoo\" is done by Mario",
+      "artists": [
+        {
+          "name": "ThePandemicLight",
+          "id": "UCbbI2Gyc4N1Bgc9AC0-YnTg"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/66yH8RZSwUc/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3nPnhEK8xd0DrheLY6HARg5QPFpyA",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_UGC",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "2:04",
+      "duration_seconds": 124
+    },
+    {
+      "videoId": "8h3EohoJUO8",
+      "title": "Aphex Twin - Xtal (Super Mario 64 Remix)",
+      "artists": [
+        {
+          "name": "on4word",
+          "id": "UCl68Q7CSkcU_tx_nBiNvf2A"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/8h3EohoJUO8/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3n8vb5c9pDKQZ_LgOwdjG7F_SAc9Q",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_UGC",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:42",
+      "duration_seconds": 282
+    },
+    {
+      "videoId": "sOOGOqTn9Fo",
+      "title": "Never Meant 64",
+      "artists": [
+        {
+          "name": "kanna lost her jaw.",
+          "id": "UCKIkMneFLbNw_QkRG3BlI6g"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/sOOGOqTn9Fo/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3mx_PYteD4xef4MWoT2hBWaKtNdLg",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_UGC",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:27",
+      "duration_seconds": 267
+    },
+    {
+      "videoId": "JG1X3_YBVEk",
+      "title": "Dry Hands",
+      "artists": [
+        {
+          "name": "saddyowner",
+          "id": "UC9unLPSUTulrTpXl4SAJ_zg"
+        },
+        {
+          "name": "TanookiAlex",
+          "id": "UCJ_HUyzq7c3ZVlza0r7Us7Q"
+        }
+      ],
+      "album": {
+        "name": "Minewest Emo",
+        "id": "MPREb_LkyQ2fj8G9G"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpJxg9wKYWWrITdOyw0Tm01_8cSicKLqFb6wU_MPdSgpFemhtNJkZVXXOzsnXmRM4Dzn6J8mEH3GojSmRafi2tHC4E2xFQ"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/br40HgAubENJMooO5lxZU6U0G2skRKbnOoIzPJZ6l2U4q3aDi0n6L-7JLIVMLbcjWoJf2UqhrAKP2KFz=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/br40HgAubENJMooO5lxZU6U0G2skRKbnOoIzPJZ6l2U4q3aDi0n6L-7JLIVMLbcjWoJf2UqhrAKP2KFz=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "1:24",
+      "duration_seconds": 84,
+      "creditsBrowseId": "MPTCJG1X3_YBVEk"
+    },
+    {
+      "videoId": "dVh_3uedFbA",
+      "title": "408 x Titus - 2016 (Official Music Video)",
+      "artists": [
+        {
+          "name": "breaksilencelabel",
+          "id": "UCyWGbodjYskhdDpKCJgbgjw"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/dVh_3uedFbA/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3k93VqBK-LPIKh901egeeAG24u3UA",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_UGC",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "2:23",
+      "duration_seconds": 143
+    },
+    {
+      "videoId": "GN4XXozJPz0",
+      "title": "play this when i'm gone",
+      "artists": [
+        {
+          "name": "mgk",
+          "id": "UCDbLC4CaZzi4jt5KyAF0ZQw"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/GN4XXozJPz0/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3l0CIuQkgPps6dcZQ3IUio0iA41QA",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_OMV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:22",
+      "duration_seconds": 202
+    },
+    {
+      "videoId": "fD5pz_93UXA",
+      "title": "i would throw my vape in a cornfield for you",
+      "artists": [
+        {
+          "name": "Flight Patterns",
+          "id": "UCP5sZDetRjDrxQRjBFRtuoA"
+        }
+      ],
+      "album": {
+        "name": "there is no montauk",
+        "id": "MPREb_Bn092U7lOOL"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpK0YBqj-_xx6QWQScaypFvFcwzRPPAUeeCBj9Axe2brbbMF-PX3HLWzwSG9137DEjlkHOFzEsmKQTuReE55Gq0IpkNwUA"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/wDhjA5rrBAoxfdTiTFU_7gZKu7tIQAEN1hzXfYECRgDzUEPW8U-4eM9-s6UCMffMvV8c5ps1X-cv8ccr=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/wDhjA5rrBAoxfdTiTFU_7gZKu7tIQAEN1hzXfYECRgDzUEPW8U-4eM9-s6UCMffMvV8c5ps1X-cv8ccr=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": true,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:18",
+      "duration_seconds": 198
+    },
+    {
+      "videoId": "EvsvAgvmuoU",
+      "title": "John Frusciante  Today Your Love, Tomorrow the World",
+      "artists": [
+        {
+          "name": "alkım Burul",
+          "id": "UCxZBcAbb7J_eljRYFVYYPQQ"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/EvsvAgvmuoU/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3ma7dC6IBlx6QNPf02VvBvlU1lRcA",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_UGC",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "2:21",
+      "duration_seconds": 141
+    },
+    {
+      "videoId": "AqQuRw0S6b4",
+      "title": "This Love",
+      "artists": [
+        {
+          "name": "Maroon 5",
+          "id": "UCdFe4KkWwZ_twpo-UECR-Nw"
+        }
+      ],
+      "album": {
+        "name": "Songs About Jane",
+        "id": "MPREb_yw3bkpUdfs7"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpKIXL92F0GqHIHEF7mb_Wrp_AyXSvd9ygHaNxGvfo2imUfNT-NZE3vXGJYqUVu5Edx8eNTbB1MZyGVyN-Q3CrZuqjc4Tw"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/b2Qn9rmBW7jWJ3elYCEdk3zXwrlpdH8wCNyHiuHbwzsVTlt8xA2sQSts-qD9U1mIXFYQGTBWtsCwqdgIDg=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/b2Qn9rmBW7jWJ3elYCEdk3zXwrlpdH8wCNyHiuHbwzsVTlt8xA2sQSts-qD9U1mIXFYQGTBWtsCwqdgIDg=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:27",
+      "duration_seconds": 207,
+      "creditsBrowseId": "MPTCAqQuRw0S6b4"
+    },
+    {
+      "videoId": "zAgvyL9-usc",
+      "title": "Today",
+      "artists": [
+        {
+          "name": "Smashing Pumpkins",
+          "id": "UCZM3bF24BS-qDMe0OigpeZw"
+        }
+      ],
+      "album": {
+        "name": "Siamese Dream (Deluxe Edition)",
+        "id": "MPREb_ag4IulWrDJa"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpKJOgzVim2ErUvz7bz1U-BGa0EXzlgkbCF52M2yqOUZNIDuHSMnVaFih_kNUcmjgtbXNtXJ6jMEhJXIw70F4XGwgFYp9g"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/0QyopvBDXRpaHHvX_jP67zGRbPlNAp9taukipLgqwpP3_YZtYS9yLrneShCq6tVIJPWB_eXrkx9bq78=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/0QyopvBDXRpaHHvX_jP67zGRbPlNAp9taukipLgqwpP3_YZtYS9yLrneShCq6tVIJPWB_eXrkx9bq78=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:22",
+      "duration_seconds": 202,
+      "creditsBrowseId": "MPTCzAgvyL9-usc"
+    },
+    {
+      "videoId": "isnqz-aJe4c",
+      "title": "Tomorrow",
+      "artists": [
+        {
+          "name": "Ozzy Osbourne",
+          "id": "UC3oY0sESMqxZaAy8nRcVxQQ"
+        }
+      ],
+      "album": {
+        "name": "Ozzmosis (Expanded Edition)",
+        "id": "MPREb_3znW30vn6Gt"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpJGvfVDPBPHY_b9-igF6mahI-BUh--IuYHyCXp_zT1oxXF_2nqtNzZC0MU5MGKSBIOAmHjs8zRkkTMyhd_DyKdpfI0x6g"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/b5cd7wrkgM-z9Yp3e7841lNHK6pxKYRE65UaNgIB46qRdeq6Jt83GrQX2xNCFGmRUKI84d5FkGhxXmeD=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/b5cd7wrkgM-z9Yp3e7841lNHK6pxKYRE65UaNgIB46qRdeq6Jt83GrQX2xNCFGmRUKI84d5FkGhxXmeD=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "6:37",
+      "duration_seconds": 397,
+      "creditsBrowseId": "MPTCisnqz-aJe4c"
+    },
+    {
+      "videoId": "NrgmdOz227I",
+      "title": "Yesterday (Remastered 2009)",
+      "artists": [
+        {
+          "name": "The Beatles",
+          "id": "UC2XdaAVUannpujzv32jcouQ"
+        }
+      ],
+      "album": {
+        "name": "Help!",
+        "id": "MPREb_Cn67yAcHym7"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpIbCoXBlEoiCDWjzndKa8fiXX9ldIOFM86R2o-AUkIimoAaSFVLnCx7-bZscLf2jOPOpE3sIfniq-wkUl81cbVgpUkL9w"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/cHaRyci2upQidmt3iHYeAzbkFJ_c1vXEJbpVh-RZpAnbyMNOtOAeZdNMoJnUrRMZnjipmxfxvuvBeFzhWw=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/cHaRyci2upQidmt3iHYeAzbkFJ_c1vXEJbpVh-RZpAnbyMNOtOAeZdNMoJnUrRMZnjipmxfxvuvBeFzhWw=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "2:06",
+      "duration_seconds": 126,
+      "creditsBrowseId": "MPTCNrgmdOz227I"
+    },
+    {
+      "videoId": "v_MZfpnCAYo",
+      "title": "It Was A Good Day",
+      "artists": [
+        {
+          "name": "Ice Cube",
+          "id": "UCA9eJHcx3lkhyaln9ZHs90Q"
+        }
+      ],
+      "album": {
+        "name": "The Predator",
+        "id": "MPREb_SuB5sd2zQT5"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpIAQpa-rr__eRdWN23IUJm_IBrPkwj6n2fWVONxLTvzo7GC2fnTx2uJj-5CKDtEF3MY2RQUOKtplXnocLh1PYY5akZj9Q"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/giW69VBBi2ahLv4m81FePPliH_J0OZGKZfL_ymfeEbGQ5JlDb-QcFqcfK8cEgAPU3shJlMeGI5C75qEa=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/giW69VBBi2ahLv4m81FePPliH_J0OZGKZfL_ymfeEbGQ5JlDb-QcFqcfK8cEgAPU3shJlMeGI5C75qEa=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:22",
+      "duration_seconds": 262,
+      "creditsBrowseId": "MPTCv_MZfpnCAYo"
+    },
+    {
+      "videoId": "6jFNZQWRNAM",
+      "title": "Part of It",
+      "artists": [
+        {
+          "name": "Microwave",
+          "id": "UCyoHhmvy10gBz9yDjU_Jsxg"
+        }
+      ],
+      "album": {
+        "name": "Death is a Warm Blanket",
+        "id": "MPREb_inabQM4vGi0"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpLHSgzWqKTpSoLg1mjmsijPV_s5N9VOXUfy7y7Xyh82HgoJ0s_JbuZ4tl0uufq6-aoemJWT2cyFpNms8ASz6AsiC5tb8A"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/k-C4iC1hY8yNm1Qtl6AfikYqAUoUNeBB6MU431R6Up77h8Xbt1JSwsKxDOXDI2iqYQglfdtV-qUOnZj0=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/k-C4iC1hY8yNm1Qtl6AfikYqAUoUNeBB6MU431R6Up77h8Xbt1JSwsKxDOXDI2iqYQglfdtV-qUOnZj0=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": true,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:15",
+      "duration_seconds": 195,
+      "creditsBrowseId": "MPTC6jFNZQWRNAM"
+    },
+    {
+      "videoId": "W2cMVP6McdQ",
+      "title": "Bury Me in Smoke",
+      "artists": [
+        {
+          "name": "Down",
+          "id": "UCKKxCacxMuyDSjG7Ep7BlFw"
+        }
+      ],
+      "album": {
+        "name": "Nola",
+        "id": "MPREb_ieTzpphIdCd"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpKF3V65u3GypxS2Cwhd1tQXnh3BMtdTp-il6z4N4DeuD11eG26OeNIAmy-PYag1y3LyIeLJrNPB8P66-mYa_phZrUO41Q"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/jpyZ9P6ffbQKCF1_CwKsblZqMgOqeDGIjutiL1sen5CzdUmh9w74d9UKPyUVzrZkeDAykusKcS-rS0Hz=w60-h60-s-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/jpyZ9P6ffbQKCF1_CwKsblZqMgOqeDGIjutiL1sen5CzdUmh9w74d9UKPyUVzrZkeDAykusKcS-rS0Hz=w120-h120-s-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": true,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "7:04",
+      "duration_seconds": 424,
+      "creditsBrowseId": "MPTCW2cMVP6McdQ"
+    }
+  ],
+  "duration_seconds": 5655
+}

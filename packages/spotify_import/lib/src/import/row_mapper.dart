@@ -10,11 +10,12 @@ bool shouldSkipPlaylistItem(Map<String, Object?> wrapper) {
 }
 
 /// Builds a [MixlistCsvRow] from one `/playlists/{id}/items` entry plus the
-/// primary artist's genres. Pinned to the live response shape (flat `item`,
+/// artists' images (genres no longer come from the API; see CLAUDE.md). Pinned to the live response shape (flat `item`,
 /// no preview_url/popularity/label); the first album artist is canonical.
 MixlistCsvRow rowFromPlaylistItem(
   Map<String, Object?> wrapper, {
-  required String? albumArtistGenres,
+  String? albumArtistImageURL,
+  String? trackArtistImageURL,
 }) {
   final item = wrapper['item'] as Map<String, Object?>;
   final artists = (item['artists'] as List).cast<Map<String, Object?>>();
@@ -43,7 +44,9 @@ MixlistCsvRow rowFromPlaylistItem(
     popularity: null, // removed from the API for Dev Mode apps
     isrc: externalIds?['isrc'] as String?,
     addedAt: wrapper['added_at'] as String,
-    genres: albumArtistGenres,
+    genres: null, // Dev Mode artist objects carry none; CSV supplement only
+    albumArtistImageURL: albumArtistImageURL,
+    trackArtistImageURL: trackArtistImageURL,
     recordLabel:
         null, // removed from the API for Dev Mode apps; supplement-step only
     danceability: null,

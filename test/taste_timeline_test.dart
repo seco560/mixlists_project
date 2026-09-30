@@ -241,7 +241,7 @@ void main() {
     });
   });
 
-  test('artist lifespans need 3+ mixlists and sort by first appearance', () {
+  test('artist lifespans need 2+ mixlists and sort by first appearance', () {
     final timeline = TasteTimeline.fromAppearances(
       mixlists: [for (var i = 1; i <= 5; i++) _mixlist(i)],
       appearances: [
@@ -254,13 +254,16 @@ void main() {
         _appearance(1, artistId: 2),
         _appearance(4, artistId: 2),
         _appearance(5, artistId: 2),
-        // Artist 3: only 2 mixlists, excluded.
-        _appearance(1, artistId: 3),
-        _appearance(2, artistId: 3),
+        // Artist 3: exactly 2 mixlists, included.
+        _appearance(3, artistId: 3),
+        _appearance(4, artistId: 3),
+        // Artist 4: only 1 mixlist, excluded.
+        _appearance(2, artistId: 4),
       ],
     );
     final lifespans = timeline.artistLifespans;
-    expect([for (final l in lifespans) l.artistId], [2, 1]);
+    expect([for (final l in lifespans) l.artistId], [2, 1, 3]);
+    expect(lifespans[2].positions, [3, 4]);
     expect(lifespans[0].positions, [1, 4, 5]);
     expect(lifespans[0].span, 4);
     expect(lifespans[1].positions, [2, 3, 5]);

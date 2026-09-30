@@ -10,6 +10,7 @@ class ArtistOverview {
     required this.uniqueSongCount,
     required this.appearanceCount,
     required this.genres,
+    this.imageURL,
   });
 
   final int id;
@@ -24,4 +25,7 @@ class ArtistOverview {
   /// Parsed from `Artists.genres` (a comma-joined string) -- empty when
   /// Spotify returned none for this artist.
   final List<String> genres;
+
+  /// `Artists.imageURL`: the first Spotify image, when there is one.
+  final String? imageURL;
 }

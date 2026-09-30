@@ -8,6 +8,7 @@ import 'package:mixlists_project/data/repository/music_library_repository.dart';
 import 'package:mixlists_project/data/models/artist_overview.dart';
 import 'package:mixlists_project/screens/artists/artist_table_cell.dart';
 import 'package:mixlists_project/widgets/shared/mixlist_filter_toggle.dart';
+import 'package:mixlists_project/widgets/shared/artist_avatar.dart';
 
 /// Hardcoded bespoke grid; not extensible enough to reuse for another
 /// grid, reimplement the general shape as a new widget instead.
@@ -338,10 +339,18 @@ class _AllArtistsScreenState extends State<AllArtistsScreen> {
               ArtistTableCell(
                 width: widths[1],
                 numeric: _columnIsNumeric[1],
-                child: Text(
-                  artist.name,
-                  style: _nameTextStyle,
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  children: [
+                    ArtistAvatar(artist: artist, size: 28),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        artist.name,
+                        style: _nameTextStyle,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               ArtistTableCell(

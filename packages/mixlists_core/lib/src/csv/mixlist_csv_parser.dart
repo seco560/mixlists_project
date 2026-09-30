@@ -23,6 +23,11 @@ class MixlistCsvRow {
   final String? isrc;
   final String addedAt;
   final String? genres;
+
+  /// Artist images; only the Spotify importer fills them. The track one is
+  /// for the song's first artist when that isn't the album artist.
+  final String? albumArtistImageURL;
+  final String? trackArtistImageURL;
   final String? recordLabel;
   final double? danceability;
   final double? energy;
@@ -57,6 +62,8 @@ class MixlistCsvRow {
     required this.isrc,
     required this.addedAt,
     required this.genres,
+    this.albumArtistImageURL,
+    this.trackArtistImageURL,
     required this.recordLabel,
     required this.danceability,
     required this.energy,

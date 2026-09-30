@@ -1,0 +1,618 @@
+{
+  "owned": false,
+  "id": "PLhKHCVhC73Kz7Drg0y4u5cfob-r_xrT5E",
+  "privacy": "PUBLIC",
+  "description": "migrating mixlists",
+  "views": 100,
+  "duration": "1 hour, 3 minutes",
+  "trackCount": 15,
+  "title": "head change",
+  "thumbnails": [
+    {
+      "url": "https://i.ytimg.com/pl_c/PLhKHCVhC73Kz7Drg0y4u5cfob-r_xrT5E/studio_square_thumbnail.jpg?sqp=CJ629NUG-oaymwEICDwQPCAASFqi85f_AwYIo9yAzQY&rs=AMzJL3ntOr8-sjcLhjoQBuZHb3fe6kvCRA",
+      "width": 60,
+      "height": 60
+    },
+    {
+      "url": "https://i.ytimg.com/pl_c/PLhKHCVhC73Kz7Drg0y4u5cfob-r_xrT5E/studio_square_thumbnail.jpg?sqp=CJ629NUG-oaymwEICHgQeCAASFqi85f_AwYIo9yAzQY&rs=AMzJL3nRjiV08xl-u1smfuLiWoiKMa9uSA",
+      "width": 120,
+      "height": 120
+    },
+    {
+      "url": "https://i.ytimg.com/pl_c/PLhKHCVhC73Kz7Drg0y4u5cfob-r_xrT5E/studio_square_thumbnail.jpg?sqp=CJ629NUG-oaymwEKCOIBEOIBIABIWqLzl_8DBgij3IDNBg&rs=AMzJL3nsfSFfV1QMlIMyFADy1prD_AH5-g",
+      "width": 226,
+      "height": 226
+    },
+    {
+      "url": "https://i.ytimg.com/pl_c/PLhKHCVhC73Kz7Drg0y4u5cfob-r_xrT5E/studio_square_thumbnail.jpg?sqp=CJ629NUG-oaymwEKCKAEEKAEIABIWqLzl_8DBgij3IDNBg&rs=AMzJL3k8yNs3xu6DAcOjbnQGbiGlpiWrGQ",
+      "width": 544,
+      "height": 544
+    }
+  ],
+  "author": {
+    "name": "Seco Vlad",
+    "id": "UC4pvon6mIMiN2X7G6PCBLsQ"
+  },
+  "year": "2026",
+  "related": [],
+  "tracks": [
+    {
+      "videoId": "_HWrQ2Y905g",
+      "title": "Title Fight-Western Haikus (Acoustic)",
+      "artists": [
+        {
+          "name": "ramblertwin2",
+          "id": "UCfhUCVTR1ghk7j10k6FDFLw"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/_HWrQ2Y905g/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3lsVay73ti0ftar5cWkRLZ9Q-jQNQ",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_UGC",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "2:10",
+      "duration_seconds": 130
+    },
+    {
+      "videoId": "N87yZ1fpYAM",
+      "title": "Head Change",
+      "artists": [
+        {
+          "name": "Modern Color",
+          "id": "UCch336RUkg5alcPu3m9B0Og"
+        }
+      ],
+      "album": {
+        "name": "From the Leaves of Your Garden",
+        "id": "MPREb_570UooHo9CR"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpJqPCCRR_ilN1BJ4g7cT8WtwIRvkb8IVV6LtV7DsUbr1n-DuhbLvZVS3DY8DN8zHFsDZKIyaCmjL4L25o61k3Hvx98y0w"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/KPHwfs2w4bgrbemHmjA8hbmppBTjMRFK-zQYQ66Soz4g5G6z-dtv5LiDvPfsLLYrgocWM4G7Ge1RisU=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/KPHwfs2w4bgrbemHmjA8hbmppBTjMRFK-zQYQ66Soz4g5G6z-dtv5LiDvPfsLLYrgocWM4G7Ge1RisU=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "2:59",
+      "duration_seconds": 179,
+      "creditsBrowseId": "MPTCN87yZ1fpYAM"
+    },
+    {
+      "videoId": "SVwHoB-AnTE",
+      "title": "To Lose My Life",
+      "artists": [
+        {
+          "name": "White Lies",
+          "id": "UCHXMw5g82_tsZ_mX-6ZJstg"
+        }
+      ],
+      "album": {
+        "name": "To Lose My Life ...",
+        "id": "MPREb_arShF0SqGG5"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpLTRvNzzA5fAkhsDYtWPzFIgl-SdHRV2115AulmqkbYpqbMMOR4yA2Mwtqa2gK1_fFqoh2CjCoT_lV4RL7S9z0Hc3BZ3g"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/tqyPi9CAuUPc6_FO1lKG6N6pNJMH61jEegIYNljLbyMdZPomZKvu-XvYbf_A447iibFsts-nbPRub-NXxA=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/tqyPi9CAuUPc6_FO1lKG6N6pNJMH61jEegIYNljLbyMdZPomZKvu-XvYbf_A447iibFsts-nbPRub-NXxA=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:12",
+      "duration_seconds": 192,
+      "creditsBrowseId": "MPTCSVwHoB-AnTE"
+    },
+    {
+      "videoId": "S2fM0cVYRJA",
+      "title": "Pace Is The Trick",
+      "artists": [
+        {
+          "name": "Interpol",
+          "id": "UCTz1LbApOPI1byhP61ktXdw"
+        }
+      ],
+      "album": {
+        "name": "Our Love To Admire",
+        "id": "MPREb_kOyd26J4zg7"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpJXgqjKhtWJ_j9plLtJeAd-FszKwojsv1xCDNbjAeLbjt5966Xr48I0VUPiRiXYmAL4liuun6Ui0N4mWtcY4mkQrNTYIQ"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/wPw1nmiMQdiP7k-CPDNvl-KlAzhSMemNLZd6FtNKmw2bv58hE2W87tiqQE-3DEiwMcbv3EBDFsJFR5Y=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/wPw1nmiMQdiP7k-CPDNvl-KlAzhSMemNLZd6FtNKmw2bv58hE2W87tiqQE-3DEiwMcbv3EBDFsJFR5Y=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:38",
+      "duration_seconds": 278,
+      "creditsBrowseId": "MPTCS2fM0cVYRJA"
+    },
+    {
+      "videoId": "giDB7faOT9E",
+      "title": "Figure You Out",
+      "artists": [
+        {
+          "name": "Citizen",
+          "id": "UCd9eIMW_1ctns-vy54VWqQw"
+        }
+      ],
+      "album": {
+        "name": "Youth",
+        "id": "MPREb_WzhFRFzoJyw"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpLsfV7tdYdK2fIzQ2Zy37WhEI9K-DWap4UqYN_AWasVnoTn-9gatfkX7bSo3McYQt74mTFRyHbFrV_8vs5GaOG_777vdw"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/5ixdHUckemlrLleBpA-TsRLgfEYskk1maXNxr4MprXcFZsbbrmJlsqu-OGSF0w-hbG0C4Io6XoFTL7nMuA=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/5ixdHUckemlrLleBpA-TsRLgfEYskk1maXNxr4MprXcFZsbbrmJlsqu-OGSF0w-hbG0C4Io6XoFTL7nMuA=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "2:35",
+      "duration_seconds": 155
+    },
+    {
+      "videoId": "7aAqHTcDqWE",
+      "title": "Desert",
+      "artists": [
+        {
+          "name": "Brand New",
+          "id": "UCtR4nrS3zXFkkT9Mxz5DnJw"
+        }
+      ],
+      "album": {
+        "name": "Science Fiction",
+        "id": "MPREb_IMUFnaUCFyV"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpKcI5SqEsCFasvOdVRISbKQWDqNApFiBy5JgE4U96RsD8NAVN4bckO19v4Bd4lxHC8x4gnW4WBkIiMDlLNApLTS2fA5FQ"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/rlf5lrb7qqD00KXdRuSxbF4I0sDeJCc1RkJIzzuotBe8Ikz7hMpJbDaZ_fWagdNc1TxicCWXs5Uo5mbTVA=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/rlf5lrb7qqD00KXdRuSxbF4I0sDeJCc1RkJIzzuotBe8Ikz7hMpJbDaZ_fWagdNc1TxicCWXs5Uo5mbTVA=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:37",
+      "duration_seconds": 217,
+      "creditsBrowseId": "MPTC7aAqHTcDqWE"
+    },
+    {
+      "videoId": "NpoHGfacNO0",
+      "title": "Primul Metrou de Dimineata",
+      "artists": [
+        {
+          "name": "Am Fost La Munte Și Mi-a Plăcut",
+          "id": "UC9PotjuaWeCEyYa4yJiwGWQ"
+        }
+      ],
+      "album": {
+        "name": "S-A Rezolvat. Nu Se Poate",
+        "id": "MPREb_eFe7Dxh57VO"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpIBy03-iuALKf-fioScRG24TxlEBTwGG4RmscRyib7lTFUJ5AGqPcAs3HZg5eZ5qdNyxKO15iuw0zjq2gxDoKy3lTk_yA"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/ci_WsXBdR1uk_p4cJza55HC_5Fm1rkFUySJTwsdDa_2rycRVBuisis8tMl73_V6lsXnoYuQ13J3fFwN-=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/ci_WsXBdR1uk_p4cJza55HC_5Fm1rkFUySJTwsdDa_2rycRVBuisis8tMl73_V6lsXnoYuQ13J3fFwN-=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "5:46",
+      "duration_seconds": 346
+    },
+    {
+      "videoId": "tlO3lZhDukU",
+      "title": "One",
+      "artists": [
+        {
+          "name": "Metallica",
+          "id": "UCGexNm_Kw4rdQjLxmpb2EKw"
+        }
+      ],
+      "album": {
+        "name": "...And Justice For All",
+        "id": "MPREb_cJGNPCluDG0"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpLVkuIsBcxQHJe8bn-iiGMpO5pvm5Ri40BugVqtfPMFGxli_EToeJ8USOX5270vqvGal7WBz6Umx_I2VcWSSL18lQx7aA"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/hDrOMK4o3My6j9RfQExTaWAthCyXR7FPanuB2FiHhkkdKeUclx-rEo28wa9PWbKJahViAxUhYov_yUL0=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/hDrOMK4o3My6j9RfQExTaWAthCyXR7FPanuB2FiHhkkdKeUclx-rEo28wa9PWbKJahViAxUhYov_yUL0=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "7:28",
+      "duration_seconds": 448
+    },
+    {
+      "videoId": "rB4zs73hQIQ",
+      "title": "The Vampyre of Time and Memory",
+      "artists": [
+        {
+          "name": "Queens of the Stone Age",
+          "id": "UCcYgNw9ne8v1cxcAD_sIOWQ"
+        }
+      ],
+      "album": {
+        "name": "...Like Clockwork",
+        "id": "MPREb_4x7yUBvMD5I"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpIg9jx5YO2v9_sNCQ2uNSHXbIhrW1uwj9Rm6ehKo1SNmzN9Pbg5KEgRrIP8CWnEzCFoZHhWPBahmvksd7anE7O0GQf6MA"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/BQrGY8saQSORMhB5g4cpNB_6nbNu_Yl77Dvmc6ClUAJJz1dbQH-UZR3ydtbHAUuTo9FzcLVqKPG392Wg=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/BQrGY8saQSORMhB5g4cpNB_6nbNu_Yl77Dvmc6ClUAJJz1dbQH-UZR3ydtbHAUuTo9FzcLVqKPG392Wg=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:35",
+      "duration_seconds": 215,
+      "creditsBrowseId": "MPTCrB4zs73hQIQ"
+    },
+    {
+      "videoId": "y0NAiTZ3Iak",
+      "title": "Lavender",
+      "artists": [
+        {
+          "name": "Dowsing",
+          "id": "UCvA-pYzzOzszVtxwduSJv4A"
+        }
+      ],
+      "album": {
+        "name": "It's Still Pretty Terrible",
+        "id": "MPREb_wCYTaksOKLg"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpIcFNkqB_GX-nTK_EhPMKaVGFL4NhzCPzSjmuD66V3xtKmwqJpsIRp9kNjEXhmqxM-ly93RijUZy-sVAdVDF5wlOuOdUA"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/lfwmqTYzc-F8MBeeiM-CD9NFqu1XOsPJDH6uPIEw1NOsBTfzsPP9RGEZ-NG-1BZF0fyvEf60PkoQi4GpBg=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/lfwmqTYzc-F8MBeeiM-CD9NFqu1XOsPJDH6uPIEw1NOsBTfzsPP9RGEZ-NG-1BZF0fyvEf60PkoQi4GpBg=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:40",
+      "duration_seconds": 220,
+      "creditsBrowseId": "MPTCy0NAiTZ3Iak"
+    },
+    {
+      "videoId": "khnokW3Mw24",
+      "title": "Instant Crush (feat. Julian Casablancas)",
+      "artists": [
+        {
+          "name": "Daft Punk",
+          "id": "UCRr1xG_2WIDs18a6cIiCxeA"
+        },
+        {
+          "name": "Julian Casablancas",
+          "id": "UCWhpbdGLnR8XtXLr0yl2nYA"
+        }
+      ],
+      "album": {
+        "name": "Random Access Memories",
+        "id": "MPREb_K8qWMWVqXGi"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpLSyfQcYoWW5u7hCQXMk_HHGWofQfrwZifVPnEx6eVramel4UaWjNiy5zNGRbU2q2b6gIIPnzqNTu6sCS1roT1B7bFxHA"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/N55arCGj69gtw6thXK8JUPisxoVYiwuIEQ7I6SGlkEyNcSJ7xIWPe76Vuu1SiUqRyx5w9qvR_zV8fV3CWQ=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/N55arCGj69gtw6thXK8JUPisxoVYiwuIEQ7I6SGlkEyNcSJ7xIWPe76Vuu1SiUqRyx5w9qvR_zV8fV3CWQ=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "5:38",
+      "duration_seconds": 338,
+      "creditsBrowseId": "MPTCkhnokW3Mw24"
+    },
+    {
+      "videoId": "v0a2U_xEiw0",
+      "title": "Out of Touch (1991) - Hall & Oates",
+      "artists": [
+        {
+          "name": "konekoxox",
+          "id": "UCz39ShUJma9A-OzNNs0jzOQ"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/v0a2U_xEiw0/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3lRpI9EAWZNJLIeXImrIHnxZgWMlA",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_UGC",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "4:42",
+      "duration_seconds": 282
+    },
+    {
+      "videoId": "ZbwZzaaxiWg",
+      "title": "Stare At The Sun (Acoustic)",
+      "artists": [
+        {
+          "name": "Thrice",
+          "id": "UCSKEn3MhDMCCIyFDfYVE6Xg"
+        }
+      ],
+      "album": {
+        "name": "All That's Left",
+        "id": "MPREb_1JsGWH8GWoT"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpJFH9F7pPbdahkv3uMu4f1LHAZnsTCK9GErMp6r5faeplwuEJOH3chaZkQWc6n1P2GVX65kNyTOiQXKnsctnFgyAMXsTw"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/egTQ9iJbD4bK__GPek3zx5GaW9GROXVdTHbKdgDHM2bOtO9E2MnJtNKi-rl8Z8Nr2HXtoD0mFBr82pSr=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/egTQ9iJbD4bK__GPek3zx5GaW9GROXVdTHbKdgDHM2bOtO9E2MnJtNKi-rl8Z8Nr2HXtoD0mFBr82pSr=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:42",
+      "duration_seconds": 222,
+      "creditsBrowseId": "MPTCZbwZzaaxiWg"
+    },
+    {
+      "videoId": "pgIGHxdGi6Q",
+      "title": "White Shores",
+      "artists": [
+        {
+          "name": "The Story So Far",
+          "id": "UCgFB_3MiH7QSoPEEXLKAIjA"
+        }
+      ],
+      "album": {
+        "name": "I Want To Disappear",
+        "id": "MPREb_rB98qmg35Dv"
+      },
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "feedbackTokens": {
+        "add": null,
+        "remove": "AB9zfpLuWzkLDC_0mipouzBUvpvKRyKXqKv78Ar8IS-A911n2nEBAGkXLdRGLt9WsxOVUhG43xJ2yqBUYO9GQZKbEMUnfGW6qA"
+      },
+      "thumbnails": [
+        {
+          "url": "https://yt3.googleusercontent.com/MiciHaKxanMP0kHa_wU2NwfklgtiLETgrIZhHv1mkd9O7K1RE6KIXm3DOqKQsj5kEd1wvMD6Xbk71Ysu=w60-h60-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://yt3.googleusercontent.com/MiciHaKxanMP0kHa_wU2NwfklgtiLETgrIZhHv1mkd9O7K1RE6KIXm3DOqKQsj5kEd1wvMD6Xbk71Ysu=w120-h120-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_ATV",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "3:12",
+      "duration_seconds": 192,
+      "creditsBrowseId": "MPTCpgIGHxdGi6Q"
+    },
+    {
+      "videoId": "gZrcUDRUBjw",
+      "title": "GTA Vice City Stories - \"In The Air Tonight\" - Phil Collins Concert",
+      "artists": [
+        {
+          "name": "GTA Series Videos",
+          "id": "UCuWcjpKbIDAbZfHoru1toFg"
+        }
+      ],
+      "album": null,
+      "likeStatus": "INDIFFERENT",
+      "inLibrary": false,
+      "pinnedToListenAgain": false,
+      "thumbnails": [
+        {
+          "url": "https://i.ytimg.com/vi/gZrcUDRUBjw/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3nAg_Hekh_PDL11_4oigs2eqpyxKA",
+          "width": 400,
+          "height": 225
+        }
+      ],
+      "isAvailable": true,
+      "isExplicit": false,
+      "videoType": "MUSIC_VIDEO_TYPE_UGC",
+      "views": null,
+      "communityVoteStatus": null,
+      "duration": "6:20",
+      "duration_seconds": 380
+    }
+  ],
+  "duration_seconds": 3794
+}

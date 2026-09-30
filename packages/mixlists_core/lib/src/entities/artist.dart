@@ -4,11 +4,15 @@ class Artist {
   final String name;
   final String? genres;
 
+  /// The first image Spotify lists for the artist (the largest).
+  final String? imageURL;
+
   Artist({
     required this.id,
     required this.spotifyURI,
     required this.name,
     this.genres,
+    this.imageURL,
   });
 
   factory Artist.fromMap(Map<String, Object?> map) {
@@ -17,10 +21,17 @@ class Artist {
       spotifyURI: map['spotifyURI'] as String?,
       name: map['name'] as String,
       genres: map['genres'] as String?,
+      imageURL: map['imageURL'] as String?,
     );
   }
 
   Map<String, Object?> toMap() {
-    return {'id': id, 'spotifyURI': spotifyURI, 'name': name, 'genres': genres};
+    return {
+      'id': id,
+      'spotifyURI': spotifyURI,
+      'name': name,
+      'genres': genres,
+      'imageURL': imageURL,
+    };
   }
 }

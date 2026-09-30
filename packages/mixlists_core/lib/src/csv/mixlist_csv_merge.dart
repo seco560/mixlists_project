@@ -41,6 +41,10 @@ MixlistCsvRow _mergeRow(MixlistCsvRow primary, MixlistCsvRow? secondary) {
     isrc: primary.isrc ?? secondary.isrc,
     addedAt: primary.addedAt,
     genres: primary.genres ?? secondary.genres,
+    albumArtistImageURL:
+        primary.albumArtistImageURL ?? secondary.albumArtistImageURL,
+    trackArtistImageURL:
+        primary.trackArtistImageURL ?? secondary.trackArtistImageURL,
     recordLabel: primary.recordLabel ?? secondary.recordLabel,
     danceability: primary.danceability ?? secondary.danceability,
     energy: primary.energy ?? secondary.energy,
